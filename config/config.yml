@@ -1,0 +1,20 @@
+Server:
+  Mode: release
+  Port: 8800
+
+Database:
+  Host:
+  Port: 3306
+  UserName:
+  Password:
+  Database: distri-ai-solana
+
+Mailbox:
+  Host:
+  Port: 25
+  Username:
+  Password:
+
+Chain:
+  Rpc:
+  ProgramId:
