@@ -17,7 +17,7 @@ If all goes well, you will get a program called `distriai-backend-solana`.
 ```
 Server:
   Mode: release
-  Port: 8888
+  Port: 8800
 
 Database:
   Host:
