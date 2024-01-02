@@ -40,6 +40,7 @@ type MachineListReq struct {
 	Gpu      string
 	GpuCount uint32
 	Region   string
+	Status   *uint8
 	OrderBy  string
 	PageReq
 }
@@ -57,9 +58,14 @@ func MachineMarket(context *gin.Context) {
 		return
 	}
 
-	machine := &model.Machine{Status: uint8(distri_ai.MachineStatusForRent), Gpu: req.Gpu, GpuCount: req.GpuCount, Region: req.Region}
+	machine := &model.Machine{Gpu: req.Gpu, GpuCount: req.GpuCount, Region: req.Region}
 	var response MachineListResponse
 	tx := common.Db.Model(&machine).Where(&machine)
+	if req.Status == nil {
+		tx.Where("status != ?", uint8(distri_ai.MachineStatusIdle))
+	} else {
+		tx.Where("status = ?", *req.Status)
+	}
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
 		resp.Fail(context, "Database error")
