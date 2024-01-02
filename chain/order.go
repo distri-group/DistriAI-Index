@@ -2,9 +2,9 @@ package chain
 
 import (
 	"context"
-	"distriai-backend-solana/chain/distri_ai"
-	"distriai-backend-solana/common"
-	"distriai-backend-solana/model"
+	"distriai-index-solana/chain/distri_ai"
+	"distriai-index-solana/common"
+	"distriai-index-solana/model"
 	"fmt"
 	"github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"

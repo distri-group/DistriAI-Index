@@ -1,10 +1,10 @@
 package main
 
 import (
-	"distriai-backend-solana/chain"
-	"distriai-backend-solana/common"
-	"distriai-backend-solana/middleware"
-	"distriai-backend-solana/routes"
+	"distriai-index-solana/chain"
+	"distriai-index-solana/common"
+	"distriai-index-solana/middleware"
+	"distriai-index-solana/routes"
 	"github.com/gin-gonic/gin"
 )
 

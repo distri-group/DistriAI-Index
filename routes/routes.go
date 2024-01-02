@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"distriai-backend-solana/handlers"
+	"distriai-index-solana/handlers"
 	"github.com/gin-gonic/gin"
 )
 

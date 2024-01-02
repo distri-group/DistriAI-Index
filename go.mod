@@ -1,4 +1,4 @@
-module distriai-backend-solana
+module distriai-index-solana
 
 go 1.21
 

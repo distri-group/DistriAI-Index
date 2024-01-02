@@ -1,8 +1,8 @@
 package chain
 
 import (
-	"distriai-backend-solana/chain/distri_ai"
-	"distriai-backend-solana/model"
+	"distriai-index-solana/chain/distri_ai"
+	"distriai-index-solana/model"
 	"encoding/json"
 	"fmt"
 	"log"

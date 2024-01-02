@@ -7,7 +7,7 @@ Database:
   Port: 3306
   UserName:
   Password:
-  Database: distri-ai-solana
+  Database: distriai-index-solana
 
 Mailbox:
   Host:

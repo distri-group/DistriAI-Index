@@ -2,7 +2,7 @@ package chain
 
 import (
 	"context"
-	"distriai-backend-solana/common"
+	"distriai-index-solana/common"
 	"encoding/base64"
 	"errors"
 	"fmt"

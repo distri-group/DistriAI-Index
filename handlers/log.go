@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"distriai-backend-solana/common"
-	"distriai-backend-solana/model"
-	"distriai-backend-solana/utils/resp"
+	"distriai-index-solana/common"
+	"distriai-index-solana/model"
+	"distriai-index-solana/utils/resp"
 	"github.com/gin-gonic/gin"
 )
 

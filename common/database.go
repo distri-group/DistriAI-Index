@@ -1,7 +1,7 @@
 package common
 
 import (
-	"distriai-backend-solana/model"
+	"distriai-index-solana/model"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
