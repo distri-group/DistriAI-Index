@@ -1,4 +1,4 @@
-# DistriAI-Backend-Solana
+# DistriAI-Index-Solana
 
 ## System Requirements
 - Linux-amd64
