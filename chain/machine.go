@@ -11,7 +11,7 @@ import (
 	"github.com/gagliardetto/solana-go/rpc"
 	"log"
 )
-
+// fetch all account data on the Solana blockchain and storage
 func fetchAllMachine() {
 	resp, err := client.GetProgramAccountsWithOpts(
 		context.TODO(),
@@ -42,7 +42,7 @@ func fetchAllMachine() {
 		}
 	}
 }
-
+// Create a new  account
 func addMachine(owner solana.PublicKey, uuid [16]uint8) {
 	address, _, err := solana.FindProgramAddress(
 		[][]byte{
@@ -65,7 +65,7 @@ func addMachine(owner solana.PublicKey, uuid [16]uint8) {
 		log.Printf("Database error: %s \n", dbResult.Error)
 	}
 }
-
+// remove account
 func removeMachine(owner solana.PublicKey, uuid [16]uint8) {
 	dbResult := common.Db.
 		Where("owner = ?", owner.String()).
@@ -75,7 +75,7 @@ func removeMachine(owner solana.PublicKey, uuid [16]uint8) {
 		log.Printf("Database error: %s \n", dbResult.Error)
 	}
 }
-
+// update account
 func updateMachine(owner solana.PublicKey, uuid [16]uint8) {
 	address, _, err := solana.FindProgramAddress(
 		[][]byte{
