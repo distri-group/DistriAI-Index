@@ -7,7 +7,7 @@ Database:
   Port: 3306
   UserName:
   Password:
-  Database: distriai-index-solana
+  Database: distriai_index_solana
 
 Mailbox:
   Host:
@@ -17,4 +17,4 @@ Mailbox:
 
 Chain:
   Rpc:
-  ProgramId:
+  ProgramId: HF4aT6sho2zTySB8nEeN5ThMvDGtGVRrH3jeBvxFNxit
