@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 )
-
+// Convert blockchain format to application format
 func buildOrderModel(o distri_ai.Order) model.Order {
 	return model.Order{
 		Uuid:        fmt.Sprintf("%#x", o.OrderId),
