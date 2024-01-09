@@ -34,8 +34,12 @@ type Mailbox struct {
 }
 
 type Chain struct {
-	Rpc       string
-	ProgramId string
+	Rpc              string
+	ProgramId        string
+	FaucetPrivateKey string
+	Dist             string
+	DistDecimals     uint8
+	DistFaucetAmount uint64
 }
 
 func InitConfig() {

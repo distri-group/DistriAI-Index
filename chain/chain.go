@@ -32,25 +32,28 @@ const (
 )
 
 var (
-	DistriAIProgramID  solana.PublicKey
-	client             *rpc.Client
+	distriProgramID    solana.PublicKey
+	rpcClient          *rpc.Client
+	wsClient           *ws.Client
 	sub                *ws.LogSubscription
 	distriInstructions = []string{_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _PlaceOrder, _RenewOrder, _OrderCompleted, _OrderFailed, _RemoveOrder}
 )
 
-func newRpcClient() {
-	DistriAIProgramID = solana.MustPublicKeyFromBase58(common.Conf.Chain.ProgramId)
-	client = rpc.New(rpc.DevNet_RPC)
+func initChain() {
+	distriProgramID = solana.MustPublicKeyFromBase58(common.Conf.Chain.ProgramId)
+	rpcClient = rpc.New(rpc.DevNet_RPC)
+
+	initSolana()
 }
 
 func subLogs() {
 	var err error
-	client, err := ws.Connect(context.Background(), rpc.DevNet_WS)
+	wsClient, err = ws.Connect(context.Background(), rpc.DevNet_WS)
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't connect to '%s': %s", rpc.DevNet_WS, err))
 	}
-	sub, err = client.LogsSubscribeMentions(
-		DistriAIProgramID,
+	sub, err = wsClient.LogsSubscribeMentions(
+		distriProgramID,
 		rpc.CommitmentFinalized,
 	)
 	if err != nil {
@@ -59,7 +62,7 @@ func subLogs() {
 }
 
 func Sync() {
-	newRpcClient()
+	initChain()
 
 	fetchAllMachine()
 	fetchAllOrder()

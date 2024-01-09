@@ -13,9 +13,9 @@ import (
 )
 
 func fetchAllOrder() {
-	resp, err := client.GetProgramAccountsWithOpts(
+	resp, err := rpcClient.GetProgramAccountsWithOpts(
 		context.TODO(),
-		DistriAIProgramID,
+		distriProgramID,
 		&rpc.GetProgramAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		},
@@ -50,13 +50,13 @@ func addOrder(orderId [16]uint8, buyer solana.PublicKey) {
 			buyer[:],
 			orderId[:],
 		},
-		DistriAIProgramID,
+		distriProgramID,
 	)
 	if err != nil {
 		return
 	}
 	var o distri_ai.Order
-	if err := client.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
+	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
 		return
 	}
 
@@ -82,13 +82,13 @@ func updateOrder(orderId [16]uint8, buyer solana.PublicKey) {
 			buyer[:],
 			orderId[:],
 		},
-		DistriAIProgramID,
+		distriProgramID,
 	)
 	if err != nil {
 		return
 	}
 	var o distri_ai.Order
-	if err := client.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
+	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
 		return
 	}
 

@@ -27,4 +27,5 @@ func RegisterRoutes(engine *gin.Engine) {
 		log.POST("/add", handlers.LogAdd)
 		log.POST("/list", handlers.LogList)
 	}
+	engine.POST("/faucet", handlers.Faucet)
 }

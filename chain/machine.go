@@ -13,9 +13,9 @@ import (
 )
 
 func fetchAllMachine() {
-	resp, err := client.GetProgramAccountsWithOpts(
+	resp, err := rpcClient.GetProgramAccountsWithOpts(
 		context.TODO(),
-		DistriAIProgramID,
+		distriProgramID,
 		&rpc.GetProgramAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		},
@@ -50,13 +50,13 @@ func addMachine(owner solana.PublicKey, uuid [16]uint8) {
 			owner[:],
 			uuid[:],
 		},
-		DistriAIProgramID,
+		distriProgramID,
 	)
 	if err != nil {
 		return
 	}
 	var m distri_ai.Machine
-	if err := client.GetAccountDataBorshInto(context.TODO(), address, &m); err != nil {
+	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &m); err != nil {
 		return
 	}
 
@@ -83,13 +83,13 @@ func updateMachine(owner solana.PublicKey, uuid [16]uint8) {
 			owner[:],
 			uuid[:],
 		},
-		DistriAIProgramID,
+		distriProgramID,
 	)
 	if err != nil {
 		return
 	}
 	var m distri_ai.Machine
-	if err := client.GetAccountDataBorshInto(context.TODO(), address, &m); err != nil {
+	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &m); err != nil {
 		return
 	}
 

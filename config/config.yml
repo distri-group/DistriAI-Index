@@ -18,3 +18,7 @@ Mailbox:
 Chain:
   Rpc:
   ProgramId: HF4aT6sho2zTySB8nEeN5ThMvDGtGVRrH3jeBvxFNxit
+  FaucetPrivateKey:
+  Dist: 896KfVVY6VRGQs1d9CKLnKUEgXXCCJcEEg7LwSK84vWE
+  DistDecimals: 9
+  DistFaucetAmount: 5
