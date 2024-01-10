@@ -24,7 +24,12 @@ Database:
   Port: 3306
   UserName:
   Password:
-  Database: distriai-index-solana
+  Database: distriai_index_solana
+
+Redis:
+  Addr: 'localhost:6379'
+  Password:
+  DB: 0
 
 Mailbox:
   Host:
@@ -34,7 +39,11 @@ Mailbox:
 
 Chain:
   Rpc:
-  ProgramId:
+  ProgramId: HF4aT6sho2zTySB8nEeN5ThMvDGtGVRrH3jeBvxFNxit
+  FaucetPrivateKey:
+  Dist: 896KfVVY6VRGQs1d9CKLnKUEgXXCCJcEEg7LwSK84vWE
+  DistDecimals: 9
+  DistFaucetAmount: 5
 ```
 
 ### Step 2: Start the distriai-index-solana service
