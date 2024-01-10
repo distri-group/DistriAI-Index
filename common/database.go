@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDatabase() {
+func initDatabase() {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		Conf.Database.Username,

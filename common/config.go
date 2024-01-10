@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Server   Server
 	Database Database
+	Redis    Redis
 	Mailbox  Mailbox
 	Chain    Chain
 }
@@ -24,6 +25,12 @@ type Database struct {
 	Username string
 	Password string
 	Database string
+}
+
+type Redis struct {
+	Addr     string
+	Password string
+	DB       int
 }
 
 type Mailbox struct {
@@ -42,7 +49,7 @@ type Chain struct {
 	DistFaucetAmount uint64
 }
 
-func InitConfig() {
+func initConfig() {
 	viper.SetConfigType("yaml")
 	configEnv := os.Getenv("GO_ENV")
 	switch configEnv {

@@ -9,6 +9,11 @@ Database:
   Password:
   Database: distriai_index_solana
 
+Redis:
+  Addr: 'localhost:6379'
+  Password:
+  DB: 0
+
 Mailbox:
   Host:
   Port: 25

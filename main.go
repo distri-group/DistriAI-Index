@@ -9,8 +9,7 @@ import (
 )
 
 func main() {
-	common.InitConfig()
-	common.InitDatabase()
+	common.Init()
 	chain.Sync()
 
 	gin.SetMode(common.Conf.Server.Mode)
