@@ -48,7 +48,7 @@ type Chain struct {
 	DistDecimals     uint8
 	DistFaucetAmount uint64
 }
-
+// Initializing application configuration
 func initConfig() {
 	viper.SetConfigType("yaml")
 	configEnv := os.Getenv("GO_ENV")
