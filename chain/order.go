@@ -11,7 +11,7 @@ import (
 	"github.com/gagliardetto/solana-go/rpc"
 	"log"
 )
-
+//retrieve all the orders from a distributed program and saves them to the local database.
 func fetchAllOrder() {
 	resp, err := rpcClient.GetProgramAccountsWithOpts(
 		context.TODO(),
