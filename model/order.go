@@ -14,4 +14,5 @@ type Order struct {
 	Metadata    string    `gorm:"size:2048;not null"`
 	Status      uint8     `gorm:"not null"`
 	OrderTime   time.Time `gorm:"autoCreateTime"`
+	RefundTime  time.Time `gorm:"autoCreateTime"`
 }

@@ -6,11 +6,13 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gagliardetto/binary v0.7.7
+	github.com/gagliardetto/gofuzz v1.2.2
 	github.com/gagliardetto/solana-go v1.8.4
 	github.com/gagliardetto/treeout v0.1.4
 	github.com/gin-gonic/gin v1.9.1
 	github.com/redis/go-redis/v9 v9.4.0
 	github.com/spf13/viper v1.16.0
+	github.com/stretchr/testify v1.8.4
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/gorm v1.25.3
@@ -57,6 +59,7 @@ require (
 	github.com/mostynb/zstdpool-freelist v0.0.0-20201229113212-927304c0c3b1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

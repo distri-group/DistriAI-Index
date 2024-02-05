@@ -24,8 +24,10 @@ const (
 	_RemoveMachine  = "RemoveMachine"
 	_MakeOffer      = "MakeOffer"
 	_CancelOffer    = "CancelOffer"
+	_SubmitTask     = "SubmitTask"
 	_PlaceOrder     = "PlaceOrder"
 	_RenewOrder     = "RenewOrder"
+	_RefundOrder    = "RefundOrder"
 	_OrderCompleted = "OrderCompleted"
 	_OrderFailed    = "OrderFailed"
 	_RemoveOrder    = "RemoveOrder"
@@ -36,7 +38,10 @@ var (
 	rpcClient          *rpc.Client
 	wsClient           *ws.Client
 	sub                *ws.LogSubscription
-	distriInstructions = []string{_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _PlaceOrder, _RenewOrder, _OrderCompleted, _OrderFailed, _RemoveOrder}
+	distriInstructions = []string{
+		_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _SubmitTask,
+		_PlaceOrder, _RenewOrder, _RefundOrder, _OrderCompleted, _OrderFailed, _RemoveOrder,
+	}
 )
 
 func initChain() {
@@ -136,7 +141,7 @@ func subEvents() {
 				continue
 			}
 			updateOrder(event.OrderId, event.Buyer)
-		case _OrderCompleted, _OrderFailed:
+		case _RefundOrder, _OrderCompleted, _OrderFailed:
 			event, err := decodeOrderEvent(data)
 			if err != nil {
 				continue

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 )
+
 // Convert blockchain format to application format
 func buildOrderModel(o distri_ai.Order) model.Order {
 	return model.Order{
@@ -19,5 +20,6 @@ func buildOrderModel(o distri_ai.Order) model.Order {
 		Metadata:    o.Metadata,
 		Status:      uint8(o.Status),
 		OrderTime:   time.Unix(o.OrderTime, 0),
+		RefundTime:  time.Unix(o.RefundTime, 0),
 	}
 }

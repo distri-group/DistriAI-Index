@@ -151,10 +151,10 @@ func Subscribe(context *gin.Context) {
 		return
 	}
 
-	//if sendEmail(req.Mailbox, fmt.Sprintf(EMAIL_BODY, mailbox.MailBox)) != nil {
-	//	resp.Fail(context, "Send email Fail")
-	//	return
-	//}
+	if sendEmail(req.Mailbox, fmt.Sprintf(EMAIL_BODY, mailbox.MailBox)) != nil {
+		resp.Fail(context, "Send email Fail")
+		return
+	}
 
 	resp.Success(context, "")
 }
