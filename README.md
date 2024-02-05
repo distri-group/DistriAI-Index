@@ -4,7 +4,7 @@
 - Linux-amd64
 
 ## Build
-Requires Go1.20 or higher.
+Requires Go1.21 or higher.
 ```
 GOOS=linux GOARCH=amd64 go build
 ```
