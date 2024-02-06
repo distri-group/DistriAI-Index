@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"time"
 )
 
 // The function initializes the database connection using the provided configuration settings and migrates the database schema.
@@ -23,6 +24,10 @@ func initDatabase() {
 	if err != nil {
 		panic("database init err! " + err.Error())
 	}
+	sqlDB, _ := db.DB()
+	sqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(10)
 
 	// Migrate the schema
 	model.AutoMigrate(db)
