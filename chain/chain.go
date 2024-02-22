@@ -69,11 +69,27 @@ func subLogs() {
 
 func Sync() {
 	initChain()
-
-	fetchAllMachine()
-	fetchAllOrder()
-
+	fetchAll()
 	go subEvents()
+}
+
+func fetchAll() {
+	out, err := rpcClient.GetProgramAccountsWithOpts(
+		context.TODO(),
+		distriProgramID,
+		&rpc.GetProgramAccountsOpts{
+			Commitment: rpc.CommitmentFinalized,
+		},
+	)
+	if err != nil {
+		log.Printf("GetProgramAccounts error: %s \n", err)
+		return
+	}
+
+	fetchAllMachine(out)
+	fetchAllOrder(out)
+	fetchAllReward(out)
+	fetchAllRewardMachine(out)
 }
 
 func subEvents() {
@@ -129,6 +145,20 @@ func subEvents() {
 				continue
 			}
 			updateMachine(event.Owner, event.Uuid)
+		case _SubmitTask:
+			event, err := decodeTaskEvent(data)
+			if err != nil {
+				continue
+			}
+			saveReward(event.Period)
+			saveRewardMachine(event.Period, event.Owner, event.MachineId)
+		case _Claim:
+			event, err := decodeRewardEvent(data)
+			if err != nil {
+				continue
+			}
+			updateMachine(event.Owner, event.MachineId)
+			saveRewardMachine(event.Period, event.Owner, event.MachineId)
 		case _PlaceOrder:
 			event, err := decodeOrderEvent(data)
 			if err != nil {

@@ -6,10 +6,10 @@ import (
 )
 
 // Convert blockchain format to application format
-func buildRewardModel(o distri_ai.Reward) model.Reward {
+func buildRewardModel(r distri_ai.Reward) model.Reward {
 	return model.Reward{
-		Period:     o.Period,
-		Pool:       o.Pool,
-		MachineNum: o.MachineNum,
+		Period:     r.Period,
+		Pool:       r.Pool,
+		MachineNum: r.MachineNum,
 	}
 }

@@ -11,22 +11,11 @@ import (
 	"github.com/gagliardetto/solana-go/rpc"
 	"log"
 )
-// fetch all account data on the Solana blockchain and storage
-func fetchAllMachine() {
-	resp, err := rpcClient.GetProgramAccountsWithOpts(
-		context.TODO(),
-		distriProgramID,
-		&rpc.GetProgramAccountsOpts{
-			Commitment: rpc.CommitmentFinalized,
-		},
-	)
-	if err != nil {
-		log.Printf("GetProgramAccounts error: %s \n", err)
-		return
-	}
 
+// fetch all account data on the Solana blockchain and storage
+func fetchAllMachine(out rpc.GetProgramAccountsResult) {
 	var machines []model.Machine
-	for _, keyedAcct := range resp {
+	for _, keyedAcct := range out {
 		acct := keyedAcct.Account
 		m := new(distri_ai.Machine)
 		if err := m.UnmarshalWithDecoder(bin.NewBorshDecoder(acct.Data.GetBinary())); err != nil {
@@ -42,6 +31,7 @@ func fetchAllMachine() {
 		}
 	}
 }
+
 // Create a new  account
 func addMachine(owner solana.PublicKey, uuid [16]uint8) {
 	address, _, err := solana.FindProgramAddress(
@@ -65,6 +55,7 @@ func addMachine(owner solana.PublicKey, uuid [16]uint8) {
 		log.Printf("Database error: %s \n", dbResult.Error)
 	}
 }
+
 // remove account
 func removeMachine(owner solana.PublicKey, uuid [16]uint8) {
 	dbResult := common.Db.
@@ -75,6 +66,7 @@ func removeMachine(owner solana.PublicKey, uuid [16]uint8) {
 		log.Printf("Database error: %s \n", dbResult.Error)
 	}
 }
+
 // update account
 func updateMachine(owner solana.PublicKey, uuid [16]uint8) {
 	address, _, err := solana.FindProgramAddress(

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"time"
 )
 
@@ -19,6 +20,7 @@ func initDatabase() {
 		Conf.Database.Database,
 	)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger:          logger.Default.LogMode(logger.Info),
 		CreateBatchSize: 100,
 	})
 	if err != nil {

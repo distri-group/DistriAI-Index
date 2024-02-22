@@ -12,21 +12,9 @@ import (
 	"log"
 )
 
-func fetchAllOrder() {
-	resp, err := rpcClient.GetProgramAccountsWithOpts(
-		context.TODO(),
-		distriProgramID,
-		&rpc.GetProgramAccountsOpts{
-			Commitment: rpc.CommitmentFinalized,
-		},
-	)
-	if err != nil {
-		log.Printf("GetProgramAccounts error: %s \n", err)
-		return
-	}
-
+func fetchAllOrder(out rpc.GetProgramAccountsResult) {
 	var orders []model.Order
-	for _, keyedAcct := range resp {
+	for _, keyedAcct := range out {
 		acct := keyedAcct.Account
 		o := new(distri_ai.Order)
 		if err := o.UnmarshalWithDecoder(bin.NewBorshDecoder(acct.Data.GetBinary())); err != nil {
