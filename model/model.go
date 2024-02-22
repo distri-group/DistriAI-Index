@@ -7,12 +7,16 @@ func AutoMigrate(db *gorm.DB) {
 		&Sync{},
 		&Machine{},
 		&Order{},
+		&Reward{},
+		&RewardMachine{},
 	)
 	db.AutoMigrate(
+		&Log{},
 		&Mailbox{},
 		&Sync{},
 		&Machine{},
 		&Order{},
-		&Log{},
+		&Reward{},
+		&RewardMachine{},
 	)
 }

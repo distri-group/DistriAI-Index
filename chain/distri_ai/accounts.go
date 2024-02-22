@@ -9,16 +9,17 @@ import (
 )
 
 type Machine struct {
-	Owner          ag_solanago.PublicKey
-	Uuid           [16]uint8
-	Metadata       string
-	Status         MachineStatus
-	Price          uint64
-	MaxDuration    uint32
-	Disk           uint32
-	CompletedCount uint32
-	FailedCount    uint32
-	Score          uint8
+	Owner           ag_solanago.PublicKey
+	Uuid            [16]uint8
+	Metadata        string
+	Status          MachineStatus
+	Price           uint64
+	MaxDuration     uint32
+	Disk            uint32
+	CompletedCount  uint32
+	FailedCount     uint32
+	Score           uint8
+	PeriodicRewards uint64
 }
 
 var MachineDiscriminator = [8]byte{25, 102, 22, 13, 58, 243, 138, 79}
@@ -76,6 +77,11 @@ func (obj Machine) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 	}
 	// Serialize `Score` param:
 	err = encoder.Encode(obj.Score)
+	if err != nil {
+		return err
+	}
+	// Serialize `PeriodicRewards` param:
+	err = encoder.Encode(obj.PeriodicRewards)
 	if err != nil {
 		return err
 	}
@@ -143,6 +149,11 @@ func (obj *Machine) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error)
 	}
 	// Deserialize `Score`:
 	err = decoder.Decode(&obj.Score)
+	if err != nil {
+		return err
+	}
+	// Deserialize `PeriodicRewards`:
+	err = decoder.Decode(&obj.PeriodicRewards)
 	if err != nil {
 		return err
 	}
@@ -366,11 +377,12 @@ func (obj *Reward) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) 
 }
 
 type RewardMachine struct {
-	Period    uint32
-	Owner     ag_solanago.PublicKey
-	MachineId [16]uint8
-	TaskNum   uint32
-	Claimed   bool
+	Period         uint32
+	Owner          ag_solanago.PublicKey
+	MachineId      [16]uint8
+	TaskNum        uint32
+	Claimed        bool
+	PeriodicReward uint64
 }
 
 var RewardMachineDiscriminator = [8]byte{106, 87, 186, 254, 4, 139, 144, 74}
@@ -403,6 +415,11 @@ func (obj RewardMachine) MarshalWithEncoder(encoder *ag_binary.Encoder) (err err
 	}
 	// Serialize `Claimed` param:
 	err = encoder.Encode(obj.Claimed)
+	if err != nil {
+		return err
+	}
+	// Serialize `PeriodicReward` param:
+	err = encoder.Encode(obj.PeriodicReward)
 	if err != nil {
 		return err
 	}
@@ -448,11 +465,17 @@ func (obj *RewardMachine) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err 
 	if err != nil {
 		return err
 	}
+	// Deserialize `PeriodicReward`:
+	err = decoder.Decode(&obj.PeriodicReward)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 type Task struct {
 	Uuid      [16]uint8
+	Period    uint32
 	Owner     ag_solanago.PublicKey
 	MachineId [16]uint8
 	Metadata  string
@@ -468,6 +491,11 @@ func (obj Task) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 	}
 	// Serialize `Uuid` param:
 	err = encoder.Encode(obj.Uuid)
+	if err != nil {
+		return err
+	}
+	// Serialize `Period` param:
+	err = encoder.Encode(obj.Period)
 	if err != nil {
 		return err
 	}
@@ -505,6 +533,11 @@ func (obj *Task) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	}
 	// Deserialize `Uuid`:
 	err = decoder.Decode(&obj.Uuid)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Period`:
+	err = decoder.Decode(&obj.Period)
 	if err != nil {
 		return err
 	}

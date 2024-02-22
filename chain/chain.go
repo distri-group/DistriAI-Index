@@ -25,6 +25,7 @@ const (
 	_MakeOffer      = "MakeOffer"
 	_CancelOffer    = "CancelOffer"
 	_SubmitTask     = "SubmitTask"
+	_Claim          = "Claim"
 	_PlaceOrder     = "PlaceOrder"
 	_RenewOrder     = "RenewOrder"
 	_RefundOrder    = "RefundOrder"
@@ -39,7 +40,7 @@ var (
 	wsClient           *ws.Client
 	sub                *ws.LogSubscription
 	distriInstructions = []string{
-		_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _SubmitTask,
+		_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _SubmitTask, _Claim,
 		_PlaceOrder, _RenewOrder, _RefundOrder, _OrderCompleted, _OrderFailed, _RemoveOrder,
 	}
 )
@@ -182,6 +183,36 @@ func decodeOrderEvent(data string) (*OrderEvent, error) {
 		return nil, errors.New("data too short")
 	}
 	event := new(OrderEvent)
+	if err := event.UnmarshalWithDecoder(bin.NewBorshDecoder(bytes[8:])); err != nil {
+		return nil, err
+	}
+	return event, nil
+}
+
+func decodeTaskEvent(data string) (*TaskEvent, error) {
+	bytes, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return nil, err
+	}
+	if len(bytes) < 8 {
+		return nil, errors.New("data too short")
+	}
+	event := new(TaskEvent)
+	if err := event.UnmarshalWithDecoder(bin.NewBorshDecoder(bytes[8:])); err != nil {
+		return nil, err
+	}
+	return event, nil
+}
+
+func decodeRewardEvent(data string) (*RewardEvent, error) {
+	bytes, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return nil, err
+	}
+	if len(bytes) < 8 {
+		return nil, errors.New("data too short")
+	}
+	event := new(RewardEvent)
 	if err := event.UnmarshalWithDecoder(bin.NewBorshDecoder(bytes[8:])); err != nil {
 		return nil, err
 	}

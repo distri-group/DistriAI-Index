@@ -98,7 +98,7 @@ const EMAIL_BODY = `
 											</tr>
 											<tr style="word-break: break-word !important;">
 												<td align="center" style="line-height: 1.666; font-size: 12px; color: rgb(153, 153, 153); padding: 5px 0px 20px; word-break: break-word !important;">© 2023 DistriAI All Rights Reserved
-													<br style="word-break: break-word !important;" />Official website：&nbsp;www.distriai.cloud
+													<br style="word-break: break-word !important;" />Official website：&nbsp;www.distri.ai
 													<br style="word-break: break-word !important;" />
 													<br style="word-break: break-word !important;" />
 													<br style="word-break: break-word !important;" />
