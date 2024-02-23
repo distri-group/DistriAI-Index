@@ -7,13 +7,13 @@ import (
 )
 
 // Convert blockchain format to application format
-func buildRewardMachineModel(o distri_ai.RewardMachine) model.RewardMachine {
+func buildRewardMachineModel(r distri_ai.RewardMachine) model.RewardMachine {
 	return model.RewardMachine{
-		Period:         o.Period,
-		Owner:          o.Owner.String(),
-		MachineId:      fmt.Sprintf("%#x", o.MachineId),
-		TaskNum:        o.TaskNum,
-		Claimed:        o.Claimed,
-		PeriodicReward: o.PeriodicReward,
+		Period:         r.Period,
+		Owner:          r.Owner.String(),
+		MachineId:      fmt.Sprintf("%#x", r.MachineId),
+		TaskNum:        r.TaskNum,
+		Claimed:        r.Claimed,
+		PeriodicReward: r.PeriodicReward,
 	}
 }

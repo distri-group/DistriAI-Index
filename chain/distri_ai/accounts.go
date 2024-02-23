@@ -9,17 +9,18 @@ import (
 )
 
 type Machine struct {
-	Owner           ag_solanago.PublicKey
-	Uuid            [16]uint8
-	Metadata        string
-	Status          MachineStatus
-	Price           uint64
-	MaxDuration     uint32
-	Disk            uint32
-	CompletedCount  uint32
-	FailedCount     uint32
-	Score           uint8
-	PeriodicRewards uint64
+	Owner                  ag_solanago.PublicKey
+	Uuid                   [16]uint8
+	Metadata               string
+	Status                 MachineStatus
+	Price                  uint64
+	MaxDuration            uint32
+	Disk                   uint32
+	CompletedCount         uint32
+	FailedCount            uint32
+	Score                  uint8
+	ClaimedPeriodicRewards uint64
+	ClaimedTaskRewards     uint64
 }
 
 var MachineDiscriminator = [8]byte{25, 102, 22, 13, 58, 243, 138, 79}
@@ -80,8 +81,13 @@ func (obj Machine) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 	if err != nil {
 		return err
 	}
-	// Serialize `PeriodicRewards` param:
-	err = encoder.Encode(obj.PeriodicRewards)
+	// Serialize `ClaimedPeriodicRewards` param:
+	err = encoder.Encode(obj.ClaimedPeriodicRewards)
+	if err != nil {
+		return err
+	}
+	// Serialize `ClaimedTaskRewards` param:
+	err = encoder.Encode(obj.ClaimedTaskRewards)
 	if err != nil {
 		return err
 	}
@@ -152,8 +158,13 @@ func (obj *Machine) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error)
 	if err != nil {
 		return err
 	}
-	// Deserialize `PeriodicRewards`:
-	err = decoder.Decode(&obj.PeriodicRewards)
+	// Deserialize `ClaimedPeriodicRewards`:
+	err = decoder.Decode(&obj.ClaimedPeriodicRewards)
+	if err != nil {
+		return err
+	}
+	// Deserialize `ClaimedTaskRewards`:
+	err = decoder.Decode(&obj.ClaimedTaskRewards)
 	if err != nil {
 		return err
 	}
