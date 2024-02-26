@@ -24,9 +24,10 @@ func RegisterRoutes(engine *gin.Engine) {
 	}
 	reward := engine.Group("/reward")
 	{
-		reward.GET("/total", handlers.RewardTotal)
+		reward.POST("/total", handlers.RewardTotal)
 		reward.POST("/claimable/list", handlers.RewardClaimableList)
 		reward.POST("/period/list", handlers.RewardPeriodList)
+		reward.POST("/machine/list", handlers.RewardMachineList)
 	}
 	log := engine.Group("/log")
 	{
