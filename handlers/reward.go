@@ -6,6 +6,7 @@ import (
 	"distriai-index-solana/utils/resp"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"time"
 )
 
 type RewardTotalReq struct {
@@ -32,32 +33,23 @@ func RewardTotal(context *gin.Context) {
 	}
 
 	var response RewardTotalResponse
+	tx := common.Db.Model(&model.RewardMachine{}).
+		Select("SUM(rewards.unit_periodic_reward) AS claimed_periodic_rewards").
+		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
+		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.claimed", true).
+		Where("reward_machines.period < ?", currentPeriod())
 	if req.Period != nil {
-		tx := common.Db.Model(&model.RewardMachine{}).
-			Select("SUM(periodic_reward) AS claimed_periodic_rewards").
-			Where("owner = ?", header.Account).
-			Where("claimed", true).
-			Where("period < ?", currentPeriod()).
-			Where("period = ?", req.Period).
-			Find(&response)
-		if tx.Error != nil {
-			resp.Fail(context, "Database error")
-			return
-		}
-	} else {
-		machine := &model.Machine{Owner: header.Account}
-		tx := common.Db.Model(&machine).
-			Select("SUM(claimed_periodic_rewards) AS claimed_periodic_rewards, SUM(claimed_task_rewards) AS claimed_task_rewards").
-			Where(&machine).
-			Find(&response)
-		if tx.Error != nil {
-			resp.Fail(context, "Database error")
-			return
-		}
+		tx.Where("reward_machines.period = ?", req.Period)
+	}
+	tx.Find(&response)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
 	}
 
-	tx := common.Db.Model(&model.RewardMachine{}).
-		Select("SUM(rewards.pool DIV rewards.machine_num) AS claimable_periodic_rewards").
+	tx = common.Db.Model(&model.RewardMachine{}).
+		Select("SUM(rewards.unit_periodic_reward) AS claimable_periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Where("reward_machines.owner = ?", header.Account).
 		Where("reward_machines.claimed", false).
@@ -125,6 +117,7 @@ func RewardClaimableList(context *gin.Context) {
 
 type RewardPeriodListItem struct {
 	Period          uint32
+	StartTime       time.Time
 	Pool            uint64
 	PeriodicRewards uint64
 }
@@ -143,7 +136,7 @@ func RewardPeriodList(context *gin.Context) {
 
 	var response RewardPeriodListResponse
 	tx := common.Db.Model(&model.RewardMachine{}).
-		Select("reward_machines.period,rewards.pool,SUM(rewards.pool DIV rewards.machine_num) AS periodic_rewards").
+		Select("reward_machines.period,rewards.start_time,rewards.pool,SUM(rewards.unit_periodic_reward) AS periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Where("reward_machines.owner = ?", header.Account).
 		Where("reward_machines.period < ?", currentPeriod()).
@@ -169,6 +162,7 @@ type RewardMachineListReq struct {
 
 type RewardMachineListItem struct {
 	Period          uint32
+	StartTime       time.Time
 	Pool            uint64
 	MachineNum      uint32
 	PeriodicRewards uint64
@@ -194,7 +188,7 @@ func RewardMachineList(context *gin.Context) {
 
 	var response RewardMachineListResponse
 	tx := common.Db.Model(&model.RewardMachine{}).
-		Select("reward_machines.period,rewards.pool,rewards.machine_num,rewards.pool DIV rewards.machine_num AS periodic_rewards,machines.*").
+		Select("reward_machines.period,rewards.start_time,rewards.pool,rewards.machine_num,rewards.unit_periodic_reward AS periodic_rewards,machines.*").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Joins("LEFT JOIN machines on machines.owner = reward_machines.owner AND machines.uuid = reward_machines.machine_id").
 		Where("reward_machines.owner = ?", header.Account).

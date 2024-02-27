@@ -3,7 +3,8 @@ package handlers
 import "time"
 
 const (
-	genesisTime    int64 = 1706745600
+	// Period 0 start time: 2024-02-27 00:00:00 UTC
+	genesisTime    int64 = 1708992000
 	periodDuration int64 = 86400
 )
 
