@@ -69,7 +69,9 @@ func subLogs() {
 
 func Sync() {
 	initChain()
+	//sync machine、order、reward、rewardMachine data from chain
 	fetchAll()
+	// subscribe smart contract events
 	go subEvents()
 }
 

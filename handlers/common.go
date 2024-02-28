@@ -19,6 +19,7 @@ type PageResp struct {
 	Total int64
 }
 
+// Paginate is a middleware to paginate the db query result
 func Paginate(context *gin.Context) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		var req PageReq

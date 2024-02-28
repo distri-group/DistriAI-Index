@@ -51,6 +51,7 @@ type MachineListResponse struct {
 }
 
 func MachineMarket(context *gin.Context) {
+	// bind request params
 	var req MachineListReq
 	err := context.ShouldBindBodyWith(&req, binding.JSON)
 	if err != nil {
@@ -58,6 +59,7 @@ func MachineMarket(context *gin.Context) {
 		return
 	}
 
+	// build sql query params
 	machine := &model.Machine{Gpu: req.Gpu, GpuCount: req.GpuCount, Region: req.Region}
 	var response MachineListResponse
 	tx := common.Db.Model(&machine).Where(&machine)
@@ -78,6 +80,7 @@ func MachineMarket(context *gin.Context) {
 	case "reliability":
 		tx.Order("`completed_count`/(`completed_count` + `failed_count`) DESC")
 	}
+	// execute pagination query
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
 		resp.Fail(context, "Database error")
