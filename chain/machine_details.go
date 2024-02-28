@@ -3,9 +3,9 @@ package chain
 import (
 	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
 type MetadataJson struct {
@@ -30,7 +30,7 @@ type InfoFlop struct {
 func buildMachineModel(m distri_ai.Machine) model.Machine {
 	var mj MetadataJson
 	if err := json.Unmarshal([]byte(m.Metadata), &mj); err != nil {
-		log.Printf("Unmarshal 'Metadata' error: %s \n", err)
+		logs.Error(fmt.Sprintf("Unmarshal 'Metadata' error: %s \n", err))
 	}
 
 	return model.Machine{

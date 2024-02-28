@@ -5,11 +5,11 @@ import (
 	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"fmt"
 	"github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"log"
 )
 
 func fetchAllOrder(out rpc.GetProgramAccountsResult) {
@@ -26,7 +26,7 @@ func fetchAllOrder(out rpc.GetProgramAccountsResult) {
 
 	if len(orders) > 0 {
 		if dbResult := common.Db.Create(&orders); dbResult.Error != nil {
-			log.Printf("Database error: %s \n", dbResult.Error)
+			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		}
 	}
 }
@@ -50,7 +50,7 @@ func addOrder(orderId [16]uint8, buyer solana.PublicKey) {
 
 	order := buildOrderModel(o)
 	if dbResult := common.Db.Create(&order); dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }
 
@@ -59,7 +59,7 @@ func removeOrder(orderId [16]uint8) {
 		Where("uuid = ?", fmt.Sprintf("%#x", orderId)).
 		Delete(&model.Order{})
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }
 
@@ -73,10 +73,12 @@ func updateOrder(orderId [16]uint8, buyer solana.PublicKey) {
 		distriProgramID,
 	)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("Can not find Program Address: %s \n", err))
 		return
 	}
 	var o distri_ai.Order
 	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
+		logs.Warn(fmt.Sprintf("GetAccountDataBorshInto error: %s \n", err))
 		return
 	}
 
@@ -86,7 +88,7 @@ func updateOrder(orderId [16]uint8, buyer solana.PublicKey) {
 		Where("uuid = ?", uuidStr).
 		Take(&order)
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		return
 	}
 
@@ -94,6 +96,6 @@ func updateOrder(orderId [16]uint8, buyer solana.PublicKey) {
 	updateOrder.Id = order.Id
 	dbResult = common.Db.Save(&updateOrder)
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }

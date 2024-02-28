@@ -3,6 +3,7 @@ package chain
 import (
 	"context"
 	"distriai-index-solana/common"
+	"distriai-index-solana/utils/logs"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -11,7 +12,6 @@ import (
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
 	"github.com/gagliardetto/solana-go/rpc/ws"
-	"log"
 	"slices"
 	"strings"
 )
@@ -63,7 +63,7 @@ func subLogs() {
 		rpc.CommitmentFinalized,
 	)
 	if err != nil {
-		log.Printf("LogsSubscribe error: '%s' \n", err)
+		logs.Error(fmt.Sprintf("LogsSubscribe error: '%s' \n", err))
 	}
 }
 
@@ -84,7 +84,7 @@ func fetchAll() {
 		},
 	)
 	if err != nil {
-		log.Printf("GetProgramAccounts error: %s \n", err)
+		logs.Error(fmt.Sprintf("GetProgramAccounts error: %s \n", err))
 		return
 	}
 
@@ -101,7 +101,7 @@ func subEvents() {
 	for {
 		got, err := sub.Recv()
 		if err != nil {
-			log.Printf("SubEvents error: %v \n", err)
+			logs.Error(fmt.Sprintf("SubEvents error: %v \n", err))
 			subLogs()
 			continue
 		}

@@ -5,11 +5,11 @@ import (
 	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"fmt"
 	"github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"log"
 )
 
 // fetch all account data on the Solana blockchain and storage
@@ -27,7 +27,7 @@ func fetchAllMachine(out rpc.GetProgramAccountsResult) {
 
 	if len(machines) > 0 {
 		if dbResult := common.Db.Create(&machines); dbResult.Error != nil {
-			log.Printf("Database error: %s \n", dbResult.Error)
+			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		}
 	}
 }
@@ -52,7 +52,7 @@ func addMachine(owner solana.PublicKey, uuid [16]uint8) {
 
 	machine := buildMachineModel(m)
 	if dbResult := common.Db.Create(&machine); dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }
 
@@ -63,7 +63,7 @@ func removeMachine(owner solana.PublicKey, uuid [16]uint8) {
 		Where("uuid = ?", fmt.Sprintf("%#x", uuid)).
 		Delete(&model.Machine{})
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }
 
@@ -78,10 +78,12 @@ func updateMachine(owner solana.PublicKey, uuid [16]uint8) {
 		distriProgramID,
 	)
 	if err != nil {
+		logs.Error(fmt.Sprintf("FindProgramAddress error: %s \n", err))
 		return
 	}
 	var m distri_ai.Machine
 	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &m); err != nil {
+		logs.Error(fmt.Sprintf("GetAccountDataBorshInto error: %s \n", err))
 		return
 	}
 
@@ -92,7 +94,7 @@ func updateMachine(owner solana.PublicKey, uuid [16]uint8) {
 		Where("uuid = ?", uuidStr).
 		Take(&machine)
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		return
 	}
 
@@ -100,6 +102,6 @@ func updateMachine(owner solana.PublicKey, uuid [16]uint8) {
 	updateMachine.Id = machine.Id
 	dbResult = common.Db.Save(&updateMachine)
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }

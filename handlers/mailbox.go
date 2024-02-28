@@ -3,6 +3,7 @@ package handlers
 import (
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -129,6 +130,7 @@ func Subscribe(context *gin.Context) {
 	var req MailboxReq
 	err := context.ShouldBindJSON(&req)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("Subscribe paramter missing: %s", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
@@ -137,6 +139,7 @@ func Subscribe(context *gin.Context) {
 	var count int64
 	dbResult := common.Db.Model(&mailbox).Where(&mailbox).Count(&count)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Subscribe database error: %s", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -147,11 +150,14 @@ func Subscribe(context *gin.Context) {
 
 	dbResult = common.Db.Create(&mailbox)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Subscribe database error: %s", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 
-	if sendEmail(req.Mailbox, fmt.Sprintf(EMAIL_BODY, mailbox.MailBox)) != nil {
+	err = sendEmail(req.Mailbox, fmt.Sprintf(EMAIL_BODY, mailbox.MailBox))
+	if err != nil {
+		logs.Error(fmt.Sprintf("Send email Fail,error: %s", err))
 		resp.Fail(context, "Send email Fail")
 		return
 	}
@@ -163,6 +169,7 @@ func Unsubscribe(context *gin.Context) {
 	var req MailboxReq
 	err := context.ShouldBindJSON(&req)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("Unsubscribe paramter missing: %s", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
@@ -171,7 +178,7 @@ func Unsubscribe(context *gin.Context) {
 	var count int64
 	dbResult := common.Db.Model(&mailbox).Where(&mailbox).Count(&count)
 	if dbResult.Error != nil {
-		fmt.Println(dbResult.Error)
+		logs.Error(fmt.Sprintf("Unsubscribe database error: %s", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -182,7 +189,7 @@ func Unsubscribe(context *gin.Context) {
 
 	dbResult = common.Db.Where(&mailbox).Delete(&mailbox)
 	if dbResult.Error != nil {
-		fmt.Println(dbResult.Error)
+		logs.Error(fmt.Sprintf("Unsubscribe database error: %s", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
