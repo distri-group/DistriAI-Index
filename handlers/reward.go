@@ -157,7 +157,7 @@ func RewardPeriodList(context *gin.Context) {
 }
 
 type RewardMachineListReq struct {
-	Period uint32 `binding:"required"`
+	Period *uint32 `binding:"required"`
 }
 
 type RewardMachineListItem struct {
@@ -193,7 +193,7 @@ func RewardMachineList(context *gin.Context) {
 		Joins("LEFT JOIN machines on machines.owner = reward_machines.owner AND machines.uuid = reward_machines.machine_id").
 		Where("reward_machines.owner = ?", header.Account).
 		Where("reward_machines.period < ?", currentPeriod()).
-		Where("reward_machines.period = ?", req.Period)
+		Where("reward_machines.period = ?", *req.Period)
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
 		resp.Fail(context, "Database error")
