@@ -77,8 +77,9 @@ type RewardClaimableListReq struct {
 }
 
 type RewardClaimableListItem struct {
-	Period    uint32
-	MachineId string
+	Period          uint32
+	MachineId       string
+	PeriodicRewards uint64
 }
 
 type RewardClaimableListResponse struct {
@@ -102,12 +103,13 @@ func RewardClaimableList(context *gin.Context) {
 
 	var response RewardClaimableListResponse
 	tx := common.Db.Model(&model.RewardMachine{}).
-		Select("period,machine_id").
-		Where("owner = ?", header.Account).
-		Where("claimed", false).
-		Where("period < ?", currentPeriod())
+		Select("reward_machines.period,reward_machines.machine_id,rewards.unit_periodic_reward AS periodic_rewards").
+		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
+		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.claimed", false).
+		Where("reward_machines.period < ?", currentPeriod())
 	if req.Period != nil {
-		tx.Where("period = ?", req.Period)
+		tx.Where("reward_machines.period = ?", req.Period)
 	}
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
