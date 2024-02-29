@@ -18,4 +18,5 @@ type Machine struct {
 	GpuCount               uint32
 	Region                 string `gorm:"size:32"`
 	Tflops                 float64
+	Ram                    float64
 }

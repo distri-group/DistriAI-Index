@@ -12,6 +12,7 @@ type MetadataJson struct {
 	GPUInfo      GPUInfo
 	LocationInfo LocationInfo
 	InfoFlop     InfoFlop
+	InfoMemory   InfoMemory
 }
 
 type GPUInfo struct {
@@ -25,6 +26,10 @@ type LocationInfo struct {
 
 type InfoFlop struct {
 	Flops float64
+}
+
+type InfoMemory struct {
+	Ram float64 `json:"RAM"`
 }
 
 func buildMachineModel(m distri_ai.Machine) model.Machine {
@@ -50,5 +55,6 @@ func buildMachineModel(m distri_ai.Machine) model.Machine {
 		GpuCount:               mj.GPUInfo.Number,
 		Region:                 mj.LocationInfo.Country,
 		Tflops:                 mj.InfoFlop.Flops,
+		Ram:                    mj.InfoMemory.Ram,
 	}
 }
