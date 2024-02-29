@@ -42,11 +42,12 @@ func MachineFilter(context *gin.Context) {
 }
 
 type MachineListReq struct {
-	Gpu      string
-	GpuCount uint32
-	Region   string
-	Status   *uint8
-	OrderBy  string
+	Gpu       string
+	GpuCount  uint32
+	Region    string
+	Status    *uint8
+	OrderBy   string
+	PriceDesc bool
 	PageReq
 }
 
@@ -60,6 +61,7 @@ func MachineMarket(context *gin.Context) {
 	var req MachineListReq
 	err := context.ShouldBindBodyWith(&req, binding.JSON)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("RequestBody Parameter missing,error: %s \n", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
@@ -80,10 +82,17 @@ func MachineMarket(context *gin.Context) {
 	}
 
 	switch req.OrderBy {
-	case "price", "price DESC", "score DESC", "tflops DESC":
+	case "price", "price DESC", "score DESC", "tflops DESC", "max_duration DESC", "disk DESC", "ram DESC":
 		tx.Order(req.OrderBy)
 	case "reliability":
 		tx.Order("`completed_count`/(`completed_count` + `failed_count`) DESC")
+	case "":
+		tx.Order("status ASC,tflops DESC")
+	}
+	if req.PriceDesc {
+		tx.Order("price DESC")
+	} else {
+		tx.Order("price ASC")
 	}
 	// execute pagination query
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
