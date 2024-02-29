@@ -5,12 +5,12 @@ import (
 	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"encoding/binary"
 	"fmt"
 	"github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"log"
 )
 
 // fetch all account data on the Solana blockchain and storage
@@ -28,7 +28,7 @@ func fetchAllRewardMachine(out rpc.GetProgramAccountsResult) {
 
 	if len(rewardMachines) > 0 {
 		if dbResult := common.Db.Create(&rewardMachines); dbResult.Error != nil {
-			log.Printf("Database error: %s \n", dbResult.Error)
+			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		}
 	}
 }
@@ -69,6 +69,6 @@ func saveRewardMachine(period uint32, owner solana.PublicKey, machineId [16]uint
 
 	dbResult = common.Db.Save(&saveRewardMachine)
 	if dbResult.Error != nil {
-		log.Printf("Database error: %s \n", dbResult.Error)
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }

@@ -3,7 +3,9 @@ package handlers
 import (
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"time"
@@ -23,11 +25,13 @@ type RewardTotalResponse struct {
 func RewardTotal(context *gin.Context) {
 	var header HttpHeader
 	if err := context.ShouldBindHeader(&header); err != nil {
+		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err))
 		resp.Fail(context, err.Error())
 		return
 	}
 	var req RewardTotalReq
 	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		logs.Warn(fmt.Sprintf("Body paramter missing: %s \n", err))
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -44,6 +48,7 @@ func RewardTotal(context *gin.Context) {
 	}
 	tx.Find(&response)
 	if tx.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -59,6 +64,7 @@ func RewardTotal(context *gin.Context) {
 	}
 	tx.Find(&response)
 	if tx.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -83,11 +89,13 @@ type RewardClaimableListResponse struct {
 func RewardClaimableList(context *gin.Context) {
 	var header HttpHeader
 	if err := context.ShouldBindHeader(&header); err != nil {
+		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err.Error()))
 		resp.Fail(context, err.Error())
 		return
 	}
 	var req RewardClaimableListReq
 	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		logs.Warn(fmt.Sprintf("Body paramter missing: %s \n", err.Error()))
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -103,11 +111,13 @@ func RewardClaimableList(context *gin.Context) {
 	}
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database count error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database find error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -130,6 +140,7 @@ type RewardPeriodListResponse struct {
 func RewardPeriodList(context *gin.Context) {
 	var header HttpHeader
 	if err := context.ShouldBindHeader(&header); err != nil {
+		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err.Error()))
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -144,11 +155,13 @@ func RewardPeriodList(context *gin.Context) {
 		Order("reward_machines.period DESC")
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database count error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database find error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -177,11 +190,13 @@ type RewardMachineListResponse struct {
 func RewardMachineList(context *gin.Context) {
 	var header HttpHeader
 	if err := context.ShouldBindHeader(&header); err != nil {
+		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err))
 		resp.Fail(context, err.Error())
 		return
 	}
 	var req RewardMachineListReq
 	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		logs.Warn(fmt.Sprintf("Body paramter missing: %s \n", err))
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -196,11 +211,13 @@ func RewardMachineList(context *gin.Context) {
 		Where("reward_machines.period = ?", *req.Period)
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database count error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database find error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}

@@ -4,7 +4,9 @@ import (
 	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -19,16 +21,19 @@ func MachineFilter(context *gin.Context) {
 	var response MachineFilterResponse
 	dbResult := common.Db.Model(&model.Machine{}).Select("gpu").Group("gpu").Find(&response.Gpu)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error based on gpu query: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = common.Db.Model(&model.Machine{}).Select("gpu_count").Group("gpu_count").Find(&response.GpuCount)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error based on gpu_count query: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = common.Db.Model(&model.Machine{}).Select("region").Group("region").Find(&response.Region)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error based on region query: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -83,6 +88,7 @@ func MachineMarket(context *gin.Context) {
 	// execute pagination query
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -94,6 +100,7 @@ func MachineMine(context *gin.Context) {
 	var header HttpHeader
 	err := context.ShouldBindHeader(&header)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("Header missing,error: %s \n", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
@@ -103,11 +110,13 @@ func MachineMine(context *gin.Context) {
 	tx := common.Db.Model(&machine).Where(&machine)
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", err))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", err))
 		resp.Fail(context, "Database error")
 		return
 	}

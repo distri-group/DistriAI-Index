@@ -3,6 +3,7 @@ package handlers
 import (
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -24,12 +25,14 @@ func OrderMine(context *gin.Context) {
 	var header HttpHeader
 	err := context.ShouldBindHeader(&header)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("header missing,error: %s \n", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
 	var req OrderMineReq
 	err = context.ShouldBindBodyWith(&req, binding.JSON)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("body missing,error: %s \n", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
@@ -48,12 +51,13 @@ func OrderMine(context *gin.Context) {
 	var response OrderListResponse
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
-		fmt.Println(dbResult.Error)
+		logs.Error(fmt.Sprintf("db count error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = tx.Order("order_time DESC").Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("db find error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
@@ -70,6 +74,7 @@ func OrderAll(context *gin.Context) {
 	var req OrderAllReq
 	err := context.ShouldBindBodyWith(&req, binding.JSON)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("Body paramter missing,error: %s \n", err))
 		resp.Fail(context, "Parameter missing")
 		return
 	}
@@ -82,12 +87,13 @@ func OrderAll(context *gin.Context) {
 	var response OrderListResponse
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
-		fmt.Println(dbResult.Error)
+		logs.Error(fmt.Sprintf("db count error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}
 	dbResult = tx.Order("order_time DESC").Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("db find error: %s \n", dbResult.Error))
 		resp.Fail(context, "Database error")
 		return
 	}

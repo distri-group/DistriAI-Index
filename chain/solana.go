@@ -3,6 +3,7 @@ package chain
 import (
 	"context"
 	"distriai-index-solana/common"
+	"distriai-index-solana/utils/logs"
 	"errors"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
@@ -11,7 +12,6 @@ import (
 	"github.com/gagliardetto/solana-go/programs/token"
 	"github.com/gagliardetto/solana-go/rpc"
 	sendandconfirm "github.com/gagliardetto/solana-go/rpc/sendAndConfirmTransaction"
-	"log"
 	"math"
 )
 
@@ -34,11 +34,13 @@ func initSolana() {
 func FaucetDist(publicKey solana.PublicKey) (string, error) {
 	faucetAta, _, err := solana.FindAssociatedTokenAddress(faucetPublicKey, dist)
 	if err != nil {
-		return "", fmt.Errorf("error finding associated token address: %v", err)
+		logs.Error(fmt.Sprintf("error finding associated token address: %s \n", err))
+		return "", fmt.Errorf("error finding associated token address: %s \n", err)
 	}
 	receiverAta, _, err := solana.FindAssociatedTokenAddress(publicKey, dist)
 	if err != nil {
-		return "", fmt.Errorf("error finding associated token address: %v", err)
+		logs.Error(fmt.Sprintf("error finding associated token address: %s \n", err))
+		return "", fmt.Errorf("error finding associated token address: %s \n", err)
 	}
 
 	var instructions []solana.Instruction
@@ -67,7 +69,8 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 
 	recent, err := rpcClient.GetRecentBlockhash(context.TODO(), rpc.CommitmentFinalized)
 	if err != nil {
-		return "", fmt.Errorf("error creating transaction: %v", err)
+		logs.Error(fmt.Sprintf("Creating transaction error: %s \n", err))
+		return "", fmt.Errorf("error creating transaction: %s \n", err)
 	}
 
 	tx, err := solana.NewTransaction(
@@ -77,7 +80,8 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 	)
 
 	if err != nil {
-		return "", fmt.Errorf("error creating transaction: %v", err)
+		logs.Error(fmt.Sprintf("Creating transaction error: %s \n", err))
+		return "", fmt.Errorf("error creating transaction: %s \n", err)
 	}
 
 	_, err = tx.Sign(
@@ -89,6 +93,7 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 		},
 	)
 	if err != nil {
+		logs.Error(fmt.Sprintf("Signing transaction error: %s \n", err))
 		return "", fmt.Errorf("error signing transaction: %v", err)
 	}
 
@@ -102,10 +107,11 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 	)
 	if err != nil {
 		spew.Dump(err)
+		logs.Error(fmt.Sprintf("Sending transaction error: %s \n", err))
 		return "", fmt.Errorf("error sending transaction: %v", err)
 	}
 
-	log.Printf("%s completed : %v", "FaucetDist", sig.String())
+	logs.Info(fmt.Sprintf("%s completed : %v", "FaucetDist", sig.String()))
 
 	return sig.String(), nil
 }
