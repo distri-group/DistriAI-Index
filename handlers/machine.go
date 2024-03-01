@@ -42,12 +42,12 @@ func MachineFilter(context *gin.Context) {
 }
 
 type MachineListReq struct {
-	Gpu       string
-	GpuCount  uint32
-	Region    string
-	Status    *uint8
-	OrderBy   string
-	PriceDesc bool
+	Gpu        string
+	GpuCount   uint32
+	Region     string
+	Status     *uint8
+	OrderBy    string
+	PriceOrder int
 	PageReq
 }
 
@@ -89,9 +89,9 @@ func MachineMarket(context *gin.Context) {
 	case "":
 		tx.Order("status ASC,tflops DESC")
 	}
-	if req.PriceDesc {
+	if req.PriceOrder == 1 {
 		tx.Order("price DESC")
-	} else {
+	} else if req.PriceOrder == 2 {
 		tx.Order("price ASC")
 	}
 	// execute pagination query

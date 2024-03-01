@@ -32,6 +32,7 @@ const (
 	OrderStatusCompleted
 	OrderStatusFailed
 	OrderStatusRefunded
+	OrderStatusPreparing
 )
 
 func (value OrderStatus) String() string {
@@ -44,6 +45,8 @@ func (value OrderStatus) String() string {
 		return "Failed"
 	case OrderStatusRefunded:
 		return "Refunded"
+	case OrderStatusPreparing:
+		return "Preparing"
 	default:
 		return ""
 	}
