@@ -81,6 +81,11 @@ func MachineMarket(context *gin.Context) {
 		return
 	}
 
+	if req.PriceOrder == 1 {
+		tx.Order("price DESC")
+	} else if req.PriceOrder == 2 {
+		tx.Order("price ASC")
+	}
 	switch req.OrderBy {
 	case "price", "price DESC", "score DESC", "tflops DESC", "max_duration DESC", "disk DESC", "ram DESC":
 		tx.Order(req.OrderBy)
@@ -89,11 +94,7 @@ func MachineMarket(context *gin.Context) {
 	case "":
 		tx.Order("status ASC,tflops DESC")
 	}
-	if req.PriceOrder == 1 {
-		tx.Order("price DESC")
-	} else if req.PriceOrder == 2 {
-		tx.Order("price ASC")
-	}
+
 	// execute pagination query
 	dbResult = tx.Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
