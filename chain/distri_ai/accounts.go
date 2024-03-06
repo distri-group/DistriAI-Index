@@ -182,6 +182,7 @@ type Order struct {
 	Metadata   string
 	Status     OrderStatus
 	OrderTime  int64
+	StartTime  int64
 	RefundTime int64
 }
 
@@ -240,6 +241,11 @@ func (obj Order) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 	}
 	// Serialize `OrderTime` param:
 	err = encoder.Encode(obj.OrderTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `StartTime` param:
+	err = encoder.Encode(obj.StartTime)
 	if err != nil {
 		return err
 	}
@@ -312,6 +318,174 @@ func (obj *Order) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	}
 	// Deserialize `OrderTime`:
 	err = decoder.Decode(&obj.OrderTime)
+	if err != nil {
+		return err
+	}
+	// Deserialize `StartTime`:
+	err = decoder.Decode(&obj.StartTime)
+	if err != nil {
+		return err
+	}
+	// Deserialize `RefundTime`:
+	err = decoder.Decode(&obj.RefundTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type OrderNew struct {
+	OrderId    [16]uint8
+	Buyer      ag_solanago.PublicKey
+	Seller     ag_solanago.PublicKey
+	MachineId  [16]uint8
+	Price      uint64
+	Duration   uint32
+	Total      uint64
+	Metadata   string
+	Status     OrderStatus
+	OrderTime  int64
+	StartTime  int64
+	RefundTime int64
+}
+
+var OrderNewDiscriminator = [8]byte{6, 203, 52, 103, 118, 10, 252, 19}
+
+func (obj OrderNew) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
+	// Write account discriminator:
+	err = encoder.WriteBytes(OrderNewDiscriminator[:], false)
+	if err != nil {
+		return err
+	}
+	// Serialize `OrderId` param:
+	err = encoder.Encode(obj.OrderId)
+	if err != nil {
+		return err
+	}
+	// Serialize `Buyer` param:
+	err = encoder.Encode(obj.Buyer)
+	if err != nil {
+		return err
+	}
+	// Serialize `Seller` param:
+	err = encoder.Encode(obj.Seller)
+	if err != nil {
+		return err
+	}
+	// Serialize `MachineId` param:
+	err = encoder.Encode(obj.MachineId)
+	if err != nil {
+		return err
+	}
+	// Serialize `Price` param:
+	err = encoder.Encode(obj.Price)
+	if err != nil {
+		return err
+	}
+	// Serialize `Duration` param:
+	err = encoder.Encode(obj.Duration)
+	if err != nil {
+		return err
+	}
+	// Serialize `Total` param:
+	err = encoder.Encode(obj.Total)
+	if err != nil {
+		return err
+	}
+	// Serialize `Metadata` param:
+	err = encoder.Encode(obj.Metadata)
+	if err != nil {
+		return err
+	}
+	// Serialize `Status` param:
+	err = encoder.Encode(obj.Status)
+	if err != nil {
+		return err
+	}
+	// Serialize `OrderTime` param:
+	err = encoder.Encode(obj.OrderTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `StartTime` param:
+	err = encoder.Encode(obj.StartTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `RefundTime` param:
+	err = encoder.Encode(obj.RefundTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *OrderNew) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
+	// Read and check account discriminator:
+	{
+		discriminator, err := decoder.ReadTypeID()
+		if err != nil {
+			return err
+		}
+		if !discriminator.Equal(OrderNewDiscriminator[:]) {
+			return fmt.Errorf(
+				"wrong discriminator: wanted %s, got %s",
+				"[6 203 52 103 118 10 252 19]",
+				fmt.Sprint(discriminator[:]))
+		}
+	}
+	// Deserialize `OrderId`:
+	err = decoder.Decode(&obj.OrderId)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Buyer`:
+	err = decoder.Decode(&obj.Buyer)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Seller`:
+	err = decoder.Decode(&obj.Seller)
+	if err != nil {
+		return err
+	}
+	// Deserialize `MachineId`:
+	err = decoder.Decode(&obj.MachineId)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Price`:
+	err = decoder.Decode(&obj.Price)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Duration`:
+	err = decoder.Decode(&obj.Duration)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Total`:
+	err = decoder.Decode(&obj.Total)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Metadata`:
+	err = decoder.Decode(&obj.Metadata)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Status`:
+	err = decoder.Decode(&obj.Status)
+	if err != nil {
+		return err
+	}
+	// Deserialize `OrderTime`:
+	err = decoder.Decode(&obj.OrderTime)
+	if err != nil {
+		return err
+	}
+	// Deserialize `StartTime`:
+	err = decoder.Decode(&obj.StartTime)
 	if err != nil {
 		return err
 	}

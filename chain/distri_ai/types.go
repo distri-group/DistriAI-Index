@@ -28,15 +28,17 @@ func (value MachineStatus) String() string {
 type OrderStatus ag_binary.BorshEnum
 
 const (
-	OrderStatusTraining OrderStatus = iota
+	OrderStatusPreparing OrderStatus = iota
+	OrderStatusTraining
 	OrderStatusCompleted
 	OrderStatusFailed
 	OrderStatusRefunded
-	OrderStatusPreparing
 )
 
 func (value OrderStatus) String() string {
 	switch value {
+	case OrderStatusPreparing:
+		return "Preparing"
 	case OrderStatusTraining:
 		return "Training"
 	case OrderStatusCompleted:
@@ -45,8 +47,6 @@ func (value OrderStatus) String() string {
 		return "Failed"
 	case OrderStatusRefunded:
 		return "Refunded"
-	case OrderStatusPreparing:
-		return "Preparing"
 	default:
 		return ""
 	}
