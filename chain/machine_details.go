@@ -51,6 +51,7 @@ func buildMachineModel(m distri_ai.Machine) model.Machine {
 		Score:                  uint32(m.Score),
 		ClaimedPeriodicRewards: m.ClaimedPeriodicRewards,
 		ClaimedTaskRewards:     m.ClaimedTaskRewards,
+		OrderPda:               m.OrderPda.String(),
 		Gpu:                    mj.GPUInfo.Model,
 		GpuCount:               mj.GPUInfo.Number,
 		Region:                 mj.LocationInfo.Country,

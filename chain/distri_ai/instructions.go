@@ -28,10 +28,6 @@ func init() {
 }
 
 var (
-	Instruction_MigrateOrderNew = ag_binary.TypeID([8]byte{112, 238, 201, 126, 89, 115, 139, 207})
-
-	Instruction_MigrateOrderRename = ag_binary.TypeID([8]byte{130, 182, 20, 92, 66, 194, 99, 205})
-
 	Instruction_AddMachine = ag_binary.TypeID([8]byte{148, 26, 70, 80, 42, 110, 107, 230})
 
 	Instruction_RemoveMachine = ag_binary.TypeID([8]byte{85, 41, 207, 236, 20, 250, 8, 97})
@@ -59,15 +55,19 @@ var (
 	Instruction_OrderFailed = ag_binary.TypeID([8]byte{27, 173, 43, 153, 198, 108, 109, 66})
 
 	Instruction_RemoveOrder = ag_binary.TypeID([8]byte{118, 116, 244, 40, 144, 211, 242, 51})
+
+	Instruction_MigrateMachineNew = ag_binary.TypeID([8]byte{225, 152, 229, 88, 158, 61, 69, 125})
+
+	Instruction_MigrateMachineRename = ag_binary.TypeID([8]byte{188, 135, 117, 64, 94, 119, 3, 147})
+
+	Instruction_MigrateOrderNew = ag_binary.TypeID([8]byte{112, 238, 201, 126, 89, 115, 139, 207})
+
+	Instruction_MigrateOrderRename = ag_binary.TypeID([8]byte{130, 182, 20, 92, 66, 194, 99, 205})
 )
 
 // InstructionIDToName returns the name of the instruction given its ID.
 func InstructionIDToName(id ag_binary.TypeID) string {
 	switch id {
-	case Instruction_MigrateOrderNew:
-		return "MigrateOrderNew"
-	case Instruction_MigrateOrderRename:
-		return "MigrateOrderRename"
 	case Instruction_AddMachine:
 		return "AddMachine"
 	case Instruction_RemoveMachine:
@@ -96,6 +96,14 @@ func InstructionIDToName(id ag_binary.TypeID) string {
 		return "OrderFailed"
 	case Instruction_RemoveOrder:
 		return "RemoveOrder"
+	case Instruction_MigrateMachineNew:
+		return "MigrateMachineNew"
+	case Instruction_MigrateMachineRename:
+		return "MigrateMachineRename"
+	case Instruction_MigrateOrderNew:
+		return "MigrateOrderNew"
+	case Instruction_MigrateOrderRename:
+		return "MigrateOrderRename"
 	default:
 		return ""
 	}
@@ -116,12 +124,6 @@ func (inst *Instruction) EncodeToTree(parent ag_treeout.Branches) {
 var InstructionImplDef = ag_binary.NewVariantDefinition(
 	ag_binary.AnchorTypeIDEncoding,
 	[]ag_binary.VariantType{
-		{
-			"migrate_order_new", (*MigrateOrderNew)(nil),
-		},
-		{
-			"migrate_order_rename", (*MigrateOrderRename)(nil),
-		},
 		{
 			"add_machine", (*AddMachine)(nil),
 		},
@@ -163,6 +165,18 @@ var InstructionImplDef = ag_binary.NewVariantDefinition(
 		},
 		{
 			"remove_order", (*RemoveOrder)(nil),
+		},
+		{
+			"migrate_machine_new", (*MigrateMachineNew)(nil),
+		},
+		{
+			"migrate_machine_rename", (*MigrateMachineRename)(nil),
+		},
+		{
+			"migrate_order_new", (*MigrateOrderNew)(nil),
+		},
+		{
+			"migrate_order_rename", (*MigrateOrderRename)(nil),
 		},
 	},
 )

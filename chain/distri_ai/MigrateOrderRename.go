@@ -13,9 +13,9 @@ import (
 // MigrateOrderRename is the `migrateOrderRename` instruction.
 type MigrateOrderRename struct {
 
-	// [0] = [WRITE] orderNew
+	// [0] = [WRITE] orderBefore
 	//
-	// [1] = [WRITE] order
+	// [1] = [WRITE] orderAfter
 	//
 	// [2] = [WRITE, SIGNER] signer
 	//
@@ -31,25 +31,25 @@ func NewMigrateOrderRenameInstructionBuilder() *MigrateOrderRename {
 	return nd
 }
 
-// SetOrderNewAccount sets the "orderNew" account.
-func (inst *MigrateOrderRename) SetOrderNewAccount(orderNew ag_solanago.PublicKey) *MigrateOrderRename {
-	inst.AccountMetaSlice[0] = ag_solanago.Meta(orderNew).WRITE()
+// SetOrderBeforeAccount sets the "orderBefore" account.
+func (inst *MigrateOrderRename) SetOrderBeforeAccount(orderBefore ag_solanago.PublicKey) *MigrateOrderRename {
+	inst.AccountMetaSlice[0] = ag_solanago.Meta(orderBefore).WRITE()
 	return inst
 }
 
-// GetOrderNewAccount gets the "orderNew" account.
-func (inst *MigrateOrderRename) GetOrderNewAccount() *ag_solanago.AccountMeta {
+// GetOrderBeforeAccount gets the "orderBefore" account.
+func (inst *MigrateOrderRename) GetOrderBeforeAccount() *ag_solanago.AccountMeta {
 	return inst.AccountMetaSlice.Get(0)
 }
 
-// SetOrderAccount sets the "order" account.
-func (inst *MigrateOrderRename) SetOrderAccount(order ag_solanago.PublicKey) *MigrateOrderRename {
-	inst.AccountMetaSlice[1] = ag_solanago.Meta(order).WRITE()
+// SetOrderAfterAccount sets the "orderAfter" account.
+func (inst *MigrateOrderRename) SetOrderAfterAccount(orderAfter ag_solanago.PublicKey) *MigrateOrderRename {
+	inst.AccountMetaSlice[1] = ag_solanago.Meta(orderAfter).WRITE()
 	return inst
 }
 
-// GetOrderAccount gets the "order" account.
-func (inst *MigrateOrderRename) GetOrderAccount() *ag_solanago.AccountMeta {
+// GetOrderAfterAccount gets the "orderAfter" account.
+func (inst *MigrateOrderRename) GetOrderAfterAccount() *ag_solanago.AccountMeta {
 	return inst.AccountMetaSlice.Get(1)
 }
 
@@ -96,10 +96,10 @@ func (inst *MigrateOrderRename) Validate() error {
 	// Check whether all (required) accounts are set:
 	{
 		if inst.AccountMetaSlice[0] == nil {
-			return errors.New("accounts.OrderNew is not set")
+			return errors.New("accounts.OrderBefore is not set")
 		}
 		if inst.AccountMetaSlice[1] == nil {
-			return errors.New("accounts.Order is not set")
+			return errors.New("accounts.OrderAfter is not set")
 		}
 		if inst.AccountMetaSlice[2] == nil {
 			return errors.New("accounts.Signer is not set")
@@ -124,8 +124,8 @@ func (inst *MigrateOrderRename) EncodeToTree(parent ag_treeout.Branches) {
 
 					// Accounts of the instruction:
 					instructionBranch.Child("Accounts[len=4]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
-						accountsBranch.Child(ag_format.Meta("     orderNew", inst.AccountMetaSlice.Get(0)))
-						accountsBranch.Child(ag_format.Meta("        order", inst.AccountMetaSlice.Get(1)))
+						accountsBranch.Child(ag_format.Meta("  orderBefore", inst.AccountMetaSlice.Get(0)))
+						accountsBranch.Child(ag_format.Meta("   orderAfter", inst.AccountMetaSlice.Get(1)))
 						accountsBranch.Child(ag_format.Meta("       signer", inst.AccountMetaSlice.Get(2)))
 						accountsBranch.Child(ag_format.Meta("systemProgram", inst.AccountMetaSlice.Get(3)))
 					})
@@ -143,13 +143,13 @@ func (obj *MigrateOrderRename) UnmarshalWithDecoder(decoder *ag_binary.Decoder) 
 // NewMigrateOrderRenameInstruction declares a new MigrateOrderRename instruction with the provided parameters and accounts.
 func NewMigrateOrderRenameInstruction(
 	// Accounts:
-	orderNew ag_solanago.PublicKey,
-	order ag_solanago.PublicKey,
+	orderBefore ag_solanago.PublicKey,
+	orderAfter ag_solanago.PublicKey,
 	signer ag_solanago.PublicKey,
 	systemProgram ag_solanago.PublicKey) *MigrateOrderRename {
 	return NewMigrateOrderRenameInstructionBuilder().
-		SetOrderNewAccount(orderNew).
-		SetOrderAccount(order).
+		SetOrderBeforeAccount(orderBefore).
+		SetOrderAfterAccount(orderAfter).
 		SetSignerAccount(signer).
 		SetSystemProgramAccount(systemProgram)
 }
