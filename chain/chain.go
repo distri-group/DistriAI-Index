@@ -28,6 +28,7 @@ const (
 	_Claim          = "Claim"
 	_PlaceOrder     = "PlaceOrder"
 	_RenewOrder     = "RenewOrder"
+	_StartOrder     = "StartOrder"
 	_RefundOrder    = "RefundOrder"
 	_OrderCompleted = "OrderCompleted"
 	_OrderFailed    = "OrderFailed"
@@ -168,7 +169,7 @@ func subEvents() {
 			}
 			updateMachine(event.Seller, event.MachineId)
 			addOrder(event.OrderId, event.Buyer)
-		case _RenewOrder:
+		case _RenewOrder, _StartOrder:
 			event, err := decodeOrderEvent(data)
 			if err != nil {
 				continue

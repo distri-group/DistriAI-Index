@@ -20,6 +20,7 @@ func buildOrderModel(o distri_ai.Order) model.Order {
 		Metadata:    o.Metadata,
 		Status:      uint8(o.Status),
 		OrderTime:   time.Unix(o.OrderTime, 0),
+		StartTime:   time.Unix(o.StartTime, 0),
 		RefundTime:  time.Unix(o.RefundTime, 0),
 	}
 }

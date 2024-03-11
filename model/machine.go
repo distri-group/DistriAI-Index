@@ -14,6 +14,7 @@ type Machine struct {
 	Score                  uint32 `gorm:"not null"`
 	ClaimedPeriodicRewards uint64 `gorm:"not null"`
 	ClaimedTaskRewards     uint64 `gorm:"not null"`
+	OrderPda               string `gorm:"size:44;not null"`
 	Gpu                    string `gorm:"size:256"`
 	GpuCount               uint32
 	Region                 string `gorm:"size:32"`
