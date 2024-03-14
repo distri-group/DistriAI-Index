@@ -42,7 +42,7 @@ var (
 	sub                *ws.LogSubscription
 	distriInstructions = []string{
 		_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _SubmitTask, _Claim,
-		_PlaceOrder, _RenewOrder, _RefundOrder, _OrderCompleted, _OrderFailed, _RemoveOrder,
+		_PlaceOrder, _RenewOrder, _StartOrder, _RefundOrder, _OrderCompleted, _OrderFailed, _RemoveOrder,
 	}
 )
 
