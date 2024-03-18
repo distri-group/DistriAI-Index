@@ -34,5 +34,10 @@ func RegisterRoutes(engine *gin.Engine) {
 		log.POST("/add", handlers.LogAdd)
 		log.POST("/list", handlers.LogList)
 	}
+	model := engine.Group("/model")
+	{
+		model.POST("/create", handlers.ModelCreate)
+		model.POST("/list", handlers.ModelList)
+	}
 	engine.POST("/faucet", handlers.Faucet)
 }

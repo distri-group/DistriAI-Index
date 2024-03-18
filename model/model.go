@@ -10,6 +10,7 @@ func AutoMigrate(db *gorm.DB) {
 		&RewardMachine{},
 	)
 	db.AutoMigrate(
+		&AiModel{},
 		&Log{},
 		&Mailbox{},
 		&Machine{},
