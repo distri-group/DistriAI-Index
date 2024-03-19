@@ -106,3 +106,23 @@ func ModelList(context *gin.Context) {
 
 	resp.Success(context, response)
 }
+
+type ModelGetReq struct {
+	Id uint `binding:"required"`
+}
+
+func ModelGet(context *gin.Context) {
+	var req ModelGetReq
+	if err := context.ShouldBindUri(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var aiModel model.AiModel
+	if err := common.Db.First(&aiModel, req.Id).Error; err != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, aiModel)
+}
