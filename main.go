@@ -1,6 +1,7 @@
 package main
 
 import (
+	"distriai-index-solana/chain"
 	"distriai-index-solana/common"
 	"distriai-index-solana/middleware"
 	"distriai-index-solana/routes"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	common.Init()
-	//chain.Sync()
+	chain.Sync()
 
 	gin.SetMode(common.Conf.Server.Mode)
 	router := gin.Default()
