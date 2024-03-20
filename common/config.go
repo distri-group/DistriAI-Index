@@ -11,6 +11,7 @@ type Config struct {
 	Database Database
 	Redis    Redis
 	Mailbox  Mailbox
+	Aws      Aws
 	Chain    Chain
 }
 
@@ -38,6 +39,12 @@ type Mailbox struct {
 	Port     int
 	Username string
 	Password string
+}
+
+type Aws struct {
+	Region          string
+	AccessKeyId     string
+	SecretAccessKey string
 }
 
 type Chain struct {

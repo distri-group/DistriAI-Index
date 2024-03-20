@@ -20,6 +20,11 @@ Mailbox:
   Username:
   Password:
 
+Aws:
+  Region:
+  AccessKeyId:
+  SecretAccessKey:
+
 Chain:
   Rpc:
   ProgramId: 6yFTDdiS1W9T9yg6YejkwKggkEE4NYqdSSzVqQvuLn16
