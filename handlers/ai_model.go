@@ -6,6 +6,7 @@ import (
 	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
 	"fmt"
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
@@ -125,4 +126,44 @@ func ModelGet(context *gin.Context) {
 	}
 
 	resp.Success(context, aiModel)
+}
+
+type ModelPresignReq struct {
+	Id       uint   `binding:"required"`
+	FilePath string `binding:"required"`
+	Method   string `binding:"required,oneof= PUT DELETE"`
+}
+
+func ModelPresign(context *gin.Context) {
+	account, err := getAccount(context)
+	if err != nil {
+		return
+	}
+	var req ModelPresignReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var aiModel model.AiModel
+	if err := common.Db.Where("id = ? AND owner = ?", req.Id, account).Take(&aiModel).Error; err != nil {
+		resp.Fail(context, "Model not found")
+		return
+	}
+
+	objectKey := fmt.Sprintf("model/%s/%s/%s", aiModel.Owner, aiModel.Name, req.FilePath)
+	presignedPutRequest := new(v4.PresignedHTTPRequest)
+	switch req.Method {
+	case "PUT":
+		presignedPutRequest, err = common.S3Presigner.PutObject("distriai", objectKey, 3600)
+	case "DELETE":
+		presignedPutRequest, err = common.S3Presigner.DeleteObject("distriai", objectKey)
+	}
+
+	if err != nil {
+		resp.Fail(context, "Create presigned URL error")
+		return
+	}
+
+	resp.Success(context, presignedPutRequest.URL)
 }

@@ -39,6 +39,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		model.POST("/create", handlers.ModelCreate)
 		model.POST("/list", handlers.ModelList)
 		model.GET("/:Id", handlers.ModelGet)
+		model.POST("/presign", handlers.ModelPresign)
 	}
 	engine.POST("/faucet", handlers.Faucet)
 }
