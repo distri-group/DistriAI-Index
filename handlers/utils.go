@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+func getAuthAccount(c *gin.Context) string {
+	return c.MustGet("account").(string)
+}
+
 func getAccount(context *gin.Context) (string, error) {
 	var header HttpHeader
 	if err := context.ShouldBindHeader(&header); err != nil {

@@ -23,10 +23,8 @@ type RewardTotalResponse struct {
 }
 
 func RewardTotal(context *gin.Context) {
-	var header HttpHeader
-	if err := context.ShouldBindHeader(&header); err != nil {
-		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err))
-		resp.Fail(context, err.Error())
+	account, err := getAccount(context)
+	if err != nil {
 		return
 	}
 	var req RewardTotalReq
@@ -40,7 +38,7 @@ func RewardTotal(context *gin.Context) {
 	tx := common.Db.Model(&model.RewardMachine{}).
 		Select("SUM(rewards.unit_periodic_reward) AS claimed_periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
-		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.claimed", true).
 		Where("reward_machines.period < ?", currentPeriod())
 	if req.Period != nil {
@@ -56,7 +54,7 @@ func RewardTotal(context *gin.Context) {
 	tx = common.Db.Model(&model.RewardMachine{}).
 		Select("SUM(rewards.unit_periodic_reward) AS claimable_periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
-		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.claimed", false).
 		Where("reward_machines.period < ?", currentPeriod())
 	if req.Period != nil {
@@ -88,10 +86,8 @@ type RewardClaimableListResponse struct {
 }
 
 func RewardClaimableList(context *gin.Context) {
-	var header HttpHeader
-	if err := context.ShouldBindHeader(&header); err != nil {
-		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err.Error()))
-		resp.Fail(context, err.Error())
+	account, err := getAccount(context)
+	if err != nil {
 		return
 	}
 	var req RewardClaimableListReq
@@ -105,7 +101,7 @@ func RewardClaimableList(context *gin.Context) {
 	tx := common.Db.Model(&model.RewardMachine{}).
 		Select("reward_machines.period,reward_machines.machine_id,rewards.unit_periodic_reward AS periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
-		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.claimed", false).
 		Where("reward_machines.period < ?", currentPeriod())
 	if req.Period != nil {
@@ -140,10 +136,8 @@ type RewardPeriodListResponse struct {
 }
 
 func RewardPeriodList(context *gin.Context) {
-	var header HttpHeader
-	if err := context.ShouldBindHeader(&header); err != nil {
-		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err.Error()))
-		resp.Fail(context, err.Error())
+	account, err := getAccount(context)
+	if err != nil {
 		return
 	}
 
@@ -151,7 +145,7 @@ func RewardPeriodList(context *gin.Context) {
 	tx := common.Db.Model(&model.RewardMachine{}).
 		Select("reward_machines.period,rewards.start_time,rewards.pool,SUM(rewards.unit_periodic_reward) AS periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
-		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.period < ?", currentPeriod()).
 		Group("reward_machines.period").
 		Order("reward_machines.period DESC")
@@ -190,10 +184,8 @@ type RewardMachineListResponse struct {
 }
 
 func RewardMachineList(context *gin.Context) {
-	var header HttpHeader
-	if err := context.ShouldBindHeader(&header); err != nil {
-		logs.Warn(fmt.Sprintf("Header paramter missing: %s \n", err))
-		resp.Fail(context, err.Error())
+	account, err := getAccount(context)
+	if err != nil {
 		return
 	}
 	var req RewardMachineListReq
@@ -208,7 +200,7 @@ func RewardMachineList(context *gin.Context) {
 		Select("reward_machines.period,rewards.start_time,rewards.pool,rewards.machine_num,rewards.unit_periodic_reward AS periodic_rewards,machines.*").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Joins("LEFT JOIN machines on machines.owner = reward_machines.owner AND machines.uuid = reward_machines.machine_id").
-		Where("reward_machines.owner = ?", header.Account).
+		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.period < ?", currentPeriod()).
 		Where("reward_machines.period = ?", *req.Period)
 	dbResult := tx.Count(&response.Total)

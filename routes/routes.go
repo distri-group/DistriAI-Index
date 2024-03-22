@@ -2,6 +2,7 @@ package routes
 
 import (
 	"distriai-index-solana/handlers"
+	"distriai-index-solana/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,6 +11,10 @@ func RegisterRoutes(engine *gin.Engine) {
 	{
 		mailbox.POST("/subscribe", handlers.Subscribe)
 		mailbox.POST("/unsubscribe", handlers.Unsubscribe)
+	}
+	user := engine.Group("/user")
+	{
+		user.POST("/login", handlers.Login)
 	}
 	machine := engine.Group("/machine")
 	{
@@ -36,10 +41,13 @@ func RegisterRoutes(engine *gin.Engine) {
 	}
 	model := engine.Group("/model")
 	{
-		model.POST("/create", handlers.ModelCreate)
 		model.POST("/list", handlers.ModelList)
 		model.GET("/:Id", handlers.ModelGet)
-		model.POST("/presign", handlers.ModelPresign)
+	}
+	modelAuth := engine.Group("/model", middleware.Jwt())
+	{
+		modelAuth.POST("/create", handlers.ModelCreate)
+		modelAuth.POST("/presign", handlers.ModelPresign)
 	}
 	engine.POST("/faucet", handlers.Faucet)
 }

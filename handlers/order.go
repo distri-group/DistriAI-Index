@@ -22,11 +22,8 @@ type OrderListResponse struct {
 }
 
 func OrderMine(context *gin.Context) {
-	var header HttpHeader
-	err := context.ShouldBindHeader(&header)
+	account, err := getAccount(context)
 	if err != nil {
-		logs.Warn(fmt.Sprintf("header missing,error: %s \n", err))
-		resp.Fail(context, "Parameter missing")
 		return
 	}
 	var req OrderMineReq
@@ -42,11 +39,11 @@ func OrderMine(context *gin.Context) {
 		tx.Where("status = ?", *req.Status)
 	}
 	if req.Direction == "buy" {
-		tx.Where("buyer = ?", header.Account)
+		tx.Where("buyer = ?", account)
 	} else if req.Direction == "sell" {
-		tx.Where("seller = ?", header.Account)
+		tx.Where("seller = ?", account)
 	} else {
-		tx.Where("buyer = ? OR seller = ?", header.Account, header.Account)
+		tx.Where("buyer = ? OR seller = ?", account, account)
 	}
 	var response OrderListResponse
 	dbResult := tx.Count(&response.Total)

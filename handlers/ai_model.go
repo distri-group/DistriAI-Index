@@ -21,10 +21,7 @@ type ModelCreateReq struct {
 }
 
 func ModelCreate(context *gin.Context) {
-	account, err := getAccount(context)
-	if err != nil {
-		return
-	}
+	account := getAuthAccount(context)
 	var req ModelCreateReq
 	if err := context.ShouldBindJSON(&req); err != nil {
 		resp.Fail(context, err.Error())
@@ -135,10 +132,7 @@ type ModelPresignReq struct {
 }
 
 func ModelPresign(context *gin.Context) {
-	account, err := getAccount(context)
-	if err != nil {
-		return
-	}
+	account := getAuthAccount(context)
 	var req ModelPresignReq
 	if err := context.ShouldBindJSON(&req); err != nil {
 		resp.Fail(context, err.Error())
@@ -153,6 +147,7 @@ func ModelPresign(context *gin.Context) {
 
 	objectKey := fmt.Sprintf("model/%s/%s/%s", aiModel.Owner, aiModel.Name, req.FilePath)
 	presignedPutRequest := new(v4.PresignedHTTPRequest)
+	var err error
 	switch req.Method {
 	case "PUT":
 		presignedPutRequest, err = common.S3Presigner.PutObject("distriai", objectKey, 3600)

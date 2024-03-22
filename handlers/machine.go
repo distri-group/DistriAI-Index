@@ -107,15 +107,12 @@ func MachineMarket(context *gin.Context) {
 }
 
 func MachineMine(context *gin.Context) {
-	var header HttpHeader
-	err := context.ShouldBindHeader(&header)
+	account, err := getAccount(context)
 	if err != nil {
-		logs.Warn(fmt.Sprintf("Header missing,error: %s \n", err))
-		resp.Fail(context, "Parameter missing")
 		return
 	}
 
-	machine := &model.Machine{Owner: header.Account}
+	machine := &model.Machine{Owner: account}
 	var response MachineListResponse
 	tx := common.Db.Model(&machine).Where(&machine)
 	dbResult := tx.Count(&response.Total)
