@@ -4,7 +4,7 @@ import "time"
 
 type Order struct {
 	Id          uint      `gorm:"primarykey"`
-	Uuid        string    `gorm:"size:34;not null;uniqueIndex"`
+	Uuid        string    `gorm:"size:34;not null;unique"`
 	Buyer       string    `gorm:"size:44;not null"`
 	Seller      string    `gorm:"size:44;not null"`
 	MachineUuid string    `gorm:"size:34;not null"`

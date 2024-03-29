@@ -12,7 +12,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gagliardetto/binary v0.7.7
 	github.com/gagliardetto/gofuzz v1.2.2
-	github.com/gagliardetto/solana-go v1.8.4
+	github.com/gagliardetto/solana-go v1.9.3
 	github.com/gagliardetto/treeout v0.1.4
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -22,8 +22,8 @@ require (
 	go.uber.org/zap v1.21.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	gorm.io/driver/mysql v1.5.1
-	gorm.io/gorm v1.25.3
+	gorm.io/driver/mysql v1.5.6
+	gorm.io/gorm v1.25.9
 )
 
 require (
@@ -55,6 +55,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/rpc v1.2.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

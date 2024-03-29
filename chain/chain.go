@@ -107,10 +107,10 @@ func subEvents() {
 			continue
 		}
 
-		logs := got.Value.Logs
-		spew.Dump(logs)
+		eventLogs := got.Value.Logs
+		spew.Dump(eventLogs)
 		var instruction, data string
-		for _, l := range logs {
+		for _, l := range eventLogs {
 			// Find first HashrateMarket Instruction in event
 			if instruction == "" {
 				if after, found := strings.CutPrefix(l, _Instruction); found {
