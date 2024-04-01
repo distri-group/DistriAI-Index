@@ -21,11 +21,13 @@ func RegisterRoutes(engine *gin.Engine) {
 		machine.POST("/filter", handlers.MachineFilter)
 		machine.POST("/market", handlers.MachineMarket)
 		machine.POST("/mine", handlers.MachineMine)
+		machine.GET("/:Id", handlers.MachineGet)
 	}
 	order := engine.Group("/order")
 	{
 		order.POST("/mine", handlers.OrderMine)
 		order.POST("/all", handlers.OrderAll)
+		order.GET("/:Id", handlers.OrderGet)
 	}
 	reward := engine.Group("/reward")
 	{

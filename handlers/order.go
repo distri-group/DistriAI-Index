@@ -97,3 +97,23 @@ func OrderAll(context *gin.Context) {
 
 	resp.Success(context, response)
 }
+
+type OrderGetReq struct {
+	Id uint `binding:"required"`
+}
+
+func OrderGet(context *gin.Context) {
+	var req OrderGetReq
+	if err := context.ShouldBindUri(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var order model.Order
+	if err := common.Db.First(&order, req.Id).Error; err != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, order)
+}

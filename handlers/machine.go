@@ -130,3 +130,23 @@ func MachineMine(context *gin.Context) {
 
 	resp.Success(context, response)
 }
+
+type MachineGetReq struct {
+	Id uint `binding:"required"`
+}
+
+func MachineGet(context *gin.Context) {
+	var req MachineGetReq
+	if err := context.ShouldBindUri(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var machine model.Machine
+	if err := common.Db.First(&machine, req.Id).Error; err != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, machine)
+}
