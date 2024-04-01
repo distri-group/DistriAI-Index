@@ -11,6 +11,8 @@ type AiModel struct {
 	Type1     uint32 `gorm:"not null"`
 	Type2     uint32 `gorm:"not null"`
 	Tags      string `gorm:"size:128;not null"`
+	Downloads uint32 `gorm:"not null"`
+	Likes     uint32 `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

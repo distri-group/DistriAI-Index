@@ -8,7 +8,9 @@ import (
 	"fmt"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
+	"math/rand"
 	"strings"
+	"time"
 )
 
 type ModelCreateReq struct {
@@ -42,6 +44,9 @@ func ModelCreate(context *gin.Context) {
 		return
 	}
 
+	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
+	likes := uint32(rnd.Int31n(100))
+
 	aiModel := model.AiModel{
 		Owner:     account,
 		Name:      req.Name,
@@ -50,6 +55,8 @@ func ModelCreate(context *gin.Context) {
 		Type1:     req.Type1,
 		Type2:     req.Type2,
 		Tags:      req.Tags,
+		Downloads: likes + uint32(rnd.Int31n(1000)),
+		Likes:     likes,
 	}
 	if err := common.Db.Create(&aiModel).Error; err != nil {
 		logs.Error(fmt.Sprintf("Database error: %v \n", err))
