@@ -21,13 +21,13 @@ func RegisterRoutes(engine *gin.Engine) {
 		machine.POST("/filter", handlers.MachineFilter)
 		machine.POST("/market", handlers.MachineMarket)
 		machine.POST("/mine", handlers.MachineMine)
-		machine.GET("/:Id", handlers.MachineGet)
+		machine.GET("/:Owner/:Uuid", handlers.MachineGet)
 	}
 	order := engine.Group("/order")
 	{
 		order.POST("/mine", handlers.OrderMine)
 		order.POST("/all", handlers.OrderAll)
-		order.GET("/:Id", handlers.OrderGet)
+		order.GET("/:Uuid", handlers.OrderGet)
 	}
 	reward := engine.Group("/reward")
 	{
@@ -44,7 +44,7 @@ func RegisterRoutes(engine *gin.Engine) {
 	model := engine.Group("/model")
 	{
 		model.POST("/list", handlers.ModelList)
-		model.GET("/:Id", handlers.ModelGet)
+		model.GET("/:Owner/:Name", handlers.ModelGet)
 	}
 	modelAuth := engine.Group("/model", middleware.Jwt())
 	{

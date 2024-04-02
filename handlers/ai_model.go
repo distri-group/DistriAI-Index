@@ -113,7 +113,8 @@ func ModelList(context *gin.Context) {
 }
 
 type ModelGetReq struct {
-	Id uint `binding:"required"`
+	Owner string `binding:"required"`
+	Name  string `binding:"required"`
 }
 
 func ModelGet(context *gin.Context) {
@@ -124,8 +125,12 @@ func ModelGet(context *gin.Context) {
 	}
 
 	var aiModel model.AiModel
-	if err := common.Db.First(&aiModel, req.Id).Error; err != nil {
-		resp.Fail(context, "Database error")
+	tx := common.Db.
+		Where("owner = ?", req.Owner).
+		Where("name = ?", req.Name).
+		Take(&aiModel)
+	if tx.Error != nil {
+		resp.Fail(context, "Model not found")
 		return
 	}
 

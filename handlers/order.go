@@ -99,7 +99,7 @@ func OrderAll(context *gin.Context) {
 }
 
 type OrderGetReq struct {
-	Id uint `binding:"required"`
+	Uuid string `binding:"required"`
 }
 
 func OrderGet(context *gin.Context) {
@@ -110,8 +110,9 @@ func OrderGet(context *gin.Context) {
 	}
 
 	var order model.Order
-	if err := common.Db.First(&order, req.Id).Error; err != nil {
-		resp.Fail(context, "Database error")
+	tx := common.Db.Where("uuid = ?", req.Uuid).Take(&order)
+	if tx.Error != nil {
+		resp.Fail(context, "Order not found")
 		return
 	}
 

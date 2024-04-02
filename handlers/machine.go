@@ -132,7 +132,8 @@ func MachineMine(context *gin.Context) {
 }
 
 type MachineGetReq struct {
-	Id uint `binding:"required"`
+	Owner string `binding:"required"`
+	Uuid  string `binding:"required"`
 }
 
 func MachineGet(context *gin.Context) {
@@ -143,8 +144,12 @@ func MachineGet(context *gin.Context) {
 	}
 
 	var machine model.Machine
-	if err := common.Db.First(&machine, req.Id).Error; err != nil {
-		resp.Fail(context, "Database error")
+	tx := common.Db.
+		Where("owner = ?", req.Owner).
+		Where("uuid = ?", req.Uuid).
+		Take(&machine)
+	if tx.Error != nil {
+		resp.Fail(context, "Machine not found")
 		return
 	}
 

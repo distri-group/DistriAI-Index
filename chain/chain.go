@@ -128,6 +128,7 @@ func subEvents() {
 		if instruction == "" || data == "" {
 			continue
 		}
+		logs.Info(fmt.Sprintf("Receive instruction: %s \n", instruction))
 
 		switch instruction {
 		case _AddMachine:
