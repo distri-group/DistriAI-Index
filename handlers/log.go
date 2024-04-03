@@ -7,6 +7,7 @@ import (
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type LogAddReq struct {
@@ -46,7 +47,7 @@ type LogListResponse struct {
 
 func LogList(context *gin.Context) {
 	var req LogListReq
-	err := context.ShouldBindJSON(&req)
+	err := context.ShouldBindBodyWith(&req, binding.JSON)
 	if err != nil {
 		logs.Warn(fmt.Sprintf("Parameter missing,error: %s \n", err))
 		resp.Fail(context, "Parameter missing")

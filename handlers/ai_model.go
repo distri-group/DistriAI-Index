@@ -8,6 +8,7 @@ import (
 	"fmt"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"math/rand"
 	"strings"
 	"time"
@@ -81,7 +82,7 @@ type ModelListResponse struct {
 
 func ModelList(context *gin.Context) {
 	var req ModelListReq
-	if err := context.ShouldBindJSON(&req); err != nil {
+	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
