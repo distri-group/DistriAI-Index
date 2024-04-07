@@ -10,8 +10,8 @@ import (
 )
 
 type LoginReq struct {
-	Account   string `binding:"required,len=44"`
-	Signature string `binding:"required,len=88"`
+	Account   string `binding:"required"`
+	Signature string `binding:"required"`
 }
 
 func Login(context *gin.Context) {

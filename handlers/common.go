@@ -7,7 +7,7 @@ import (
 )
 
 type HttpHeader struct {
-	Account string `binding:"required,len=44"`
+	Account string `binding:"required"`
 }
 
 type PageReq struct {

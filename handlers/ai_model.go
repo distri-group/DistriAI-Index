@@ -65,7 +65,7 @@ func ModelCreate(context *gin.Context) {
 		return
 	}
 
-	resp.Success(context, "")
+	resp.Success(context, aiModel)
 }
 
 type ModelListReq struct {
