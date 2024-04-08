@@ -2,8 +2,8 @@ package model
 
 type Machine struct {
 	Id                     uint   `gorm:"primarykey"`
-	Owner                  string `gorm:"size:44;not null;index:idx_machines_owner_uuid"`
-	Uuid                   string `gorm:"size:34;not null;index:idx_machines_owner_uuid"`
+	Owner                  string `gorm:"size:44;not null;uniqueIndex:idx_machines_owner_uuid"`
+	Uuid                   string `gorm:"size:34;not null;uniqueIndex:idx_machines_owner_uuid"`
 	Metadata               string `gorm:"size:2048;not null"`
 	Status                 uint8  `gorm:"not null"`
 	Price                  uint64 `gorm:"not null"`
