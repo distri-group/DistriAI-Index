@@ -52,4 +52,9 @@ func RegisterRoutes(engine *gin.Engine) {
 		modelAuth.POST("/presign", handlers.ModelPresign)
 	}
 	engine.POST("/faucet", handlers.Faucet)
+	dataset := engine.Group("/dataset", middleware.Jwt())
+	{
+		dataset.POST("/create", handlers.DataSetCreate)
+		dataset.POST("/presign", handlers.DatasetPresign)
+	}
 }
