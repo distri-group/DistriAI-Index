@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// RegisterRoutes unified management routes
 func RegisterRoutes(engine *gin.Engine) {
 	mailbox := engine.Group("/mailbox")
 	{
@@ -56,5 +57,10 @@ func RegisterRoutes(engine *gin.Engine) {
 	{
 		dataset.POST("/create", handlers.DataSetCreate)
 		dataset.POST("/presign", handlers.DatasetPresign)
+	}
+	datasetInfo := engine.Group("/datasetinfo")
+	{
+		datasetInfo.POST("/list", handlers.DatasetList)
+		datasetInfo.GET("/:Owner/:Name", handlers.DatasetGet)
 	}
 }
