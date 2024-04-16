@@ -11,6 +11,7 @@ func AutoMigrate(db *gorm.DB) {
 	)
 	db.AutoMigrate(
 		&AiModel{},
+		&Dataset{},
 		&Log{},
 		&Mailbox{},
 		&Machine{},

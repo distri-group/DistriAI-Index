@@ -8,6 +8,7 @@ import (
 	"fmt"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"math/rand"
 	"strings"
 	"time"
@@ -117,7 +118,7 @@ type DatasetListResponse struct {
 
 func DatasetList(context *gin.Context) {
 	var req DatasetListReq
-	if err := context.ShouldBindQuery(&req); err != nil {
+	if err := context.ShouldBindBodyWith(&req, &binding.JSON); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -125,7 +126,7 @@ func DatasetList(context *gin.Context) {
 	var response DatasetListResponse
 	dataset := model.Dataset{Type1: req.Type1, Type2: req.Type2}
 	tx := common.Db.Model(&dataset).Where(&dataset)
-	if req.Name != "" {
+	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
 		tx.Where("name LIKE ?", "%"+name+"%")
 	}
