@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterRoutes unified management routes
+// RegisterRoutes unified management routes.
 func RegisterRoutes(engine *gin.Engine) {
 	mailbox := engine.Group("/mailbox")
 	{

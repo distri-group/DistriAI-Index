@@ -22,7 +22,7 @@ type DatasetCreateReq struct {
 	Tags    string `binding:"required"`
 }
 
-// DataSetCreate users upload data sets
+// DataSetCreate users upload data sets.
 func DataSetCreate(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req DatasetCreateReq
