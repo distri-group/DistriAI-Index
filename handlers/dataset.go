@@ -20,15 +20,15 @@ type DatasetCreateReq struct {
 	License uint8  `binding:"required"`
 	Type1   uint32 `binging:"required"`
 	Type2   uint32 `binding:"required"`
-	Tags    string `binding:"required"`
+	Tags    string `binding:"max=128"`
 }
 
-// DataSetCreate users upload data sets.
-func DataSetCreate(context *gin.Context) {
+// DatasetCreate user create a dataset.
+func DatasetCreate(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req DatasetCreateReq
 	if err := context.ShouldBindJSON(&req); err != nil {
-		resp.Fail(context, "")
+		resp.Fail(context, err.Error())
 		return
 	}
 
@@ -42,7 +42,7 @@ func DataSetCreate(context *gin.Context) {
 		return
 	}
 	if count > 0 {
-		resp.Fail(context, "Duplicate model name")
+		resp.Fail(context, "Duplicate dataset name")
 		return
 	}
 
@@ -70,7 +70,7 @@ func DataSetCreate(context *gin.Context) {
 	resp.Success(context, "")
 }
 
-type DataSetPresignReq struct {
+type DatasetPresignReq struct {
 	Id       uint   `binding:"required"`
 	FilePath string `binding:"required"`
 	Method   string `binding:"required,oneof= PUT DELETE"`
@@ -78,7 +78,7 @@ type DataSetPresignReq struct {
 
 func DatasetPresign(context *gin.Context) {
 	account := getAuthAccount(context)
-	var req DataSetPresignReq
+	var req DatasetPresignReq
 	if err := context.ShouldBindJSON(&req); err != nil {
 		resp.Fail(context, err.Error())
 		return
