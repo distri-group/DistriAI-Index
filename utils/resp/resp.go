@@ -11,6 +11,7 @@ const (
 	EXIST   = -1
 )
 
+// Resp is response data structure
 type Resp struct {
 	Code int
 	Msg  string
