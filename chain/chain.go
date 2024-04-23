@@ -48,14 +48,14 @@ var (
 
 func initChain() {
 	distriProgramID = solana.MustPublicKeyFromBase58(common.Conf.Chain.ProgramId)
-	rpcClient = rpc.New(rpc.TestNet_RPC)
+	rpcClient = rpc.New(common.Conf.Chain.Rpc)
 
 	initSolana()
 }
 
 func subLogs() {
 	var err error
-	wsClient, err = ws.Connect(context.Background(), rpc.TestNet_WS)
+	wsClient, err = ws.Connect(context.Background(), common.Conf.Chain.Ws)
 	if err != nil {
 		panic(fmt.Sprintf("Couldn't connect to '%s': %s", rpc.DevNet_WS, err))
 	}

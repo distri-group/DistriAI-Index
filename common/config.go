@@ -49,6 +49,7 @@ type Aws struct {
 
 type Chain struct {
 	Rpc              string
+	Ws               string
 	ProgramId        string
 	FaucetPrivateKey string
 	Dist             string
