@@ -1,4 +1,4 @@
-# DistriAI-Index-Solana
+# DistriAI-Index
 
 ## System Requirements
 - Linux-amd64
@@ -38,8 +38,9 @@ Mailbox:
   Password:
 
 Chain:
-  Rpc:
-  ProgramId: HF4aT6sho2zTySB8nEeN5ThMvDGtGVRrH3jeBvxFNxit
+  Rpc: 'https://api.devnet.solana.com'
+  Ws: 'wss://api.devnet.solana.com'
+  ProgramId: 6yFTDdiS1W9T9yg6YejkwKggkEE4NYqdSSzVqQvuLn16
   FaucetPrivateKey:
   Dist: 896KfVVY6VRGQs1d9CKLnKUEgXXCCJcEEg7LwSK84vWE
   DistDecimals: 9
@@ -56,6 +57,9 @@ screen -S distriai-index-solana
 ./distriai-index-solana
 ```
 When the service is started, the `machines` and `orders` tables in database will be cleared, the latest data on the chain will be pulled.
+- Detach the screen window
+
+`CTRL +  A` + `D`
 
 ## Stop
 - Attach the screen window
@@ -65,3 +69,8 @@ screen -r distriai-index-solana
 - stop service
 
 `CTRL +  C`
+
+- Exit the screen window
+```
+exit
+```

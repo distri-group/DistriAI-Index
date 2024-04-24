@@ -30,6 +30,6 @@ Chain:
   Ws: 'wss://api.devnet.solana.com'
   ProgramId: 6yFTDdiS1W9T9yg6YejkwKggkEE4NYqdSSzVqQvuLn16
   FaucetPrivateKey:
-  Dist: 2mdavGYoNKKYVx4RvM36pPH6MJ1hr6TjkkcdFzCcpFZR
+  Dist: 896KfVVY6VRGQs1d9CKLnKUEgXXCCJcEEg7LwSK84vWE
   DistDecimals: 9
   DistFaucetAmount: 5
