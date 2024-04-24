@@ -13,39 +13,9 @@ If all goes well, you will get a program called `distriai-index-solana`.
 ## Run
 ### Step 1: Prepare configuration file
 - Copy `/config` folder to where `distriai-index-solana` program locate.
-- Edit Database configuration in `./config/config.yml`.
-```
-Server:
-  Mode: release
-  Port: 8800
+- Edit configuration in `./config/config.yml`.
 
-Database:
-  Host:
-  Port: 3306
-  UserName:
-  Password:
-  Database: distriai_index_solana
-
-Redis:
-  Addr: 'localhost:6379'
-  Password:
-  DB: 0
-
-Mailbox:
-  Host:
-  Port: 25
-  Username:
-  Password:
-
-Chain:
-  Rpc: 'https://api.devnet.solana.com'
-  Ws: 'wss://api.devnet.solana.com'
-  ProgramId: 6yFTDdiS1W9T9yg6YejkwKggkEE4NYqdSSzVqQvuLn16
-  FaucetPrivateKey:
-  Dist: 896KfVVY6VRGQs1d9CKLnKUEgXXCCJcEEg7LwSK84vWE
-  DistDecimals: 9
-  DistFaucetAmount: 5
-```
+https://github.com/distri-group/DistriAI-Index/blob/dbe7077a310e6a9a6c0fec4f41e7199004f26df5/config/config.yml#L1-L35
 
 ### Step 2: Start the distriai-index-solana service
 - New a screen window
