@@ -1,9 +1,32 @@
 package chain
 
 import (
+	"encoding/base64"
+	"errors"
 	"github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"
 )
+
+type DistriEvent interface {
+	*MachineEvent | *OrderEvent | *TaskEvent | *RewardEvent
+
+	UnmarshalWithDecoder(decoder *bin.Decoder) error
+}
+
+func decodeDistriEvent[T DistriEvent](data string) (T, error) {
+	bytes, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return nil, err
+	}
+	if len(bytes) < 8 {
+		return nil, errors.New("data too short")
+	}
+	var event T
+	if err := event.UnmarshalWithDecoder(bin.NewBorshDecoder(bytes[8:])); err != nil {
+		return nil, err
+	}
+	return event, nil
+}
 
 type MachineEvent struct {
 	Owner solana.PublicKey

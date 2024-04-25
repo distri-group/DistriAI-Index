@@ -73,7 +73,7 @@ func Sync() {
 	//sync machine、order、reward、rewardMachine data from chain
 	fetchAll()
 	// subscribe smart contract events
-	go subEvents()
+	//go subEvents()
 }
 
 func fetchAll() {
@@ -128,7 +128,7 @@ func subEvents() {
 		if instruction == "" || data == "" {
 			continue
 		}
-		logs.Info(fmt.Sprintf("Receive instruction: %s \n", instruction))
+		logs.Info(fmt.Sprintf("[WebSocket] Receive instruction: %s \n", instruction))
 
 		switch instruction {
 		case _AddMachine:
@@ -190,6 +190,91 @@ func subEvents() {
 			}
 			removeOrder(event.OrderId)
 		}
+	}
+}
+
+func HandleEventLogs(eventLogs []string) {
+	spew.Dump(eventLogs)
+	var instruction, data string
+	for _, l := range eventLogs {
+		// Find first HashrateMarket Instruction in event
+		if instruction == "" {
+			if after, found := strings.CutPrefix(l, _Instruction); found {
+				if i := slices.Index(distriInstructions, after); i >= 0 {
+					instruction = after
+					continue
+				}
+			}
+		}
+		if after, found := strings.CutPrefix(l, _Data); found {
+			data = after
+			continue
+		}
+	}
+	if instruction == "" || data == "" {
+		return
+	}
+	logs.Info(fmt.Sprintf("[Webhook] Receive instruction: %s \n", instruction))
+
+	switch instruction {
+	case _AddMachine:
+		event, err := decodeMachineEvent(data)
+		if err != nil {
+			return
+		}
+		addMachine(event.Owner, event.Uuid)
+	case _RemoveMachine:
+		event, err := decodeMachineEvent(data)
+		if err != nil {
+			return
+		}
+		removeMachine(event.Owner, event.Uuid)
+	case _MakeOffer, _CancelOffer:
+		event, err := decodeMachineEvent(data)
+		if err != nil {
+			return
+		}
+		updateMachine(event.Owner, event.Uuid)
+	case _SubmitTask:
+		event, err := decodeTaskEvent(data)
+		if err != nil {
+			return
+		}
+		saveReward(event.Period)
+		saveRewardMachine(event.Period, event.Owner, event.MachineId)
+	case _Claim:
+		event, err := decodeRewardEvent(data)
+		if err != nil {
+			return
+		}
+		updateMachine(event.Owner, event.MachineId)
+		saveRewardMachine(event.Period, event.Owner, event.MachineId)
+	case _PlaceOrder:
+		event, err := decodeOrderEvent(data)
+		if err != nil {
+			return
+		}
+		updateMachine(event.Seller, event.MachineId)
+		addOrder(event.OrderId, event.Buyer)
+	case _RenewOrder, _StartOrder:
+		event, err := decodeOrderEvent(data)
+		if err != nil {
+			return
+		}
+		updateOrder(event.OrderId, event.Buyer)
+	case _RefundOrder, _OrderCompleted, _OrderFailed:
+		event, err := decodeOrderEvent(data)
+		if err != nil {
+			return
+		}
+		updateMachine(event.Seller, event.MachineId)
+		updateOrder(event.OrderId, event.Buyer)
+	case _RemoveOrder:
+		event, err := decodeOrderEvent(data)
+		if err != nil {
+			return
+		}
+		removeOrder(event.OrderId)
 	}
 }
 

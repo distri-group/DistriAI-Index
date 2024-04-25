@@ -9,6 +9,7 @@ import (
 // RegisterRoutes unified management routes.
 func RegisterRoutes(engine *gin.Engine) {
 	engine.POST("/faucet", handlers.Faucet)
+	engine.POST("/webhook", handlers.Webhook)
 	mailbox := engine.Group("/mailbox")
 	{
 		mailbox.POST("/subscribe", handlers.Subscribe)
