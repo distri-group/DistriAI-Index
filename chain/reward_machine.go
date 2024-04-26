@@ -48,10 +48,23 @@ func saveRewardMachine(period uint32, owner solana.PublicKey, machineId [16]uint
 		distriProgramID,
 	)
 	if err != nil {
+		logs.Error(fmt.Sprintf("FindProgramAddress error: %s \n", err))
+		return
+	}
+
+	resp, err := rpcClient.GetAccountInfoWithOpts(
+		context.TODO(),
+		address,
+		&rpc.GetAccountInfoOpts{
+			Commitment: rpc.CommitmentConfirmed,
+		},
+	)
+	if err != nil {
+		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts error: %s \n", err))
 		return
 	}
 	var r distri_ai.RewardMachine
-	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &r); err != nil {
+	if err := r.UnmarshalWithDecoder(bin.NewBorshDecoder(resp.Value.Data.GetBinary())); err != nil {
 		return
 	}
 

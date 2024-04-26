@@ -41,10 +41,23 @@ func addOrder(orderId [16]uint8, buyer solana.PublicKey) {
 		distriProgramID,
 	)
 	if err != nil {
+		logs.Warn(fmt.Sprintf("Can not find Program Address: %s \n", err))
+		return
+	}
+
+	resp, err := rpcClient.GetAccountInfoWithOpts(
+		context.TODO(),
+		address,
+		&rpc.GetAccountInfoOpts{
+			Commitment: rpc.CommitmentConfirmed,
+		},
+	)
+	if err != nil {
+		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts error: %s \n", err))
 		return
 	}
 	var o distri_ai.Order
-	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
+	if err := o.UnmarshalWithDecoder(bin.NewBorshDecoder(resp.Value.Data.GetBinary())); err != nil {
 		return
 	}
 
@@ -76,9 +89,20 @@ func updateOrder(orderId [16]uint8, buyer solana.PublicKey) {
 		logs.Warn(fmt.Sprintf("Can not find Program Address: %s \n", err))
 		return
 	}
+
+	resp, err := rpcClient.GetAccountInfoWithOpts(
+		context.TODO(),
+		address,
+		&rpc.GetAccountInfoOpts{
+			Commitment: rpc.CommitmentConfirmed,
+		},
+	)
+	if err != nil {
+		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts error: %s \n", err))
+		return
+	}
 	var o distri_ai.Order
-	if err := rpcClient.GetAccountDataBorshInto(context.TODO(), address, &o); err != nil {
-		logs.Warn(fmt.Sprintf("GetAccountDataBorshInto error: %s \n", err))
+	if err := o.UnmarshalWithDecoder(bin.NewBorshDecoder(resp.Value.Data.GetBinary())); err != nil {
 		return
 	}
 

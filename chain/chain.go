@@ -81,7 +81,7 @@ func fetchAll() {
 		context.TODO(),
 		distriProgramID,
 		&rpc.GetProgramAccountsOpts{
-			Commitment: rpc.CommitmentFinalized,
+			Commitment: rpc.CommitmentConfirmed,
 		},
 	)
 	if err != nil {
@@ -122,7 +122,7 @@ func subEvents() {
 			}
 			if after, found := strings.CutPrefix(l, _Data); found {
 				data = after
-				continue
+				break
 			}
 		}
 		if instruction == "" || data == "" {
@@ -208,7 +208,7 @@ func HandleEventLogs(eventLogs []string) {
 		}
 		if after, found := strings.CutPrefix(l, _Data); found {
 			data = after
-			continue
+			break
 		}
 	}
 	if instruction == "" || data == "" {
@@ -276,6 +276,8 @@ func HandleEventLogs(eventLogs []string) {
 		}
 		removeOrder(event.OrderId)
 	}
+
+	logs.Info(fmt.Sprintf("[Webhook] Handle instruction: %s \n", instruction))
 }
 
 func decodeMachineEvent(data string) (*MachineEvent, error) {
