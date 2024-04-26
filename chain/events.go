@@ -8,24 +8,22 @@ import (
 )
 
 type DistriEvent interface {
-	*MachineEvent | *OrderEvent | *TaskEvent | *RewardEvent
-
 	UnmarshalWithDecoder(decoder *bin.Decoder) error
 }
 
-func decodeDistriEvent[T DistriEvent](data string) (T, error) {
+func decodeDistriEvent(data string, event DistriEvent) error {
 	bytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if len(bytes) < 8 {
-		return nil, errors.New("data too short")
+		return errors.New("data too short")
 	}
-	var event T
-	if err := event.UnmarshalWithDecoder(bin.NewBorshDecoder(bytes[8:])); err != nil {
-		return nil, err
+	decoder := bin.NewBorshDecoder(bytes[8:])
+	if err := event.UnmarshalWithDecoder(decoder); err != nil {
+		return err
 	}
-	return event, nil
+	return nil
 }
 
 type MachineEvent struct {

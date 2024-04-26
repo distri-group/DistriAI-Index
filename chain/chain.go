@@ -218,60 +218,60 @@ func HandleEventLogs(eventLogs []string) {
 
 	switch instruction {
 	case _AddMachine:
-		event, err := decodeMachineEvent(data)
-		if err != nil {
+		var event MachineEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		addMachine(event.Owner, event.Uuid)
 	case _RemoveMachine:
-		event, err := decodeMachineEvent(data)
-		if err != nil {
+		var event MachineEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		removeMachine(event.Owner, event.Uuid)
 	case _MakeOffer, _CancelOffer:
-		event, err := decodeMachineEvent(data)
-		if err != nil {
+		var event MachineEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		updateMachine(event.Owner, event.Uuid)
 	case _SubmitTask:
-		event, err := decodeTaskEvent(data)
-		if err != nil {
+		var event RewardEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		saveReward(event.Period)
 		saveRewardMachine(event.Period, event.Owner, event.MachineId)
 	case _Claim:
-		event, err := decodeRewardEvent(data)
-		if err != nil {
+		var event RewardEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		updateMachine(event.Owner, event.MachineId)
 		saveRewardMachine(event.Period, event.Owner, event.MachineId)
 	case _PlaceOrder:
-		event, err := decodeOrderEvent(data)
-		if err != nil {
+		var event OrderEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		updateMachine(event.Seller, event.MachineId)
 		addOrder(event.OrderId, event.Buyer)
 	case _RenewOrder, _StartOrder:
-		event, err := decodeOrderEvent(data)
-		if err != nil {
+		var event OrderEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		updateOrder(event.OrderId, event.Buyer)
 	case _RefundOrder, _OrderCompleted, _OrderFailed:
-		event, err := decodeOrderEvent(data)
-		if err != nil {
+		var event OrderEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		updateMachine(event.Seller, event.MachineId)
 		updateOrder(event.OrderId, event.Buyer)
 	case _RemoveOrder:
-		event, err := decodeOrderEvent(data)
-		if err != nil {
+		var event OrderEvent
+		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
 		removeOrder(event.OrderId)
