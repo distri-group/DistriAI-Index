@@ -8,8 +8,6 @@ import (
 
 // RegisterRoutes unified management routes.
 func RegisterRoutes(engine *gin.Engine) {
-	engine.POST("/faucet", handlers.Faucet)
-	engine.POST("/webhook", handlers.Webhook)
 	mailbox := engine.Group("/mailbox")
 	{
 		mailbox.POST("/subscribe", handlers.Subscribe)
@@ -44,24 +42,34 @@ func RegisterRoutes(engine *gin.Engine) {
 		log.POST("/add", handlers.LogAdd)
 		log.POST("/list", handlers.LogList)
 	}
-	modelAuth := engine.Group("/model", middleware.Jwt())
-	{
-		modelAuth.POST("/create", handlers.ModelCreate)
-		modelAuth.POST("/presign", handlers.ModelPresign)
-	}
 	model := engine.Group("/model")
 	{
 		model.POST("/list", handlers.ModelList)
 		model.GET("/:Owner/:Name", handlers.ModelGet)
+		model.POST("/download", handlers.ModelDownload)
+		model.GET("likecount", handlers.ModelLikeCount)
 	}
-	datasetAuth := engine.Group("/dataset", middleware.Jwt())
+	modelAuth := engine.Group("/model", middleware.Jwt())
 	{
-		datasetAuth.POST("/create", handlers.DatasetCreate)
-		datasetAuth.POST("/presign", handlers.DatasetPresign)
+		modelAuth.POST("/create", handlers.ModelCreate)
+		modelAuth.POST("/presign", handlers.ModelPresign)
+		modelAuth.POST("/like", handlers.ModelLike)
+		modelAuth.GET("/islike", handlers.ModelIsLike)
 	}
-	dataset := engine.Group("/dataset")
+	engine.POST("/faucet", handlers.Faucet)
+	dataset := engine.Group("/dataset", middleware.Jwt())
 	{
-		dataset.POST("/list", handlers.DatasetList)
-		dataset.GET("/:Owner/:Name", handlers.DatasetGet)
+		dataset.POST("/create", handlers.DataSetCreate)
+		dataset.POST("/presign", handlers.DatasetPresign)
+		dataset.POST("/like", handlers.DatasetLike)
+		dataset.GET("/islike", handlers.DatasetIsLike)
+	}
+	datasetInfo := engine.Group("/datasetinfo")
+	{
+		datasetInfo.POST("/list", handlers.DatasetList)
+		datasetInfo.GET("/:Owner/:Name", handlers.DatasetGet)
+
+		datasetInfo.POST("/download", handlers.DatasetDownload)
+		datasetInfo.GET("/likecount", handlers.DatasetLikeCount)
 	}
 }
