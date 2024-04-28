@@ -9,6 +9,7 @@ import (
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 	"math/rand"
 	"strings"
 	"time"
@@ -20,15 +21,15 @@ type DatasetCreateReq struct {
 	License uint8  `binding:"required"`
 	Type1   uint32 `binging:"required"`
 	Type2   uint32 `binding:"required"`
-	Tags    string `binding:"max=128"`
+	Tags    string `binding:"required"`
 }
 
-// DatasetCreate user create a dataset.
-func DatasetCreate(context *gin.Context) {
+// DataSetCreate users upload data sets.
+func DataSetCreate(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req DatasetCreateReq
 	if err := context.ShouldBindJSON(&req); err != nil {
-		resp.Fail(context, err.Error())
+		resp.Fail(context, "")
 		return
 	}
 
@@ -42,7 +43,7 @@ func DatasetCreate(context *gin.Context) {
 		return
 	}
 	if count > 0 {
-		resp.Fail(context, "Duplicate dataset name")
+		resp.Fail(context, "Duplicate model name")
 		return
 	}
 
@@ -61,7 +62,33 @@ func DatasetCreate(context *gin.Context) {
 		Downloads: likes + uint32(rnd.Int31n(1000)),
 		Likes:     likes,
 	}
-	if err := common.Db.Create(&dataSet).Error; err != nil {
+	/*if err := common.Db.Create(&dataSet).Error; err != nil {
+		logs.Error(fmt.Sprintf("Database error: %v \n", err))
+		resp.Fail(context, "Database error")
+		return
+	}*/
+
+	datasetHeat := model.DatasetHeat{
+		Owner:     account,
+		Name:      req.Name,
+		Likes:     0,
+		Downloads: 0,
+		Clicks:    0,
+	}
+	/*if err := common.Db.Create(&datasetHeat).Error; err != nil {
+		logs.Error(fmt.Sprintf("Database error: %v \n", err))
+		resp.Fail(context, "Database error")
+		return
+	}*/
+
+	err := common.Db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&dataSet).Error; err != nil {
+			return err
+		}
+		return tx.Create(&datasetHeat).Error
+	})
+
+	if err != nil {
 		logs.Error(fmt.Sprintf("Database error: %v \n", err))
 		resp.Fail(context, "Database error")
 		return
@@ -70,7 +97,7 @@ func DatasetCreate(context *gin.Context) {
 	resp.Success(context, "")
 }
 
-type DatasetPresignReq struct {
+type DataSetPresignReq struct {
 	Id       uint   `binding:"required"`
 	FilePath string `binding:"required"`
 	Method   string `binding:"required,oneof= PUT DELETE"`
@@ -78,7 +105,7 @@ type DatasetPresignReq struct {
 
 func DatasetPresign(context *gin.Context) {
 	account := getAuthAccount(context)
-	var req DatasetPresignReq
+	var req DataSetPresignReq
 	if err := context.ShouldBindJSON(&req); err != nil {
 		resp.Fail(context, err.Error())
 		return
@@ -118,7 +145,7 @@ type DatasetListResponse struct {
 
 func DatasetList(context *gin.Context) {
 	var req DatasetListReq
-	if err := context.ShouldBindBodyWith(&req, &binding.JSON); err != nil {
+	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -160,15 +187,145 @@ func DatasetGet(context *gin.Context) {
 		resp.Fail(context, err.Error())
 		return
 	}
+
+	// query through owner and name
 	var dataset model.Dataset
-	tx := common.Db.
-		Where("owner = ?", req.Owner).
+	err := common.Db.Transaction(func(tx *gorm.DB) error {
+		tx.Where("owner = ?", req.Owner).
+			Where("name = ?", req.Name).
+			Take(&dataset)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		tx.Model(&model.DatasetHeat{}).
+			Where("owner = ?", req.Owner).
+			Where("name = ?", req.Name).
+			Update("clicks", gorm.Expr("clicks + ?", 1))
+		return tx.Error
+	})
+	if err != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	/*
+		tx := common.Db.
+			Where("owner = ?", req.Owner).
+			Where("name = ?", req.Name).
+			Take(&dataset)
+		if tx.Error != nil {
+			resp.Fail(context, "Dataset not found")
+			return
+		}*/
+
+	resp.Success(context, dataset)
+}
+
+func DatasetDownload(context *gin.Context) {
+	//var dataset model.DatasetHeat
+	var req DatasetGetReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+	tx := common.Db.Model(&model.DatasetHeat{}).
 		Where("name = ?", req.Name).
-		Take(&dataset)
+		Where("owner = ?", req.Owner).
+		Update("downloads", gorm.Expr("downloads + ?", 1))
 	if tx.Error != nil {
-		resp.Fail(context, "Dataset not found")
+		resp.Fail(context, "dataset not found")
 		return
 	}
 
-	resp.Success(context, dataset)
+	resp.Success(context, "")
+}
+
+type DatasetLikeReq struct {
+	Owner string `binding:"required" json:"Owner"`
+	Name  string `binding:"required" json:"Name"`
+	Like  bool   `json:"Like"`
+}
+
+func DatasetLike(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req DatasetLikeReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	num := -1
+	if req.Like {
+		num = 1
+	}
+
+	err := common.Db.Transaction(func(tx *gorm.DB) error {
+		tx.Model(&model.DatasetHeat{}).
+			Where("owner = ?", account).
+			Where("name = ?", req.Name).
+			Update("likes", gorm.Expr("likes + ?", num))
+		if tx.Error != nil {
+			return tx.Error
+		}
+		like := model.DatasetLike{
+			Account: account,
+			Owner:   req.Owner,
+			Name:    req.Name,
+		}
+
+		if req.Like {
+			// tx.Where(like).FirstOrCreate(&model.DatasetLike{}, like)
+			return tx.Create(&like).Error
+		}
+		return tx.Where(&like).
+			Delete(&model.DatasetLike{}).
+			Error
+	})
+
+	if err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+	resp.Success(context, "")
+}
+
+func DatasetIsLike(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req DatasetGetReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var count int64
+	tx := common.Db.Model(&model.DatasetLike{}).
+		Where("account = ? and owner = ? and name = ?", account, req.Owner, req.Name).
+		Count(&count)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, count > 0)
+}
+
+func DatasetLikeCount(context *gin.Context) {
+	var req DatasetGetReq
+
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var datasetHeat model.DatasetHeat
+	tx := common.Db.Model(&model.DatasetHeat{}).
+		Where("owner = ?", req.Owner).
+		Where("name = ?", req.Name).
+		Take(&datasetHeat)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, datasetHeat.Likes)
 }
