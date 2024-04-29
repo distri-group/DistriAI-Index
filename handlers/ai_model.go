@@ -9,6 +9,7 @@ import (
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 	"math/rand"
 	"strings"
 	"time"
@@ -59,7 +60,26 @@ func ModelCreate(context *gin.Context) {
 		Downloads: likes + uint32(rnd.Int31n(1000)),
 		Likes:     likes,
 	}
-	if err := common.Db.Create(&aiModel).Error; err != nil {
+	aiModelHeat := model.AiModelHeat{
+		Owner:     account,
+		Name:      req.Name,
+		Likes:     0,
+		Downloads: 0,
+		Clicks:    0,
+	}
+	/*if err := common.Db.Create(&aiModel).Error; err != nil {
+		logs.Error(fmt.Sprintf("Database error: %v \n", err))
+		resp.Fail(context, "Database error")
+		return
+	}*/
+
+	err := common.Db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&aiModel).Error; err != nil {
+			return err
+		}
+		return tx.Create(&aiModelHeat).Error
+	})
+	if err != nil {
 		logs.Error(fmt.Sprintf("Database error: %v \n", err))
 		resp.Fail(context, "Database error")
 		return
@@ -88,8 +108,15 @@ func ModelList(context *gin.Context) {
 	}
 
 	var response ModelListResponse
-	aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
-	tx := common.Db.Model(&aiModel).Where(&aiModel)
+	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
+	//tx := common.Db.Model(&aiModel).Where(&aiModel)
+	tx := common.Db.Table("ai_models").
+		Select("ai_models.id, ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.created_at, ai_model_heats.downloads, ai_model_heats.likes").
+		Joins("INNER JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
+
+	if req.Type1 != 0 && req.Type2 != 0 {
+		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
+	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
 		tx.Where("name LIKE ?", "%"+name+"%")
@@ -126,12 +153,31 @@ func ModelGet(context *gin.Context) {
 	}
 
 	var aiModel model.AiModel
-	tx := common.Db.
+	/*tx := common.Db.
 		Where("owner = ?", req.Owner).
 		Where("name = ?", req.Name).
 		Take(&aiModel)
 	if tx.Error != nil {
 		resp.Fail(context, "Model not found")
+		return
+	}*/
+
+	err := common.Db.Transaction(func(tx *gorm.DB) error {
+		tx.Where("owner = ?", req.Owner).
+			Where("name = ?", req.Name).
+			Take(&aiModel)
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		tx.Model(&model.AiModelHeat{}).
+			Where("owner = ?", req.Owner).
+			Where("name = ?", req.Name).
+			Update("clicks", gorm.Expr("clicks + ?", 1))
+		return tx.Error
+	})
+	if err != nil {
+		resp.Fail(context, err.Error())
 		return
 	}
 
@@ -174,4 +220,110 @@ func ModelPresign(context *gin.Context) {
 	}
 
 	resp.Success(context, presignedPutRequest.URL)
+}
+
+func ModelDownload(context *gin.Context) {
+	var req ModelGetReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	tx := common.Db.Model(&model.AiModelHeat{}).
+		Where("owner = ?", req.Owner).
+		Where("name = ?", req.Name).
+		Update("downloads", gorm.Expr("downloads + ?", 1))
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	resp.Success(context, "")
+}
+
+type ModelLikeReq struct {
+	Owner string `binding:"required" json:"Owner"`
+	Name  string `binding:"required" json:"Name"`
+	Like  bool   `json:"Like"`
+}
+
+func ModelLike(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req ModelLikeReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	num := -1
+	if req.Like {
+		num = 1
+	}
+
+	err := common.Db.Transaction(func(tx *gorm.DB) error {
+		tx.Model(&model.AiModelHeat{}).
+			Where("owner = ?", req.Owner).
+			Where("name = ?", req.Name).
+			Update("likes", gorm.Expr("likes + ?", num))
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		like := model.AiModelLike{
+			Account: account,
+			Owner:   req.Owner,
+			Name:    req.Name,
+		}
+		if req.Like {
+			return tx.Create(&like).Error
+		}
+
+		return tx.Where(&like).
+			Delete(&model.AiModelLike{}).Error
+	})
+
+	if err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+	resp.Success(context, "")
+}
+
+func ModelIsLike(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req ModelGetReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var count int64
+	tx := common.Db.Model(&model.AiModelLike{}).
+		Where("account = ? and owner = ? and name = ?", account, req.Owner, req.Name).
+		Count(&count)
+
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	resp.Success(context, count > 0)
+}
+
+func ModelLikeCount(context *gin.Context) {
+	var req ModelGetReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+	var modelHeat model.AiModelHeat
+	tx := common.Db.Model(&model.AiModelHeat{}).
+		Where("owner = ?", req.Owner).
+		Where("name = ?", req.Name).
+		Take(&modelHeat)
+
+	if tx.Error != nil {
+		resp.Fail(context, tx.Error.Error())
+		return
+	}
+
+	resp.Success(context, modelHeat.Likes)
 }
