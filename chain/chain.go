@@ -33,6 +33,10 @@ const (
 	_OrderCompleted = "OrderCompleted"
 	_OrderFailed    = "OrderFailed"
 	_RemoveOrder    = "RemoveOrder"
+	_CreateAiModel  = "CreateAiModel"
+	_RemoveAiModel  = "RemoveAiModel"
+	_CreateDataset  = "CreateDataset"
+	_RemoveDataset  = "RemoveDataset"
 )
 
 var (
