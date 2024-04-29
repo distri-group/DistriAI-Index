@@ -155,8 +155,10 @@ func DatasetList(context *gin.Context) {
 	//tx := common.Db.Model(&dataset).Where(&dataset)
 	tx := common.Db.Table("datasets").
 		Select("datasets.id, datasets.owner, datasets.name, datasets.Scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.created_at, dataset_heats.downloads, dataset_heats.likes").
-		Joins("INNER JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name").
-		Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
+		Joins("INNER JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
+	if req.Type1 != 0 && req.Type2 != 0 {
+		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
+	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
 		tx.Where("name LIKE ?", "%"+name+"%")
