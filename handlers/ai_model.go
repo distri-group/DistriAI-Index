@@ -111,8 +111,11 @@ func ModelList(context *gin.Context) {
 	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("ai_models").
 		Select("ai_models.id, ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.created_at, ai_model_heats.downloads, ai_model_heats.likes").
-		Joins("INNER JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name").
-		Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
+		Joins("INNER JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
+
+	if req.Type1 != 0 && req.Type2 != 0 {
+		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
+	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
 		tx.Where("name LIKE ?", "%"+name+"%")
