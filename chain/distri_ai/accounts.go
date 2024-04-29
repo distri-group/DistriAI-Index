@@ -8,20 +8,303 @@ import (
 	ag_solanago "github.com/gagliardetto/solana-go"
 )
 
+type AiModel struct {
+	Owner      ag_solanago.PublicKey
+	Name       string
+	Framework  uint8
+	License    uint8
+	Type1      uint8
+	Type2      uint8
+	Tags       string
+	CreateTime int64
+	UpdateTime int64
+}
+
+var AiModelDiscriminator = [8]byte{42, 206, 111, 34, 42, 121, 50, 138}
+
+func (obj AiModel) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
+	// Write account discriminator:
+	err = encoder.WriteBytes(AiModelDiscriminator[:], false)
+	if err != nil {
+		return err
+	}
+	// Serialize `Owner` param:
+	err = encoder.Encode(obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Name` param:
+	err = encoder.Encode(obj.Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Framework` param:
+	err = encoder.Encode(obj.Framework)
+	if err != nil {
+		return err
+	}
+	// Serialize `License` param:
+	err = encoder.Encode(obj.License)
+	if err != nil {
+		return err
+	}
+	// Serialize `Type1` param:
+	err = encoder.Encode(obj.Type1)
+	if err != nil {
+		return err
+	}
+	// Serialize `Type2` param:
+	err = encoder.Encode(obj.Type2)
+	if err != nil {
+		return err
+	}
+	// Serialize `Tags` param:
+	err = encoder.Encode(obj.Tags)
+	if err != nil {
+		return err
+	}
+	// Serialize `CreateTime` param:
+	err = encoder.Encode(obj.CreateTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `UpdateTime` param:
+	err = encoder.Encode(obj.UpdateTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *AiModel) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
+	// Read and check account discriminator:
+	{
+		discriminator, err := decoder.ReadTypeID()
+		if err != nil {
+			return err
+		}
+		if !discriminator.Equal(AiModelDiscriminator[:]) {
+			return fmt.Errorf(
+				"wrong discriminator: wanted %s, got %s",
+				"[42 206 111 34 42 121 50 138]",
+				fmt.Sprint(discriminator[:]))
+		}
+	}
+	// Deserialize `Owner`:
+	err = decoder.Decode(&obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Name`:
+	err = decoder.Decode(&obj.Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Framework`:
+	err = decoder.Decode(&obj.Framework)
+	if err != nil {
+		return err
+	}
+	// Deserialize `License`:
+	err = decoder.Decode(&obj.License)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Type1`:
+	err = decoder.Decode(&obj.Type1)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Type2`:
+	err = decoder.Decode(&obj.Type2)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Tags`:
+	err = decoder.Decode(&obj.Tags)
+	if err != nil {
+		return err
+	}
+	// Deserialize `CreateTime`:
+	err = decoder.Decode(&obj.CreateTime)
+	if err != nil {
+		return err
+	}
+	// Deserialize `UpdateTime`:
+	err = decoder.Decode(&obj.UpdateTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type Dataset struct {
+	Owner      ag_solanago.PublicKey
+	Name       string
+	Scale      uint8
+	License    uint8
+	Type1      uint8
+	Type2      uint8
+	Tags       string
+	CreateTime int64
+	UpdateTime int64
+}
+
+var DatasetDiscriminator = [8]byte{242, 85, 87, 90, 234, 188, 241, 17}
+
+func (obj Dataset) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
+	// Write account discriminator:
+	err = encoder.WriteBytes(DatasetDiscriminator[:], false)
+	if err != nil {
+		return err
+	}
+	// Serialize `Owner` param:
+	err = encoder.Encode(obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Name` param:
+	err = encoder.Encode(obj.Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Scale` param:
+	err = encoder.Encode(obj.Scale)
+	if err != nil {
+		return err
+	}
+	// Serialize `License` param:
+	err = encoder.Encode(obj.License)
+	if err != nil {
+		return err
+	}
+	// Serialize `Type1` param:
+	err = encoder.Encode(obj.Type1)
+	if err != nil {
+		return err
+	}
+	// Serialize `Type2` param:
+	err = encoder.Encode(obj.Type2)
+	if err != nil {
+		return err
+	}
+	// Serialize `Tags` param:
+	err = encoder.Encode(obj.Tags)
+	if err != nil {
+		return err
+	}
+	// Serialize `CreateTime` param:
+	err = encoder.Encode(obj.CreateTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `UpdateTime` param:
+	err = encoder.Encode(obj.UpdateTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *Dataset) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
+	// Read and check account discriminator:
+	{
+		discriminator, err := decoder.ReadTypeID()
+		if err != nil {
+			return err
+		}
+		if !discriminator.Equal(DatasetDiscriminator[:]) {
+			return fmt.Errorf(
+				"wrong discriminator: wanted %s, got %s",
+				"[242 85 87 90 234 188 241 17]",
+				fmt.Sprint(discriminator[:]))
+		}
+	}
+	// Deserialize `Owner`:
+	err = decoder.Decode(&obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Name`:
+	err = decoder.Decode(&obj.Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Scale`:
+	err = decoder.Decode(&obj.Scale)
+	if err != nil {
+		return err
+	}
+	// Deserialize `License`:
+	err = decoder.Decode(&obj.License)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Type1`:
+	err = decoder.Decode(&obj.Type1)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Type2`:
+	err = decoder.Decode(&obj.Type2)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Tags`:
+	err = decoder.Decode(&obj.Tags)
+	if err != nil {
+		return err
+	}
+	// Deserialize `CreateTime`:
+	err = decoder.Decode(&obj.CreateTime)
+	if err != nil {
+		return err
+	}
+	// Deserialize `UpdateTime`:
+	err = decoder.Decode(&obj.UpdateTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type Machine struct {
-	Owner                  ag_solanago.PublicKey
-	Uuid                   [16]uint8
-	Metadata               string
-	Status                 MachineStatus
-	Price                  uint64
-	MaxDuration            uint32
-	Disk                   uint32
-	CompletedCount         uint32
-	FailedCount            uint32
-	Score                  uint8
+	// Owner of this machine.
+	Owner ag_solanago.PublicKey
+
+	// UUID of this machine.
+	Uuid [16]uint8
+
+	// The metadata by json format of this machine.
+	Metadata string
+
+	// The status of this machine.
+	Status MachineStatus
+
+	// The price of this machine.
+	Price uint64
+
+	// The maximum number of hours the machine can be rent.
+	MaxDuration uint32
+
+	// The GB amount of this machine's avaliable disk.
+	Disk uint32
+
+	// The total number of completed orders for this machine.
+	CompletedCount uint32
+
+	// The total number of failed orders for this machine.
+	FailedCount uint32
+
+	// Computing power score of this machine.
+	Score uint8
+
+	// Total claimed periodic rewards.
 	ClaimedPeriodicRewards uint64
-	ClaimedTaskRewards     uint64
-	OrderPda               ag_solanago.PublicKey
+
+	// Total claimed task rewards.
+	ClaimedTaskRewards uint64
+	OrderPda           ag_solanago.PublicKey
 }
 
 var MachineDiscriminator = [8]byte{25, 102, 22, 13, 58, 243, 138, 79}
@@ -183,19 +466,33 @@ func (obj *Machine) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error)
 }
 
 type MachineNew struct {
-	Owner                  ag_solanago.PublicKey
-	Uuid                   [16]uint8
-	Metadata               string
-	Status                 MachineStatus
-	Price                  uint64
-	MaxDuration            uint32
-	Disk                   uint32
-	CompletedCount         uint32
-	FailedCount            uint32
-	Score                  uint8
+	Owner ag_solanago.PublicKey
+	Uuid  [16]uint8
+
+	// The metadata by json format of this machine.
+	Metadata string
+
+	// The status of this machine.
+	Status MachineStatus
+
+	// The price of this machine.
+	Price uint64
+
+	// The maximum number of hours the machine can be rent.
+	MaxDuration uint32
+
+	// The GB amount of this machine's avaliable disk.
+	Disk           uint32
+	CompletedCount uint32
+	FailedCount    uint32
+	Score          uint8
+
+	// Total claimed periodic rewards.
 	ClaimedPeriodicRewards uint64
-	ClaimedTaskRewards     uint64
-	OrderPda               ag_solanago.PublicKey
+
+	// Total claimed task rewards.
+	ClaimedTaskRewards uint64
+	OrderPda           ag_solanago.PublicKey
 }
 
 var MachineNewDiscriminator = [8]byte{27, 50, 112, 47, 115, 74, 107, 33}
@@ -357,17 +654,40 @@ func (obj *MachineNew) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err err
 }
 
 type Order struct {
-	OrderId    [16]uint8
-	Buyer      ag_solanago.PublicKey
-	Seller     ag_solanago.PublicKey
-	MachineId  [16]uint8
-	Price      uint64
-	Duration   uint32
-	Total      uint64
-	Metadata   string
-	Status     OrderStatus
-	OrderTime  int64
-	StartTime  int64
+	// UUID of this order.
+	OrderId [16]uint8
+
+	// The buyer of this order.
+	Buyer ag_solanago.PublicKey
+
+	// The seller of this order.
+	Seller ag_solanago.PublicKey
+
+	// The machine id of this order.
+	MachineId [16]uint8
+
+	// The price of this order.
+	Price uint64
+
+	// The duration hours of this order.
+	Duration uint32
+
+	// The total amount of this order.
+	Total uint64
+
+	// The metadata by json format of this order.
+	Metadata string
+
+	// The status of this order.
+	Status OrderStatus
+
+	// The order time of this order.
+	OrderTime int64
+
+	// The start time of this order.
+	StartTime int64
+
+	// The refund time of this order.
 	RefundTime int64
 }
 
@@ -520,17 +840,39 @@ func (obj *Order) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 }
 
 type OrderNew struct {
-	OrderId    [16]uint8
-	Buyer      ag_solanago.PublicKey
-	Seller     ag_solanago.PublicKey
-	MachineId  [16]uint8
-	Price      uint64
-	Duration   uint32
-	Total      uint64
-	Metadata   string
-	Status     OrderStatus
-	OrderTime  int64
-	StartTime  int64
+	OrderId [16]uint8
+
+	// The buyer of this order.
+	Buyer ag_solanago.PublicKey
+
+	// The seller of this order.
+	Seller ag_solanago.PublicKey
+
+	// The machine id of this order.
+	MachineId [16]uint8
+
+	// The price of this order.
+	Price uint64
+
+	// The duration hours of this order.
+	Duration uint32
+
+	// The total amount of this order.
+	Total uint64
+
+	// The metadata by json format of this order.
+	Metadata string
+
+	// The status of this order.
+	Status OrderStatus
+
+	// The order time of this order.
+	OrderTime int64
+
+	// The start time of this order.
+	StartTime int64
+
+	// The refund time of this order.
 	RefundTime int64
 }
 
@@ -683,13 +1025,26 @@ func (obj *OrderNew) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error
 }
 
 type Reward struct {
-	Period             uint32
-	StartTime          int64
-	Pool               uint64
-	MachineNum         uint32
+	// Reward period.
+	Period uint32
+
+	// Start time of this reward period.
+	StartTime int64
+
+	// Reward pool in this period.
+	Pool uint64
+
+	// Participating machine number in this period.
+	MachineNum uint32
+
+	// Periodic reward per machine in this period.
 	UnitPeriodicReward uint64
-	TaskNum            uint32
-	UnitTaskReward     uint64
+
+	// Task number in this period.
+	TaskNum uint32
+
+	// Task reward per task in this period.
+	UnitTaskReward uint64
 }
 
 var RewardDiscriminator = [8]byte{174, 129, 42, 212, 190, 18, 45, 34}
@@ -791,11 +1146,19 @@ func (obj *Reward) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) 
 }
 
 type RewardMachine struct {
-	Period    uint32
-	Owner     ag_solanago.PublicKey
+	Period uint32
+
+	// Machine owner.
+	Owner ag_solanago.PublicKey
+
+	// Machine id.
 	MachineId [16]uint8
-	TaskNum   uint32
-	Claimed   bool
+
+	// Task number submited in this period.
+	TaskNum uint32
+
+	// Reward has been claimed.
+	Claimed bool
 }
 
 var RewardMachineDiscriminator = [8]byte{106, 87, 186, 254, 4, 139, 144, 74}
@@ -877,11 +1240,20 @@ func (obj *RewardMachine) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err 
 }
 
 type Task struct {
-	Uuid      [16]uint8
-	Period    uint32
-	Owner     ag_solanago.PublicKey
+	// Task id
+	Uuid [16]uint8
+
+	// Period
+	Period uint32
+
+	// Machine owner.
+	Owner ag_solanago.PublicKey
+
+	// Machine id of this task.
 	MachineId [16]uint8
-	Metadata  string
+
+	// The metadata by json format of this task.
+	Metadata string
 }
 
 var TaskDiscriminator = [8]byte{79, 34, 229, 55, 88, 90, 55, 84}

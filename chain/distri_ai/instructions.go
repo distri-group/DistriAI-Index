@@ -56,6 +56,14 @@ var (
 
 	Instruction_RemoveOrder = ag_binary.TypeID([8]byte{118, 116, 244, 40, 144, 211, 242, 51})
 
+	Instruction_CreateAiModel = ag_binary.TypeID([8]byte{210, 121, 102, 94, 247, 85, 173, 215})
+
+	Instruction_RemoveAiModel = ag_binary.TypeID([8]byte{239, 39, 190, 250, 232, 8, 160, 106})
+
+	Instruction_CreateDataset = ag_binary.TypeID([8]byte{63, 151, 84, 132, 246, 167, 216, 122})
+
+	Instruction_RemoveDataset = ag_binary.TypeID([8]byte{114, 128, 121, 235, 46, 207, 76, 98})
+
 	Instruction_MigrateMachineNew = ag_binary.TypeID([8]byte{225, 152, 229, 88, 158, 61, 69, 125})
 
 	Instruction_MigrateMachineRename = ag_binary.TypeID([8]byte{188, 135, 117, 64, 94, 119, 3, 147})
@@ -96,6 +104,14 @@ func InstructionIDToName(id ag_binary.TypeID) string {
 		return "OrderFailed"
 	case Instruction_RemoveOrder:
 		return "RemoveOrder"
+	case Instruction_CreateAiModel:
+		return "CreateAiModel"
+	case Instruction_RemoveAiModel:
+		return "RemoveAiModel"
+	case Instruction_CreateDataset:
+		return "CreateDataset"
+	case Instruction_RemoveDataset:
+		return "RemoveDataset"
 	case Instruction_MigrateMachineNew:
 		return "MigrateMachineNew"
 	case Instruction_MigrateMachineRename:
@@ -165,6 +181,18 @@ var InstructionImplDef = ag_binary.NewVariantDefinition(
 		},
 		{
 			"remove_order", (*RemoveOrder)(nil),
+		},
+		{
+			"create_ai_model", (*CreateAiModel)(nil),
+		},
+		{
+			"remove_ai_model", (*RemoveAiModel)(nil),
+		},
+		{
+			"create_dataset", (*CreateDataset)(nil),
+		},
+		{
+			"remove_dataset", (*RemoveDataset)(nil),
 		},
 		{
 			"migrate_machine_new", (*MigrateMachineNew)(nil),
