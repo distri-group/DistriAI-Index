@@ -46,7 +46,7 @@ func RegisterRoutes(engine *gin.Engine) {
 	{
 		model.POST("/list", handlers.ModelList)
 		model.GET("/:Owner/:Name", handlers.ModelGet)
-		//model.POST("/download", handlers.ModelDownload)
+		model.POST("/download", handlers.ModelDownload)
 		//model.GET("likecount", handlers.ModelLikeCount)
 	}
 	modelAuth := engine.Group("/model", middleware.Jwt())
@@ -69,7 +69,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		datasetInfo.POST("/list", handlers.DatasetList)
 		datasetInfo.GET("/:Owner/:Name", handlers.DatasetGet)
 
-		//datasetInfo.POST("/download", handlers.DatasetDownload)
+		datasetInfo.POST("/download", handlers.DatasetDownload)
 		//datasetInfo.GET("/likecount", handlers.DatasetLikeCount)
 	}
 }
