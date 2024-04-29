@@ -5,8 +5,15 @@
 
 ## Build
 Requires Go1.21 or higher.
+- Windows
 ```
-GOOS=linux GOARCH=amd64 go build
+set GOOS=linux
+set GOOS=linux
+go build
+```
+- Linux or Mac
+```
+GOOS=linux GOOS=linux go build
 ```
 If all goes well, you will get a program called `distriai-index-solana`.
 
