@@ -58,7 +58,7 @@ func saveReward(period uint32) {
 		},
 	)
 	if err != nil {
-		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts error: %s \n", err))
+		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts address: %s, error: %s \n", address, err))
 		return
 	}
 	var r distri_ai.Reward

@@ -60,7 +60,7 @@ func saveRewardMachine(period uint32, owner solana.PublicKey, machineId [16]uint
 		},
 	)
 	if err != nil {
-		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts error: %s \n", err))
+		logs.Warn(fmt.Sprintf("GetAccountInfoWithOpts address: %s, error: %s \n", address, err))
 		return
 	}
 	var r distri_ai.RewardMachine
