@@ -64,7 +64,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		dataset.POST("/like", handlers.DatasetLike)
 		dataset.GET("/islike", handlers.DatasetIsLike)
 	}
-	datasetInfo := engine.Group("/datasetinfo")
+	datasetInfo := engine.Group("/dataset")
 	{
 		datasetInfo.POST("/list", handlers.DatasetList)
 		datasetInfo.GET("/:Owner/:Name", handlers.DatasetGet)
