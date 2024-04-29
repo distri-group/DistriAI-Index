@@ -16,17 +16,3 @@ type AiModel struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-
-type AiModelHeat struct {
-	Owner     string `gorm:"size:44;not null;"`
-	Name      string `gorm:"size:50;not null;"`
-	Likes     uint   `gorm:"not null;default:0"`
-	Downloads uint   `gorm:"not null;default:0"`
-	Clicks    uint   `gorm:"not null;default:0"`
-}
-
-type AiModelLike struct {
-	Account string `gorm:"not null"`
-	Owner   string `gorm:"size:44;not null;"`
-	Name    string `gorm:"size:50;not null;"`
-}
