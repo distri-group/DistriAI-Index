@@ -138,19 +138,41 @@ type DatasetListReq struct {
 	OrderBy string
 }
 
-type DatasetListResponse struct {
+type DatasetRsp struct {
+	Id        uint   `gorm:"primarykey"`
+	Owner     string `gorm:"size:44;not null;index:idx_dataset_owner_name"`
+	Name      string `gorm:"size:50;not null;index:idx_dataset_owner_name"`
+	Scale     uint8  `gorm:"not null"`
+	License   uint8  `gorm:"not null"`
+	Type1     uint32 `gorm:"not null"`
+	Type2     uint32 `gorm:"not null"`
+	Tags      string `gorm:"size:128;not null"`
+	Downloads uint32 `gorm:"not null"`
+	Likes     uint32 `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Islike    bool
+}
+
+type DatasetList struct {
 	List []model.Dataset
 	PageResp
 }
 
-func DatasetList(context *gin.Context) {
+type DatasetListResponse struct {
+	List []DatasetRsp
+	PageResp
+}
+
+func DatasetListGet(context *gin.Context) {
+	account := getAuthAccount(context)
 	var req DatasetListReq
 	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
 
-	var response DatasetListResponse
+	var list DatasetList
 	//dataset := model.Dataset{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&dataset).Where(&dataset)
 	tx := common.Db.Table("datasets").
@@ -163,23 +185,33 @@ func DatasetList(context *gin.Context) {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
 		tx.Where("name LIKE ?", "%"+name+"%")
 	}
-	if err := tx.Count(&response.Total).Error; err != nil {
+	if err := tx.Count(&list.Total).Error; err != nil {
 		resp.Fail(context, "Database error")
 		return
 	}
 
 	switch req.OrderBy {
-	case "downloads DESC", "likes DESC":
+	case "downloads DESC", "likes DESC", "updated_at DESC":
 		tx.Order(req.OrderBy)
 	default:
-		tx.Order("updated_at DESC")
+		//tx.Order("updated_at DESC")
+		tx.Order(gorm.Expr("dataset_heats.likes + dataset_heats.downloads + dataset_heats.clicks"))
 	}
-	if tx.Scopes(Paginate(context)).Find(&response.List).Error != nil {
+	if tx.Scopes(Paginate(context)).Find(&list.List).Error != nil {
 		resp.Fail(context, "Database error")
 		return
 	}
 
-	resp.Success(context, response)
+	likeList, err := addIsLike(list.List, account)
+	if err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+	res := DatasetListResponse{
+		List:     likeList,
+		PageResp: list.PageResp,
+	}
+	resp.Success(context, res)
 }
 
 type DatasetGetReq struct {
@@ -267,7 +299,7 @@ func DatasetLike(context *gin.Context) {
 
 	err := common.Db.Transaction(func(tx *gorm.DB) error {
 		tx.Model(&model.DatasetHeat{}).
-			Where("owner = ?", account).
+			Where("owner = ?", req.Owner).
 			Where("name = ?", req.Name).
 			Update("likes", gorm.Expr("likes + ?", num))
 		if tx.Error != nil {
@@ -334,4 +366,44 @@ func DatasetLikeCount(context *gin.Context) {
 	}
 
 	resp.Success(context, datasetHeat.Likes)
+}
+
+func addIsLike(datasets []model.Dataset, account string) ([]DatasetRsp, error) {
+	mp := make(map[string]string)
+	if account != "" {
+		var datasetLike []model.DatasetLike
+		tx := common.Db.Model(&model.DatasetLike{}).
+			Where("account = ?", account).
+			Find(&datasetLike)
+		if tx.Error != nil {
+			return nil, tx.Error
+		}
+		for _, like := range datasetLike {
+			mp[like.Owner] = like.Name
+		}
+	} else {
+		mp[""] = ""
+	}
+	//var mp map[string]string
+
+	var resp []DatasetRsp
+	for _, dataset := range datasets {
+		resp = append(resp, DatasetRsp{
+			Id:        dataset.Id,
+			Owner:     dataset.Owner,
+			Name:      dataset.Name,
+			Scale:     dataset.Scale,
+			License:   dataset.License,
+			Type1:     dataset.Type1,
+			Type2:     dataset.Type2,
+			Tags:      dataset.Tags,
+			Downloads: dataset.Downloads,
+			Likes:     dataset.Likes,
+			CreatedAt: dataset.CreatedAt,
+			UpdatedAt: dataset.UpdatedAt,
+			Islike:    mp[dataset.Owner] == dataset.Name,
+		})
+	}
+
+	return resp, nil
 }
