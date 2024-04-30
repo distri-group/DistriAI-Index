@@ -8,12 +8,12 @@ Requires Go1.21 or higher.
 - Windows
 ```
 set GOOS=linux
-set GOOS=linux
+set GOARCH=amd64
 go build
 ```
 - Linux or Mac
 ```
-GOOS=linux GOOS=linux go build
+GOOS=linux GOARCH=amd64 go build
 ```
 If all goes well, you will get a program called `distriai-index-solana`.
 

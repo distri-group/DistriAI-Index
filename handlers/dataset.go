@@ -62,33 +62,7 @@ func DatasetCreate(context *gin.Context) {
 		Downloads: likes + uint32(rnd.Int31n(1000)),
 		Likes:     likes,
 	}
-	/*if err := common.Db.Create(&dataSet).Error; err != nil {
-		logs.Error(fmt.Sprintf("Database error: %v \n", err))
-		resp.Fail(context, "Database error")
-		return
-	}*/
-
-	datasetHeat := model.DatasetHeat{
-		Owner:     account,
-		Name:      req.Name,
-		Likes:     0,
-		Downloads: 0,
-		Clicks:    0,
-	}
-	/*if err := common.Db.Create(&datasetHeat).Error; err != nil {
-		logs.Error(fmt.Sprintf("Database error: %v \n", err))
-		resp.Fail(context, "Database error")
-		return
-	}*/
-
-	err := common.Db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(&dataSet).Error; err != nil {
-			return err
-		}
-		return tx.Create(&datasetHeat).Error
-	})
-
-	if err != nil {
+	if err := common.Db.Create(&dataSet).Error; err != nil {
 		logs.Error(fmt.Sprintf("Database error: %v \n", err))
 		resp.Fail(context, "Database error")
 		return
@@ -159,15 +133,9 @@ type DatasetList struct {
 	PageResp
 }
 
-type DatasetListResponse struct {
-	List []DatasetRsp
-	PageResp
-}
-
-func DatasetListGet(context *gin.Context) {
-	account := getAuthAccount(context)
+func DatasetList(context *gin.Context) {
 	var req DatasetListReq
-	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+	if err := context.ShouldBindBodyWith(&req, &binding.JSON); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
@@ -225,8 +193,6 @@ func DatasetGet(context *gin.Context) {
 		resp.Fail(context, err.Error())
 		return
 	}
-
-	// query through owner and name
 	var dataset model.Dataset
 	err := common.Db.Transaction(func(tx *gorm.DB) error {
 		tx.Where("owner = ?", req.Owner).

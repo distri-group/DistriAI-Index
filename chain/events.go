@@ -26,6 +26,44 @@ func decodeDistriEvent(data string, event DistriEvent) error {
 	return nil
 }
 
+type AiModelEvent struct {
+	Owner solana.PublicKey
+	Name  string
+}
+
+func (obj *AiModelEvent) UnmarshalWithDecoder(decoder *bin.Decoder) (err error) {
+	// Deserialize `Owner`:
+	err = decoder.Decode(&obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Name`:
+	err = decoder.Decode(&obj.Name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type DatasetEvent struct {
+	Owner solana.PublicKey
+	Name  string
+}
+
+func (obj *DatasetEvent) UnmarshalWithDecoder(decoder *bin.Decoder) (err error) {
+	// Deserialize `Owner`:
+	err = decoder.Decode(&obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Name`:
+	err = decoder.Decode(&obj.Name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type MachineEvent struct {
 	Owner solana.PublicKey
 	Uuid  [16]uint8
