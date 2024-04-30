@@ -78,3 +78,26 @@ func Jwt() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func DataListJwt() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.Set("account", "")
+			c.Next()
+			return
+		}
+		claims, err := ParseToken(authHeader)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 2005,
+				"msg":  "Invalid token",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Set("account", claims.Account)
+		c.Next()
+	}
+}

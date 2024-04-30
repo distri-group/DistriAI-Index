@@ -44,6 +44,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		log.POST("/add", handlers.LogAdd)
 		log.POST("/list", handlers.LogList)
 	}
+
 	model := engine.Group("/model")
 	{
 		model.POST("/list", handlers.ModelList)
@@ -72,5 +73,10 @@ func RegisterRoutes(engine *gin.Engine) {
 
 		dataset.POST("/download", handlers.DatasetDownload)
 		//dataset.GET("/likecount", handlers.DatasetLikeCount)
+	}
+
+	datasetList := engine.Group("/dataset", middleware.DataListJwt())
+	{
+		datasetList.POST("/list", handlers.DatasetListGet)
 	}
 }
