@@ -3,99 +3,14 @@ package handlers
 import (
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
-	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
-	"math/rand"
 	"strings"
-	"time"
 )
-
-type DatasetCreateReq struct {
-	Name    string `binding:"required,max=50"`
-	Scale   uint8  `binding:"required"`
-	License uint8  `binding:"required"`
-	Type1   uint32 `binging:"required"`
-	Type2   uint32 `binding:"required"`
-	Tags    string `binding:"max=128"`
-}
-
-// DatasetCreate user create a dataset.
-func DatasetCreate(context *gin.Context) {
-	account := getAuthAccount(context)
-	var req DatasetCreateReq
-	if err := context.ShouldBindJSON(&req); err != nil {
-		resp.Fail(context, err.Error())
-		return
-	}
-
-	var count int64
-	tx := common.Db.Model(&model.Dataset{}).
-		Where("owner = ?", account).
-		Where("name = ?", req.Name).
-		Count(&count)
-	if tx.Error != nil {
-		resp.Fail(context, "Database error")
-		return
-	}
-	if count > 0 {
-		resp.Fail(context, "Duplicate dataset name")
-		return
-	}
-
-	//generate random number
-	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
-	likes := uint32(rnd.Int31n(100))
-	// create new dataset struct
-	dataSet := model.Dataset{
-		Owner:     account,
-		Name:      req.Name,
-		Scale:     req.Scale,
-		License:   req.License,
-		Type1:     req.Type1,
-		Type2:     req.Type2,
-		Tags:      req.Tags,
-		Downloads: likes + uint32(rnd.Int31n(1000)),
-		Likes:     likes,
-	}
-	/*if err := common.Db.Create(&dataSet).Error; err != nil {
-		logs.Error(fmt.Sprintf("Database error: %v \n", err))
-		resp.Fail(context, "Database error")
-		return
-	}*/
-
-	datasetHeat := model.DatasetHeat{
-		Owner:     account,
-		Name:      req.Name,
-		Likes:     0,
-		Downloads: 0,
-		Clicks:    0,
-	}
-	/*if err := common.Db.Create(&datasetHeat).Error; err != nil {
-		logs.Error(fmt.Sprintf("Database error: %v \n", err))
-		resp.Fail(context, "Database error")
-		return
-	}*/
-
-	err := common.Db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(&dataSet).Error; err != nil {
-			return err
-		}
-		return tx.Create(&datasetHeat).Error
-	})
-
-	if err != nil {
-		logs.Error(fmt.Sprintf("Database error: %v \n", err))
-		resp.Fail(context, "Database error")
-		return
-	}
-
-	resp.Success(context, "")
-}
 
 type DatasetPresignReq struct {
 	Id       uint   `binding:"required"`
@@ -133,8 +48,8 @@ func DatasetPresign(context *gin.Context) {
 
 type DatasetListReq struct {
 	Name    string
-	Type1   uint32
-	Type2   uint32
+	Type1   uint8
+	Type2   uint8
 	OrderBy string
 }
 
@@ -154,8 +69,8 @@ func DatasetList(context *gin.Context) {
 	//dataset := model.Dataset{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&dataset).Where(&dataset)
 	tx := common.Db.Table("datasets").
-		Select("datasets.id, datasets.owner, datasets.name, datasets.Scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.created_at, dataset_heats.downloads, dataset_heats.likes").
-		Joins("INNER JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
+		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.update_time, dataset_heats.downloads, dataset_heats.likes").
+		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
 	}
@@ -247,9 +162,9 @@ func DatasetDownload(context *gin.Context) {
 }
 
 type DatasetLikeReq struct {
-	Owner string `binding:"required" json:"Owner"`
-	Name  string `binding:"required" json:"Name"`
-	Like  bool   `json:"Like"`
+	Owner string `binding:"required"`
+	Name  string `binding:"required"`
+	Like  bool
 }
 
 func DatasetLike(context *gin.Context) {

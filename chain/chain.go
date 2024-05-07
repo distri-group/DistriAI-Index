@@ -93,6 +93,8 @@ func fetchAll() {
 		return
 	}
 
+	fetchAllAiModel(out)
+	fetchAllDataset(out)
 	fetchAllMachine(out)
 	fetchAllOrder(out)
 	fetchAllReward(out)
@@ -279,6 +281,30 @@ func HandleEventLogs(eventLogs []string) {
 			return
 		}
 		removeOrder(event.OrderId)
+	case _CreateAiModel:
+		var event AiModelEvent
+		if decodeDistriEvent(data, &event) != nil {
+			return
+		}
+		addAiModel(event.Owner, event.Name)
+	case _RemoveAiModel:
+		var event AiModelEvent
+		if decodeDistriEvent(data, &event) != nil {
+			return
+		}
+		removeAiModel(event.Owner, event.Name)
+	case _CreateDataset:
+		var event DatasetEvent
+		if decodeDistriEvent(data, &event) != nil {
+			return
+		}
+		addDataset(event.Owner, event.Name)
+	case _RemoveDataset:
+		var event DatasetEvent
+		if decodeDistriEvent(data, &event) != nil {
+			return
+		}
+		removeDataset(event.Owner, event.Name)
 	}
 
 	logs.Info(fmt.Sprintf("[Webhook] Handle instruction: %s \n", instruction))
