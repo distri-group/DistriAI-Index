@@ -13,14 +13,22 @@ import (
 )
 
 type ModelListReq struct {
+	Owner   string
 	Name    string
 	Type1   uint8
 	Type2   uint8
 	OrderBy string
 }
 
+type ModelListItem struct {
+	model.AiModel
+	Likes     uint32
+	Downloads uint32
+	Clicks    uint32
+}
+
 type ModelListResponse struct {
-	List []model.AiModel
+	List []ModelListItem
 	PageResp
 }
 
@@ -35,15 +43,18 @@ func ModelList(context *gin.Context) {
 	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.id, ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.created_at, ai_model_heats.downloads, ai_model_heats.likes").
+		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
 	}
+	if "" != req.Owner {
+		tx.Where("ai_models.onwer = ?", req.Owner)
+	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
-		tx.Where("name LIKE ?", "%"+name+"%")
+		tx.Where("ai_models.name LIKE ?", "%"+name+"%")
 	}
 	if err := tx.Count(&response.Total).Error; err != nil {
 		resp.Fail(context, "Database error")
@@ -51,10 +62,32 @@ func ModelList(context *gin.Context) {
 	}
 
 	switch req.OrderBy {
-	case "downloads DESC", "likes DESC":
+	case "update_time DESC", "downloads DESC", "likes DESC":
 		tx.Order(req.OrderBy)
 	default:
-		tx.Order("updated_at DESC")
+		tx.Order("`downloads` + `likes` + `clicks` DESC")
+	}
+	if tx.Scopes(Paginate(context)).Find(&response.List); tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, response)
+}
+
+func ModelLikes(context *gin.Context) {
+	account := getAuthAccount(context)
+	var response ModelListResponse
+	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
+	//tx := common.Db.Model(&aiModel).Where(&aiModel)
+	tx := common.Db.Table("ai_models").
+		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes").
+		Joins("INNER JOIN ai_model_likes ON ai_models.owner = ai_model_likes.owner AND ai_models.name = ai_model_likes.name AND ai_model_likes.account = ?", account).
+		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
+
+	if err := tx.Count(&response.Total).Error; err != nil {
+		resp.Fail(context, "Database error")
+		return
 	}
 	if tx.Scopes(Paginate(context)).Find(&response.List); tx.Error != nil {
 		resp.Fail(context, "Database error")
