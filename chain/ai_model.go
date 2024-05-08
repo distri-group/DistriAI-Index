@@ -30,6 +30,24 @@ func fetchAllAiModel(out rpc.GetProgramAccountsResult) {
 		if dbResult := common.Db.Create(&aiModels); dbResult.Error != nil {
 			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		}
+		createAiModelHeats(aiModels)
+	}
+}
+
+func createAiModelHeats(aiModels []model.AiModel) {
+	var heats []model.AiModelHeat
+	for _, aiModel := range aiModels {
+		heat := model.AiModelHeat{Owner: aiModel.Owner, Name: aiModel.Name}
+		var count int64
+		common.Db.Model(&heat).Count(&count)
+		if count == 0 {
+			heats = append(heats, heat)
+		}
+	}
+	if len(heats) > 0 {
+		if dbResult := common.Db.Create(&heats); dbResult.Error != nil {
+			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+		}
 	}
 }
 

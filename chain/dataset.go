@@ -30,6 +30,24 @@ func fetchAllDataset(out rpc.GetProgramAccountsResult) {
 		if dbResult := common.Db.Create(&datasets); dbResult.Error != nil {
 			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 		}
+		createDatasetHeats(datasets)
+	}
+}
+
+func createDatasetHeats(datasets []model.Dataset) {
+	var heats []model.DatasetHeat
+	for _, dataset := range datasets {
+		heat := model.DatasetHeat{Owner: dataset.Owner, Name: dataset.Name}
+		var count int64
+		common.Db.Model(&heat).Count(&count)
+		if count == 0 {
+			heats = append(heats, heat)
+		}
+	}
+	if len(heats) > 0 {
+		if dbResult := common.Db.Create(&heats); dbResult.Error != nil {
+			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+		}
 	}
 }
 

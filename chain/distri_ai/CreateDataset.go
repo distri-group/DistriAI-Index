@@ -12,12 +12,12 @@ import (
 
 // CreateDataset is the `createDataset` instruction.
 type CreateDataset struct {
-	Name      *string
-	Framework *uint8
-	Scale     *uint8
-	Type1     *uint8
-	Type2     *uint8
-	Tags      *string
+	Name    *string
+	Scale   *uint8
+	License *uint8
+	Type1   *uint8
+	Type2   *uint8
+	Tags    *string
 
 	// [0] = [WRITE] dataset
 	//
@@ -41,15 +41,15 @@ func (inst *CreateDataset) SetName(name string) *CreateDataset {
 	return inst
 }
 
-// SetFramework sets the "framework" parameter.
-func (inst *CreateDataset) SetFramework(framework uint8) *CreateDataset {
-	inst.Framework = &framework
-	return inst
-}
-
 // SetScale sets the "scale" parameter.
 func (inst *CreateDataset) SetScale(scale uint8) *CreateDataset {
 	inst.Scale = &scale
+	return inst
+}
+
+// SetLicense sets the "license" parameter.
+func (inst *CreateDataset) SetLicense(license uint8) *CreateDataset {
+	inst.License = &license
 	return inst
 }
 
@@ -127,11 +127,11 @@ func (inst *CreateDataset) Validate() error {
 		if inst.Name == nil {
 			return errors.New("Name parameter is not set")
 		}
-		if inst.Framework == nil {
-			return errors.New("Framework parameter is not set")
-		}
 		if inst.Scale == nil {
 			return errors.New("Scale parameter is not set")
+		}
+		if inst.License == nil {
+			return errors.New("License parameter is not set")
 		}
 		if inst.Type1 == nil {
 			return errors.New("Type1 parameter is not set")
@@ -169,12 +169,12 @@ func (inst *CreateDataset) EncodeToTree(parent ag_treeout.Branches) {
 
 					// Parameters of the instruction:
 					instructionBranch.Child("Params[len=6]").ParentFunc(func(paramsBranch ag_treeout.Branches) {
-						paramsBranch.Child(ag_format.Param("     Name", *inst.Name))
-						paramsBranch.Child(ag_format.Param("Framework", *inst.Framework))
-						paramsBranch.Child(ag_format.Param("    Scale", *inst.Scale))
-						paramsBranch.Child(ag_format.Param("    Type1", *inst.Type1))
-						paramsBranch.Child(ag_format.Param("    Type2", *inst.Type2))
-						paramsBranch.Child(ag_format.Param("     Tags", *inst.Tags))
+						paramsBranch.Child(ag_format.Param("   Name", *inst.Name))
+						paramsBranch.Child(ag_format.Param("  Scale", *inst.Scale))
+						paramsBranch.Child(ag_format.Param("License", *inst.License))
+						paramsBranch.Child(ag_format.Param("  Type1", *inst.Type1))
+						paramsBranch.Child(ag_format.Param("  Type2", *inst.Type2))
+						paramsBranch.Child(ag_format.Param("   Tags", *inst.Tags))
 					})
 
 					// Accounts of the instruction:
@@ -193,13 +193,13 @@ func (obj CreateDataset) MarshalWithEncoder(encoder *ag_binary.Encoder) (err err
 	if err != nil {
 		return err
 	}
-	// Serialize `Framework` param:
-	err = encoder.Encode(obj.Framework)
+	// Serialize `Scale` param:
+	err = encoder.Encode(obj.Scale)
 	if err != nil {
 		return err
 	}
-	// Serialize `Scale` param:
-	err = encoder.Encode(obj.Scale)
+	// Serialize `License` param:
+	err = encoder.Encode(obj.License)
 	if err != nil {
 		return err
 	}
@@ -226,13 +226,13 @@ func (obj *CreateDataset) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err 
 	if err != nil {
 		return err
 	}
-	// Deserialize `Framework`:
-	err = decoder.Decode(&obj.Framework)
+	// Deserialize `Scale`:
+	err = decoder.Decode(&obj.Scale)
 	if err != nil {
 		return err
 	}
-	// Deserialize `Scale`:
-	err = decoder.Decode(&obj.Scale)
+	// Deserialize `License`:
+	err = decoder.Decode(&obj.License)
 	if err != nil {
 		return err
 	}
@@ -258,8 +258,8 @@ func (obj *CreateDataset) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err 
 func NewCreateDatasetInstruction(
 	// Parameters:
 	name string,
-	framework uint8,
 	scale uint8,
+	license uint8,
 	type1 uint8,
 	type2 uint8,
 	tags string,
@@ -269,8 +269,8 @@ func NewCreateDatasetInstruction(
 	systemProgram ag_solanago.PublicKey) *CreateDataset {
 	return NewCreateDatasetInstructionBuilder().
 		SetName(name).
-		SetFramework(framework).
 		SetScale(scale).
+		SetLicense(license).
 		SetType1(type1).
 		SetType2(type2).
 		SetTags(tags).
