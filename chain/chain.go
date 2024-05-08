@@ -8,7 +8,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"github.com/gagliardetto/solana-go/rpc/ws"
 	"slices"
 	"strings"
 )
@@ -39,7 +38,6 @@ const (
 var (
 	distriProgramID    solana.PublicKey
 	rpcClient          *rpc.Client
-	wsClient           *ws.Client
 	distriInstructions = []string{
 		_AddMachine, _RemoveMachine, _MakeOffer, _CancelOffer, _SubmitTask, _Claim,
 		_PlaceOrder, _RenewOrder, _StartOrder, _RefundOrder, _OrderCompleted, _OrderFailed, _RemoveOrder,
@@ -50,16 +48,7 @@ var (
 func initChain() {
 	distriProgramID = solana.MustPublicKeyFromBase58(common.Conf.Chain.ProgramId)
 	rpcClient = rpc.New(common.Conf.Chain.Rpc)
-	initWsClient()
 	initSolana()
-}
-
-func initWsClient() {
-	var err error
-	wsClient, err = ws.Connect(context.Background(), common.Conf.Chain.Ws)
-	if err != nil {
-		panic(fmt.Sprintf("Couldn't connect to '%s': %s", common.Conf.Chain.Ws, err))
-	}
 }
 
 func Sync() {

@@ -11,8 +11,8 @@ import (
 	associatedtokenaccount "github.com/gagliardetto/solana-go/programs/associated-token-account"
 	"github.com/gagliardetto/solana-go/programs/token"
 	"github.com/gagliardetto/solana-go/rpc"
-	sendandconfirm "github.com/gagliardetto/solana-go/rpc/sendAndConfirmTransaction"
 	"math"
+	"time"
 )
 
 var (
@@ -99,19 +99,44 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 
 	spew.Dump(tx)
 
-	sig, err := sendandconfirm.SendAndConfirmTransaction(
-		context.TODO(),
-		rpcClient,
-		wsClient,
-		tx,
-	)
+	sig, err := rpcClient.SendTransaction(context.TODO(), tx)
 	if err != nil {
 		spew.Dump(err)
 		logs.Error(fmt.Sprintf("Sending transaction error: %s \n", err))
 		return "", fmt.Errorf("error sending transaction: %v", err)
 	}
+	if _, err := waitForConfirm(sig); err != nil {
+		logs.Error(fmt.Sprintf("Tx waitForConfirm error: %s \n", err))
+		return "", fmt.Errorf("error sending transaction: %v", err)
+	}
 
-	logs.Info(fmt.Sprintf("%s completed : %v", "FaucetDist", sig.String()))
+	logs.Info(fmt.Sprintf("[FaucetDist] Tx confirmed : %v", sig.String()))
 
 	return sig.String(), nil
+}
+
+func waitForConfirm(sig solana.Signature) (confirmed bool, err error) {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	tryTimes := 0
+	for {
+		select {
+		case <-ticker.C:
+			_, err := rpcClient.GetTransaction(
+				context.TODO(),
+				sig,
+				&rpc.GetTransactionOpts{
+					Commitment: rpc.CommitmentConfirmed,
+				},
+			)
+			if err == nil {
+				return true, nil
+			}
+			tryTimes++
+			if tryTimes > 20 {
+				return false, err
+			}
+		}
+	}
 }
