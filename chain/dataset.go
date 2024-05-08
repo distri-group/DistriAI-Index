@@ -83,8 +83,13 @@ func addDataset(owner solana.PublicKey, name string) {
 		return
 	}
 
-	aiModel := buildDatasetModel(d)
-	if dbResult := common.Db.Create(&aiModel); dbResult.Error != nil {
+	dataset := buildDatasetModel(d)
+	if dbResult := common.Db.Create(&dataset); dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+	}
+
+	heat := model.DatasetHeat{Owner: dataset.Owner, Name: dataset.Name}
+	if dbResult := common.Db.Create(&heat); dbResult.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 }
@@ -95,6 +100,22 @@ func removeDataset(owner solana.PublicKey, name string) {
 		Where("owner = ?", owner.String()).
 		Where("name = ?", name).
 		Delete(&model.Dataset{})
+	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+	}
+
+	dbResult = common.Db.
+		Where("owner = ?", owner.String()).
+		Where("name = ?", name).
+		Delete(&model.DatasetHeat{})
+	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+	}
+
+	dbResult = common.Db.
+		Where("owner = ?", owner.String()).
+		Where("name = ?", name).
+		Delete(&model.DatasetLike{})
 	if dbResult.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}

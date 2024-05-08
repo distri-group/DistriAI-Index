@@ -87,6 +87,11 @@ func addAiModel(owner solana.PublicKey, name string) {
 	if dbResult := common.Db.Create(&aiModel); dbResult.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
+
+	heat := model.AiModel{Owner: aiModel.Owner, Name: aiModel.Name}
+	if dbResult := common.Db.Create(&heat); dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+	}
 }
 
 // remove account
@@ -95,6 +100,22 @@ func removeAiModel(owner solana.PublicKey, name string) {
 		Where("owner = ?", owner.String()).
 		Where("name = ?", name).
 		Delete(&model.AiModel{})
+	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+	}
+
+	dbResult = common.Db.
+		Where("owner = ?", owner.String()).
+		Where("name = ?", name).
+		Delete(&model.AiModelHeat{})
+	if dbResult.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
+	}
+
+	dbResult = common.Db.
+		Where("owner = ?", owner.String()).
+		Where("name = ?", name).
+		Delete(&model.AiModelLike{})
 	if dbResult.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
