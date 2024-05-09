@@ -3,6 +3,7 @@ package handlers
 import (
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
@@ -20,7 +21,7 @@ type ModelListReq struct {
 	OrderBy string
 }
 
-type ModelListItem struct {
+type ModelDetail struct {
 	model.AiModel
 	Likes     uint32
 	Downloads uint32
@@ -28,7 +29,7 @@ type ModelListItem struct {
 }
 
 type ModelListResponse struct {
-	List []ModelListItem
+	List []ModelDetail
 	PageResp
 }
 
@@ -43,14 +44,14 @@ func ModelList(context *gin.Context) {
 	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes").
+		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
 	}
 	if "" != req.Owner {
-		tx.Where("ai_models.onwer = ?", req.Owner)
+		tx.Where("ai_models.owner = ?", req.Owner)
 	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
@@ -81,7 +82,7 @@ func ModelLikes(context *gin.Context) {
 	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes").
+		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
 		Joins("INNER JOIN ai_model_likes ON ai_models.owner = ai_model_likes.owner AND ai_models.name = ai_model_likes.name AND ai_model_likes.account = ?", account).
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
@@ -109,36 +110,25 @@ func ModelGet(context *gin.Context) {
 		return
 	}
 
-	var aiModel model.AiModel
-	/*tx := common.Db.
-		Where("owner = ?", req.Owner).
-		Where("name = ?", req.Name).
-		Take(&aiModel)
+	var modelDetail ModelDetail
+	tx := common.Db.Table("ai_models").
+		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
+		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name").
+		Where("ai_models.owner = ? AND ai_models.name = ?", req.Owner, req.Name).
+		Take(&modelDetail)
 	if tx.Error != nil {
 		resp.Fail(context, "Model not found")
 		return
-	}*/
-
-	err := common.Db.Transaction(func(tx *gorm.DB) error {
-		tx.Where("owner = ?", req.Owner).
-			Where("name = ?", req.Name).
-			Take(&aiModel)
-		if tx.Error != nil {
-			return tx.Error
-		}
-
-		tx.Model(&model.AiModelHeat{}).
-			Where("owner = ?", req.Owner).
-			Where("name = ?", req.Name).
-			Update("clicks", gorm.Expr("clicks + ?", 1))
-		return tx.Error
-	})
-	if err != nil {
-		resp.Fail(context, err.Error())
-		return
 	}
 
-	resp.Success(context, aiModel)
+	tx = common.Db.Model(&model.AiModelHeat{}).
+		Where("owner = ? AND name = ?", req.Owner, req.Name).
+		Update("clicks", gorm.Expr("clicks + ?", 1))
+	if tx.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
+	}
+
+	resp.Success(context, modelDetail)
 }
 
 type ModelPresignReq struct {
@@ -248,7 +238,7 @@ func ModelLike(context *gin.Context) {
 func ModelIsLike(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req ModelGetReq
-	if err := context.ShouldBindJSON(&req); err != nil {
+	if err := context.ShouldBindQuery(&req); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}

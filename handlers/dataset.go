@@ -3,6 +3,7 @@ package handlers
 import (
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
+	"distriai-index-solana/utils/logs"
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
@@ -54,7 +55,7 @@ type DatasetListReq struct {
 	OrderBy string
 }
 
-type DatasetListItem struct {
+type DatasetDetail struct {
 	model.Dataset
 	Likes     uint32
 	Downloads uint32
@@ -62,7 +63,7 @@ type DatasetListItem struct {
 }
 
 type DatasetListResponse struct {
-	List []DatasetListItem
+	List []DatasetDetail
 	PageResp
 }
 
@@ -77,13 +78,13 @@ func DatasetList(context *gin.Context) {
 	//dataset := model.Dataset{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&dataset).Where(&dataset)
 	tx := common.Db.Table("datasets").
-		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes").
+		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
 	}
 	if "" != req.Owner {
-		tx.Where("ai_models.onwer = ?", req.Owner)
+		tx.Where("ai_models.owner = ?", req.Owner)
 	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
@@ -114,7 +115,7 @@ func DatasetLikes(context *gin.Context) {
 	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
 	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("datasets").
-		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes").
+		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
 		Joins("INNER JOIN dataset_likes ON datasets.owner = dataset_likes.owner AND datasets.name = dataset_likes.name AND dataset_likes.account = ?", account).
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 
@@ -142,37 +143,25 @@ func DatasetGet(context *gin.Context) {
 		return
 	}
 
-	// query through owner and name
-	var dataset model.Dataset
-	err := common.Db.Transaction(func(tx *gorm.DB) error {
-		tx.Where("owner = ?", req.Owner).
-			Where("name = ?", req.Name).
-			Take(&dataset)
-		if tx.Error != nil {
-			return tx.Error
-		}
-
-		tx.Model(&model.DatasetHeat{}).
-			Where("owner = ?", req.Owner).
-			Where("name = ?", req.Name).
-			Update("clicks", gorm.Expr("clicks + ?", 1))
-		return tx.Error
-	})
-	if err != nil {
-		resp.Fail(context, "Database error")
+	var datasetDetail DatasetDetail
+	tx := common.Db.Table("datasets").
+		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
+		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name").
+		Where("datasets.owner = ? AND datasets.name = ?", req.Owner, req.Name).
+		Take(&datasetDetail)
+	if tx.Error != nil {
+		resp.Fail(context, "Dataset not found")
 		return
 	}
-	/*
-		tx := common.Db.
-			Where("owner = ?", req.Owner).
-			Where("name = ?", req.Name).
-			Take(&dataset)
-		if tx.Error != nil {
-			resp.Fail(context, "Dataset not found")
-			return
-		}*/
 
-	resp.Success(context, dataset)
+	tx = common.Db.Model(&model.DatasetHeat{}).
+		Where("owner = ? AND name = ?", req.Owner, req.Name).
+		Update("clicks", gorm.Expr("clicks + ?", 1))
+	if tx.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
+	}
+
+	resp.Success(context, datasetDetail)
 }
 
 func DatasetDownload(context *gin.Context) {
@@ -246,7 +235,7 @@ func DatasetLike(context *gin.Context) {
 func DatasetIsLike(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req DatasetGetReq
-	if err := context.ShouldBindJSON(&req); err != nil {
+	if err := context.ShouldBindQuery(&req); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
