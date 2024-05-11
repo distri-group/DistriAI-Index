@@ -39,7 +39,7 @@ func createDatasetHeats(datasets []model.Dataset) {
 	for _, dataset := range datasets {
 		heat := model.DatasetHeat{Owner: dataset.Owner, Name: dataset.Name}
 		var count int64
-		common.Db.Model(&heat).Count(&count)
+		common.Db.Model(&heat).Where(&heat).Count(&count)
 		if count == 0 {
 			heats = append(heats, heat)
 		}

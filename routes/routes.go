@@ -53,7 +53,7 @@ func RegisterRoutes(engine *gin.Engine) {
 	}
 	modelAuth := engine.Group("/model", middleware.Jwt())
 	{
-		modelAuth.GET("/likes", handlers.ModelLikes)
+		modelAuth.POST("/likes", handlers.ModelLikes)
 		modelAuth.POST("/presign", handlers.ModelPresign)
 		modelAuth.POST("/like", handlers.ModelLike)
 		modelAuth.GET("/islike", handlers.ModelIsLike)
@@ -67,7 +67,7 @@ func RegisterRoutes(engine *gin.Engine) {
 	}
 	datasetAuth := engine.Group("/dataset", middleware.Jwt())
 	{
-		datasetAuth.GET("/likes", handlers.DatasetLikes)
+		datasetAuth.POST("/likes", handlers.DatasetLikes)
 		datasetAuth.POST("/presign", handlers.DatasetPresign)
 		datasetAuth.POST("/like", handlers.DatasetLike)
 		datasetAuth.GET("/islike", handlers.DatasetIsLike)

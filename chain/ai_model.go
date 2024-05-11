@@ -39,7 +39,7 @@ func createAiModelHeats(aiModels []model.AiModel) {
 	for _, aiModel := range aiModels {
 		heat := model.AiModelHeat{Owner: aiModel.Owner, Name: aiModel.Name}
 		var count int64
-		common.Db.Model(&heat).Count(&count)
+		common.Db.Model(&heat).Where(&heat).Count(&count)
 		if count == 0 {
 			heats = append(heats, heat)
 		}

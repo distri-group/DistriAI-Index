@@ -84,7 +84,7 @@ func DatasetList(context *gin.Context) {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
 	}
 	if "" != req.Owner {
-		tx.Where("ai_models.owner = ?", req.Owner)
+		tx.Where("datasets.owner = ?", req.Owner)
 	}
 	if "" != req.Name {
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
@@ -111,17 +111,35 @@ func DatasetList(context *gin.Context) {
 
 func DatasetLikes(context *gin.Context) {
 	account := getAuthAccount(context)
+	var req DatasetListReq
+	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
 	var response DatasetListResponse
-	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
-	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("datasets").
 		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
 		Joins("INNER JOIN dataset_likes ON datasets.owner = dataset_likes.owner AND datasets.name = dataset_likes.name AND dataset_likes.account = ?", account).
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 
+	if req.Type1 != 0 && req.Type2 != 0 {
+		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
+	}
+	if "" != req.Name {
+		name := strings.ReplaceAll(req.Name, "%", "\\%")
+		tx.Where("datasets.name LIKE ?", "%"+name+"%")
+	}
 	if err := tx.Count(&response.Total).Error; err != nil {
 		resp.Fail(context, "Database error")
 		return
+	}
+
+	switch req.OrderBy {
+	case "update_time DESC", "downloads DESC", "likes DESC":
+		tx.Order(req.OrderBy)
+	default:
+		tx.Order("`downloads` + `likes` + `clicks` DESC")
 	}
 	if tx.Scopes(Paginate(context)).Find(&response.List); tx.Error != nil {
 		resp.Fail(context, "Database error")
