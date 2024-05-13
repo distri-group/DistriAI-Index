@@ -88,7 +88,7 @@ func addAiModel(owner solana.PublicKey, name string) {
 		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}
 
-	heat := model.AiModel{Owner: aiModel.Owner, Name: aiModel.Name}
+	heat := model.AiModelHeat{Owner: aiModel.Owner, Name: aiModel.Name}
 	if dbResult := common.Db.Create(&heat); dbResult.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
 	}

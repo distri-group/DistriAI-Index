@@ -219,15 +219,32 @@ func ModelLike(context *gin.Context) {
 		return
 	}
 
+	var count int64
+	tx := common.Db.Model(&model.AiModelLike{}).
+		Where("account = ? AND owner = ? AND name = ?", account, req.Owner, req.Name).
+		Count(&count)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
 	num := -1
 	if req.Like {
+		if count > 0 {
+			resp.Fail(context, "Already liked")
+			return
+		}
 		num = 1
+	} else {
+		if count == 0 {
+			resp.Fail(context, "Yet not liked")
+			return
+		}
 	}
 
 	err := common.Db.Transaction(func(tx *gorm.DB) error {
 		tx.Model(&model.AiModelHeat{}).
-			Where("owner = ?", req.Owner).
-			Where("name = ?", req.Name).
+			Where("owner = ? AND name = ?", req.Owner, req.Name).
 			Update("likes", gorm.Expr("likes + ?", num))
 		if tx.Error != nil {
 			return tx.Error

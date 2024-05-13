@@ -121,7 +121,7 @@ func HandleEventLogs(eventLogs []string) {
 		}
 		updateMachine(event.Owner, event.Uuid)
 	case _SubmitTask:
-		var event RewardEvent
+		var event TaskEvent
 		if decodeDistriEvent(data, &event) != nil {
 			return
 		}
