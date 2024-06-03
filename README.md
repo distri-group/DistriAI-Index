@@ -4,7 +4,7 @@
 - Linux-amd64
 
 ## Build
-Requires Go1.21 or higher.
+Requires Go1.22 or higher.
 - Windows
 ```
 set GOOS=linux
@@ -22,7 +22,7 @@ If all goes well, you will get a program called `distriai-index-solana`.
 - Copy `/config` folder to where `distriai-index-solana` program locate.
 - Edit configuration in `./config/config.yml`.
 
-https://github.com/distri-group/DistriAI-Index/blob/dbe7077a310e6a9a6c0fec4f41e7199004f26df5/config/config.yml#L1-L35
+https://github.com/distri-group/DistriAI-Index/blob/facc8ce9be9b8720556ff19fa2987defa697aac4/config/config.yml#L1-L34
 
 ### Step 2: Start the distriai-index-solana service
 - New a screen window
