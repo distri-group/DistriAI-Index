@@ -21,6 +21,7 @@ func AutoMigrate(db *gorm.DB) {
 		&Log{},
 		&Mailbox{},
 		&Machine{},
+		&MachineInfo{},
 		&Order{},
 		&Reward{},
 		&RewardMachine{},

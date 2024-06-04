@@ -51,8 +51,14 @@ type MachineListReq struct {
 	PageReq
 }
 
+type MachineDetail struct {
+	model.Machine
+	CachedModels   string
+	CachedDatasets string
+}
+
 type MachineListResponse struct {
-	List []model.Machine
+	List []MachineDetail
 	PageResp
 }
 
@@ -67,13 +73,16 @@ func MachineMarket(context *gin.Context) {
 	}
 
 	// build sql query params
-	machine := &model.Machine{Gpu: req.Gpu, GpuCount: req.GpuCount, Region: req.Region}
+	machine := model.Machine{Gpu: req.Gpu, GpuCount: req.GpuCount, Region: req.Region}
 	var response MachineListResponse
-	tx := common.Db.Model(&machine).Where(&machine)
+	tx := common.Db.Table("machines").
+		Select("machines.*, machine_infos.cached_models, machine_infos.cached_datasets").
+		Joins("LEFT JOIN machine_infos ON machines.owner = machine_infos.owner AND machines.uuid = machine_infos.uuid").
+		Where(&machine)
 	if req.Status == nil {
-		tx.Where("status != ?", uint8(distri_ai.MachineStatusIdle))
+		tx.Where("machines.status != ?", uint8(distri_ai.MachineStatusIdle))
 	} else {
-		tx.Where("status = ?", *req.Status)
+		tx.Where("machines.status = ?", *req.Status)
 	}
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
@@ -112,9 +121,11 @@ func MachineMine(context *gin.Context) {
 		return
 	}
 
-	machine := &model.Machine{Owner: account}
 	var response MachineListResponse
-	tx := common.Db.Model(&machine).Where(&machine)
+	tx := common.Db.Table("machines").
+		Select("machines.*, machine_infos.cached_models, machine_infos.cached_datasets").
+		Joins("LEFT JOIN machine_infos ON machines.owner = machine_infos.owner AND machines.uuid = machine_infos.uuid").
+		Where("machines.owner = ?", account)
 	dbResult := tx.Count(&response.Total)
 	if dbResult.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", err))
@@ -143,15 +154,53 @@ func MachineGet(context *gin.Context) {
 		return
 	}
 
-	var machine model.Machine
-	tx := common.Db.
-		Where("owner = ?", req.Owner).
-		Where("uuid = ?", req.Uuid).
-		Take(&machine)
+	var machineDetail MachineDetail
+	tx := common.Db.Table("machines").
+		Select("machines.*, machine_infos.cached_models, machine_infos.cached_datasets").
+		Joins("LEFT JOIN machine_infos ON machines.owner = machine_infos.owner AND machines.uuid = machine_infos.uuid").
+		Where("machines.owner = ? AND machines.uuid = ?", req.Owner, req.Uuid).
+		Take(&machineDetail)
 	if tx.Error != nil {
 		resp.Fail(context, "Machine not found")
 		return
 	}
 
-	resp.Success(context, machine)
+	resp.Success(context, machineDetail)
+}
+
+type MachineInfoCachedReq struct {
+	Owner          string `binding:"required"`
+	Uuid           string `binding:"required"`
+	CachedModels   string `binding:"required"`
+	CachedDatasets string `binding:"required"`
+}
+
+func MachineInfoCached(context *gin.Context) {
+	var req MachineInfoCachedReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+	machineInfo := model.MachineInfo{Owner: req.Owner, Uuid: req.Uuid}
+	var count int64
+	tx := common.Db.Model(&machineInfo).Count(&count)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	if count == 0 {
+		machineInfo.CachedModels = req.CachedModels
+		machineInfo.CachedDatasets = req.CachedDatasets
+		tx = common.Db.Create(&machineInfo)
+	} else {
+		tx = common.Db.Model(&machineInfo).
+			Updates(model.MachineInfo{CachedModels: req.CachedModels, CachedDatasets: req.CachedDatasets})
+	}
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+
+	resp.Success(context, "")
 }

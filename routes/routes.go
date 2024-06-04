@@ -25,6 +25,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		machine.POST("/market", handlers.MachineMarket)
 		machine.POST("/mine", handlers.MachineMine)
 		machine.GET("/:Owner/:Uuid", handlers.MachineGet)
+		machine.POST("/info/cached", handlers.MachineInfoCached)
 	}
 	order := engine.Group("/order")
 	{
