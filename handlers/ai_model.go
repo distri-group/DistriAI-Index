@@ -41,8 +41,6 @@ func ModelList(context *gin.Context) {
 	}
 
 	var response ModelListResponse
-	//aiModel := model.AiModel{Type1: req.Type1, Type2: req.Type2}
-	//tx := common.Db.Model(&aiModel).Where(&aiModel)
 	tx := common.Db.Table("ai_models").
 		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
@@ -50,7 +48,9 @@ func ModelList(context *gin.Context) {
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
 	}
-	if "" != req.Owner {
+	if "" == req.Owner {
+		tx.Where("ai_model_heats.review = 1")
+	} else {
 		tx.Where("ai_models.owner = ?", req.Owner)
 	}
 	if "" != req.Name {

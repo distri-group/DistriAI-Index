@@ -75,15 +75,15 @@ func DatasetList(context *gin.Context) {
 	}
 
 	var response DatasetListResponse
-	//dataset := model.Dataset{Type1: req.Type1, Type2: req.Type2}
-	//tx := common.Db.Model(&dataset).Where(&dataset)
 	tx := common.Db.Table("datasets").
 		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
 	}
-	if "" != req.Owner {
+	if "" == req.Owner {
+		tx.Where("dataset_heats.review = 1")
+	} else {
 		tx.Where("datasets.owner = ?", req.Owner)
 	}
 	if "" != req.Name {

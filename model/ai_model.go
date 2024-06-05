@@ -22,6 +22,7 @@ type AiModelHeat struct {
 	Likes     uint32 `gorm:"not null"`
 	Downloads uint32 `gorm:"not null"`
 	Clicks    uint32 `gorm:"not null"`
+	Review    uint8  `gorm:"not null;comment:'0-pending,1-accept,2-reject'"`
 }
 
 type AiModelLike struct {
