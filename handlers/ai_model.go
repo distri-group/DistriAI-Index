@@ -26,6 +26,7 @@ type ModelDetail struct {
 	Likes     uint32
 	Downloads uint32
 	Clicks    uint32
+	Size      uint32
 }
 
 type ModelListResponse struct {
@@ -42,7 +43,7 @@ func ModelList(context *gin.Context) {
 
 	var response ModelListResponse
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
+		Select("ai_models.*, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks, ai_model_heats.size").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
 	if req.Type1 != 0 && req.Type2 != 0 {
@@ -308,4 +309,42 @@ func ModelLikeCount(context *gin.Context) {
 	}
 
 	resp.Success(context, modelHeat.Likes)
+}
+
+type ModelUpdateSizeReq struct {
+	Name string `binding:"required"`
+	Size uint32
+}
+
+func ModelSizeUpdate(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req ModelUpdateSizeReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	tx := common.Db.Model(&model.AiModelHeat{}).
+		Where("owner = ? AND name = ?", account, req.Name).
+		Update("size", req.Size)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	resp.Success(context, "")
+}
+
+func ModelSizeTotal(context *gin.Context) {
+	account := getAuthAccount(context)
+
+	var size uint32
+	tx := common.Db.Model(&model.AiModelHeat{}).
+		Select("SUM(size)").
+		Where("owner = ?", account).
+		Find(&size)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	resp.Success(context, size)
 }

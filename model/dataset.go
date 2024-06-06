@@ -23,6 +23,7 @@ type DatasetHeat struct {
 	Downloads uint   `gorm:"not null"`
 	Clicks    uint   `gorm:"not null"`
 	Review    uint8  `gorm:"not null;comment:'0-pending,1-accept,2-reject'"`
+	Size      uint32 `gorm:"not null"`
 }
 
 type DatasetLike struct {

@@ -76,7 +76,7 @@ func DatasetList(context *gin.Context) {
 
 	var response DatasetListResponse
 	tx := common.Db.Table("datasets").
-		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
+		Select("datasets.*, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks, dataset_heats.size").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
@@ -306,4 +306,42 @@ func DatasetLikeCount(context *gin.Context) {
 	}
 
 	resp.Success(context, datasetHeat.Likes)
+}
+
+type DatasetUpdateSizeReq struct {
+	Name string `binding:"required"`
+	Size uint32
+}
+
+func DatasetSizeUpdate(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req DatasetUpdateSizeReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	tx := common.Db.Model(&model.DatasetHeat{}).
+		Where("owner = ? AND name = ?", account, req.Name).
+		Update("size", req.Size)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	resp.Success(context, "")
+}
+
+func DatasetSizeTotal(context *gin.Context) {
+	account := getAuthAccount(context)
+
+	var size uint32
+	tx := common.Db.Model(&model.DatasetHeat{}).
+		Select("SUM(size)").
+		Where("owner = ?", account).
+		Find(&size)
+	if tx.Error != nil {
+		resp.Fail(context, "Database error")
+		return
+	}
+	resp.Success(context, size)
 }
