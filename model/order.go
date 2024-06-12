@@ -16,4 +16,14 @@ type Order struct {
 	OrderTime   time.Time `gorm:"autoCreateTime"`
 	StartTime   time.Time `gorm:"autoCreateTime"`
 	RefundTime  time.Time `gorm:"autoCreateTime"`
+	Model1Owner string    `gorm:"size:44;not null"`
+	Model1Name  string    `gorm:"size:50;not null"`
+	Model2Owner string    `gorm:"size:44;not null"`
+	Model2Name  string    `gorm:"size:50;not null"`
+	Model3Owner string    `gorm:"size:44;not null"`
+	Model3Name  string    `gorm:"size:50;not null"`
+	Model4Owner string    `gorm:"size:44;not null"`
+	Model4Name  string    `gorm:"size:50;not null"`
+	Model5Owner string    `gorm:"size:44;not null"`
+	Model5Name  string    `gorm:"size:50;not null"`
 }

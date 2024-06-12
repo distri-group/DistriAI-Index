@@ -688,7 +688,17 @@ type Order struct {
 	StartTime int64
 
 	// The refund time of this order.
-	RefundTime int64
+	RefundTime  int64
+	Model1Owner ag_solanago.PublicKey
+	Model1Name  string
+	Model2Owner ag_solanago.PublicKey
+	Model2Name  string
+	Model3Owner ag_solanago.PublicKey
+	Model3Name  string
+	Model4Owner ag_solanago.PublicKey
+	Model4Name  string
+	Model5Owner ag_solanago.PublicKey
+	Model5Name  string
 }
 
 var OrderDiscriminator = [8]byte{134, 173, 223, 185, 77, 86, 28, 51}
@@ -756,6 +766,56 @@ func (obj Order) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 	}
 	// Serialize `RefundTime` param:
 	err = encoder.Encode(obj.RefundTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model1Owner` param:
+	err = encoder.Encode(obj.Model1Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model1Name` param:
+	err = encoder.Encode(obj.Model1Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model2Owner` param:
+	err = encoder.Encode(obj.Model2Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model2Name` param:
+	err = encoder.Encode(obj.Model2Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model3Owner` param:
+	err = encoder.Encode(obj.Model3Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model3Name` param:
+	err = encoder.Encode(obj.Model3Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model4Owner` param:
+	err = encoder.Encode(obj.Model4Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model4Name` param:
+	err = encoder.Encode(obj.Model4Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model5Owner` param:
+	err = encoder.Encode(obj.Model5Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model5Name` param:
+	err = encoder.Encode(obj.Model5Name)
 	if err != nil {
 		return err
 	}
@@ -836,6 +896,56 @@ func (obj *Order) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
 	if err != nil {
 		return err
 	}
+	// Deserialize `Model1Owner`:
+	err = decoder.Decode(&obj.Model1Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model1Name`:
+	err = decoder.Decode(&obj.Model1Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model2Owner`:
+	err = decoder.Decode(&obj.Model2Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model2Name`:
+	err = decoder.Decode(&obj.Model2Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model3Owner`:
+	err = decoder.Decode(&obj.Model3Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model3Name`:
+	err = decoder.Decode(&obj.Model3Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model4Owner`:
+	err = decoder.Decode(&obj.Model4Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model4Name`:
+	err = decoder.Decode(&obj.Model4Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model5Owner`:
+	err = decoder.Decode(&obj.Model5Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model5Name`:
+	err = decoder.Decode(&obj.Model5Name)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -873,7 +983,17 @@ type OrderNew struct {
 	StartTime int64
 
 	// The refund time of this order.
-	RefundTime int64
+	RefundTime  int64
+	Model1Owner ag_solanago.PublicKey
+	Model1Name  string
+	Model2Owner ag_solanago.PublicKey
+	Model2Name  string
+	Model3Owner ag_solanago.PublicKey
+	Model3Name  string
+	Model4Owner ag_solanago.PublicKey
+	Model4Name  string
+	Model5Owner ag_solanago.PublicKey
+	Model5Name  string
 }
 
 var OrderNewDiscriminator = [8]byte{6, 203, 52, 103, 118, 10, 252, 19}
@@ -941,6 +1061,56 @@ func (obj OrderNew) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
 	}
 	// Serialize `RefundTime` param:
 	err = encoder.Encode(obj.RefundTime)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model1Owner` param:
+	err = encoder.Encode(obj.Model1Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model1Name` param:
+	err = encoder.Encode(obj.Model1Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model2Owner` param:
+	err = encoder.Encode(obj.Model2Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model2Name` param:
+	err = encoder.Encode(obj.Model2Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model3Owner` param:
+	err = encoder.Encode(obj.Model3Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model3Name` param:
+	err = encoder.Encode(obj.Model3Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model4Owner` param:
+	err = encoder.Encode(obj.Model4Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model4Name` param:
+	err = encoder.Encode(obj.Model4Name)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model5Owner` param:
+	err = encoder.Encode(obj.Model5Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `Model5Name` param:
+	err = encoder.Encode(obj.Model5Name)
 	if err != nil {
 		return err
 	}
@@ -1018,6 +1188,56 @@ func (obj *OrderNew) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error
 	}
 	// Deserialize `RefundTime`:
 	err = decoder.Decode(&obj.RefundTime)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model1Owner`:
+	err = decoder.Decode(&obj.Model1Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model1Name`:
+	err = decoder.Decode(&obj.Model1Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model2Owner`:
+	err = decoder.Decode(&obj.Model2Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model2Name`:
+	err = decoder.Decode(&obj.Model2Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model3Owner`:
+	err = decoder.Decode(&obj.Model3Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model3Name`:
+	err = decoder.Decode(&obj.Model3Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model4Owner`:
+	err = decoder.Decode(&obj.Model4Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model4Name`:
+	err = decoder.Decode(&obj.Model4Name)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model5Owner`:
+	err = decoder.Decode(&obj.Model5Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `Model5Name`:
+	err = decoder.Decode(&obj.Model5Name)
 	if err != nil {
 		return err
 	}

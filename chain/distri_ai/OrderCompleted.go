@@ -23,22 +23,32 @@ type OrderCompleted struct {
 	//
 	// [3] = [WRITE] sellerAta
 	//
-	// [4] = [WRITE] vault
+	// [4] = [WRITE] model1OwnerAta
 	//
-	// [5] = [] mint
+	// [5] = [WRITE] model2OwnerAta
 	//
-	// [6] = [] tokenProgram
+	// [6] = [WRITE] model3OwnerAta
 	//
-	// [7] = [] associatedTokenProgram
+	// [7] = [WRITE] model4OwnerAta
 	//
-	// [8] = [] systemProgram
+	// [8] = [WRITE] model5OwnerAta
+	//
+	// [9] = [WRITE] vault
+	//
+	// [10] = [] mint
+	//
+	// [11] = [] tokenProgram
+	//
+	// [12] = [] associatedTokenProgram
+	//
+	// [13] = [] systemProgram
 	ag_solanago.AccountMetaSlice `bin:"-"`
 }
 
 // NewOrderCompletedInstructionBuilder creates a new `OrderCompleted` instruction builder.
 func NewOrderCompletedInstructionBuilder() *OrderCompleted {
 	nd := &OrderCompleted{
-		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 9),
+		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 14),
 	}
 	return nd
 }
@@ -99,59 +109,114 @@ func (inst *OrderCompleted) GetSellerAtaAccount() *ag_solanago.AccountMeta {
 	return inst.AccountMetaSlice.Get(3)
 }
 
+// SetModel1OwnerAtaAccount sets the "model1OwnerAta" account.
+func (inst *OrderCompleted) SetModel1OwnerAtaAccount(model1OwnerAta ag_solanago.PublicKey) *OrderCompleted {
+	inst.AccountMetaSlice[4] = ag_solanago.Meta(model1OwnerAta).WRITE()
+	return inst
+}
+
+// GetModel1OwnerAtaAccount gets the "model1OwnerAta" account.
+func (inst *OrderCompleted) GetModel1OwnerAtaAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(4)
+}
+
+// SetModel2OwnerAtaAccount sets the "model2OwnerAta" account.
+func (inst *OrderCompleted) SetModel2OwnerAtaAccount(model2OwnerAta ag_solanago.PublicKey) *OrderCompleted {
+	inst.AccountMetaSlice[5] = ag_solanago.Meta(model2OwnerAta).WRITE()
+	return inst
+}
+
+// GetModel2OwnerAtaAccount gets the "model2OwnerAta" account.
+func (inst *OrderCompleted) GetModel2OwnerAtaAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(5)
+}
+
+// SetModel3OwnerAtaAccount sets the "model3OwnerAta" account.
+func (inst *OrderCompleted) SetModel3OwnerAtaAccount(model3OwnerAta ag_solanago.PublicKey) *OrderCompleted {
+	inst.AccountMetaSlice[6] = ag_solanago.Meta(model3OwnerAta).WRITE()
+	return inst
+}
+
+// GetModel3OwnerAtaAccount gets the "model3OwnerAta" account.
+func (inst *OrderCompleted) GetModel3OwnerAtaAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(6)
+}
+
+// SetModel4OwnerAtaAccount sets the "model4OwnerAta" account.
+func (inst *OrderCompleted) SetModel4OwnerAtaAccount(model4OwnerAta ag_solanago.PublicKey) *OrderCompleted {
+	inst.AccountMetaSlice[7] = ag_solanago.Meta(model4OwnerAta).WRITE()
+	return inst
+}
+
+// GetModel4OwnerAtaAccount gets the "model4OwnerAta" account.
+func (inst *OrderCompleted) GetModel4OwnerAtaAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(7)
+}
+
+// SetModel5OwnerAtaAccount sets the "model5OwnerAta" account.
+func (inst *OrderCompleted) SetModel5OwnerAtaAccount(model5OwnerAta ag_solanago.PublicKey) *OrderCompleted {
+	inst.AccountMetaSlice[8] = ag_solanago.Meta(model5OwnerAta).WRITE()
+	return inst
+}
+
+// GetModel5OwnerAtaAccount gets the "model5OwnerAta" account.
+func (inst *OrderCompleted) GetModel5OwnerAtaAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(8)
+}
+
 // SetVaultAccount sets the "vault" account.
 func (inst *OrderCompleted) SetVaultAccount(vault ag_solanago.PublicKey) *OrderCompleted {
-	inst.AccountMetaSlice[4] = ag_solanago.Meta(vault).WRITE()
+	inst.AccountMetaSlice[9] = ag_solanago.Meta(vault).WRITE()
 	return inst
 }
 
 // GetVaultAccount gets the "vault" account.
 func (inst *OrderCompleted) GetVaultAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(4)
+	return inst.AccountMetaSlice.Get(9)
 }
 
 // SetMintAccount sets the "mint" account.
 func (inst *OrderCompleted) SetMintAccount(mint ag_solanago.PublicKey) *OrderCompleted {
-	inst.AccountMetaSlice[5] = ag_solanago.Meta(mint)
+	inst.AccountMetaSlice[10] = ag_solanago.Meta(mint)
 	return inst
 }
 
 // GetMintAccount gets the "mint" account.
 func (inst *OrderCompleted) GetMintAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(5)
+	return inst.AccountMetaSlice.Get(10)
 }
 
 // SetTokenProgramAccount sets the "tokenProgram" account.
 func (inst *OrderCompleted) SetTokenProgramAccount(tokenProgram ag_solanago.PublicKey) *OrderCompleted {
-	inst.AccountMetaSlice[6] = ag_solanago.Meta(tokenProgram)
+	inst.AccountMetaSlice[11] = ag_solanago.Meta(tokenProgram)
 	return inst
 }
 
 // GetTokenProgramAccount gets the "tokenProgram" account.
 func (inst *OrderCompleted) GetTokenProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(6)
+	return inst.AccountMetaSlice.Get(11)
 }
 
 // SetAssociatedTokenProgramAccount sets the "associatedTokenProgram" account.
 func (inst *OrderCompleted) SetAssociatedTokenProgramAccount(associatedTokenProgram ag_solanago.PublicKey) *OrderCompleted {
-	inst.AccountMetaSlice[7] = ag_solanago.Meta(associatedTokenProgram)
+	inst.AccountMetaSlice[12] = ag_solanago.Meta(associatedTokenProgram)
 	return inst
 }
 
 // GetAssociatedTokenProgramAccount gets the "associatedTokenProgram" account.
 func (inst *OrderCompleted) GetAssociatedTokenProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(7)
+	return inst.AccountMetaSlice.Get(12)
 }
 
 // SetSystemProgramAccount sets the "systemProgram" account.
 func (inst *OrderCompleted) SetSystemProgramAccount(systemProgram ag_solanago.PublicKey) *OrderCompleted {
-	inst.AccountMetaSlice[8] = ag_solanago.Meta(systemProgram)
+	inst.AccountMetaSlice[13] = ag_solanago.Meta(systemProgram)
 	return inst
 }
 
 // GetSystemProgramAccount gets the "systemProgram" account.
 func (inst *OrderCompleted) GetSystemProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(8)
+	return inst.AccountMetaSlice.Get(13)
 }
 
 func (inst OrderCompleted) Build() *Instruction {
@@ -197,18 +262,33 @@ func (inst *OrderCompleted) Validate() error {
 			return errors.New("accounts.SellerAta is not set")
 		}
 		if inst.AccountMetaSlice[4] == nil {
-			return errors.New("accounts.Vault is not set")
+			return errors.New("accounts.Model1OwnerAta is not set")
 		}
 		if inst.AccountMetaSlice[5] == nil {
-			return errors.New("accounts.Mint is not set")
+			return errors.New("accounts.Model2OwnerAta is not set")
 		}
 		if inst.AccountMetaSlice[6] == nil {
-			return errors.New("accounts.TokenProgram is not set")
+			return errors.New("accounts.Model3OwnerAta is not set")
 		}
 		if inst.AccountMetaSlice[7] == nil {
-			return errors.New("accounts.AssociatedTokenProgram is not set")
+			return errors.New("accounts.Model4OwnerAta is not set")
 		}
 		if inst.AccountMetaSlice[8] == nil {
+			return errors.New("accounts.Model5OwnerAta is not set")
+		}
+		if inst.AccountMetaSlice[9] == nil {
+			return errors.New("accounts.Vault is not set")
+		}
+		if inst.AccountMetaSlice[10] == nil {
+			return errors.New("accounts.Mint is not set")
+		}
+		if inst.AccountMetaSlice[11] == nil {
+			return errors.New("accounts.TokenProgram is not set")
+		}
+		if inst.AccountMetaSlice[12] == nil {
+			return errors.New("accounts.AssociatedTokenProgram is not set")
+		}
+		if inst.AccountMetaSlice[13] == nil {
 			return errors.New("accounts.SystemProgram is not set")
 		}
 	}
@@ -230,16 +310,21 @@ func (inst *OrderCompleted) EncodeToTree(parent ag_treeout.Branches) {
 					})
 
 					// Accounts of the instruction:
-					instructionBranch.Child("Accounts[len=9]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
+					instructionBranch.Child("Accounts[len=14]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
 						accountsBranch.Child(ag_format.Meta("               machine", inst.AccountMetaSlice.Get(0)))
 						accountsBranch.Child(ag_format.Meta("                 order", inst.AccountMetaSlice.Get(1)))
 						accountsBranch.Child(ag_format.Meta("                seller", inst.AccountMetaSlice.Get(2)))
 						accountsBranch.Child(ag_format.Meta("             sellerAta", inst.AccountMetaSlice.Get(3)))
-						accountsBranch.Child(ag_format.Meta("                 vault", inst.AccountMetaSlice.Get(4)))
-						accountsBranch.Child(ag_format.Meta("                  mint", inst.AccountMetaSlice.Get(5)))
-						accountsBranch.Child(ag_format.Meta("          tokenProgram", inst.AccountMetaSlice.Get(6)))
-						accountsBranch.Child(ag_format.Meta("associatedTokenProgram", inst.AccountMetaSlice.Get(7)))
-						accountsBranch.Child(ag_format.Meta("         systemProgram", inst.AccountMetaSlice.Get(8)))
+						accountsBranch.Child(ag_format.Meta("        model1OwnerAta", inst.AccountMetaSlice.Get(4)))
+						accountsBranch.Child(ag_format.Meta("        model2OwnerAta", inst.AccountMetaSlice.Get(5)))
+						accountsBranch.Child(ag_format.Meta("        model3OwnerAta", inst.AccountMetaSlice.Get(6)))
+						accountsBranch.Child(ag_format.Meta("        model4OwnerAta", inst.AccountMetaSlice.Get(7)))
+						accountsBranch.Child(ag_format.Meta("        model5OwnerAta", inst.AccountMetaSlice.Get(8)))
+						accountsBranch.Child(ag_format.Meta("                 vault", inst.AccountMetaSlice.Get(9)))
+						accountsBranch.Child(ag_format.Meta("                  mint", inst.AccountMetaSlice.Get(10)))
+						accountsBranch.Child(ag_format.Meta("          tokenProgram", inst.AccountMetaSlice.Get(11)))
+						accountsBranch.Child(ag_format.Meta("associatedTokenProgram", inst.AccountMetaSlice.Get(12)))
+						accountsBranch.Child(ag_format.Meta("         systemProgram", inst.AccountMetaSlice.Get(13)))
 					})
 				})
 		})
@@ -282,6 +367,11 @@ func NewOrderCompletedInstruction(
 	order ag_solanago.PublicKey,
 	seller ag_solanago.PublicKey,
 	sellerAta ag_solanago.PublicKey,
+	model1OwnerAta ag_solanago.PublicKey,
+	model2OwnerAta ag_solanago.PublicKey,
+	model3OwnerAta ag_solanago.PublicKey,
+	model4OwnerAta ag_solanago.PublicKey,
+	model5OwnerAta ag_solanago.PublicKey,
 	vault ag_solanago.PublicKey,
 	mint ag_solanago.PublicKey,
 	tokenProgram ag_solanago.PublicKey,
@@ -294,6 +384,11 @@ func NewOrderCompletedInstruction(
 		SetOrderAccount(order).
 		SetSellerAccount(seller).
 		SetSellerAtaAccount(sellerAta).
+		SetModel1OwnerAtaAccount(model1OwnerAta).
+		SetModel2OwnerAtaAccount(model2OwnerAta).
+		SetModel3OwnerAtaAccount(model3OwnerAta).
+		SetModel4OwnerAtaAccount(model4OwnerAta).
+		SetModel5OwnerAtaAccount(model5OwnerAta).
 		SetVaultAccount(vault).
 		SetMintAccount(mint).
 		SetTokenProgramAccount(tokenProgram).

@@ -22,5 +22,15 @@ func buildOrderModel(o distri_ai.Order) model.Order {
 		OrderTime:   time.Unix(o.OrderTime, 0),
 		StartTime:   time.Unix(o.StartTime, 0),
 		RefundTime:  time.Unix(o.RefundTime, 0),
+		Model1Owner: o.Model1Owner.String(),
+		Model1Name:  o.Model1Name,
+		Model2Owner: o.Model2Owner.String(),
+		Model2Name:  o.Model2Name,
+		Model3Owner: o.Model3Owner.String(),
+		Model3Name:  o.Model3Name,
+		Model4Owner: o.Model4Owner.String(),
+		Model4Name:  o.Model4Name,
+		Model5Owner: o.Model5Owner.String(),
+		Model5Name:  o.Model5Name,
 	}
 }

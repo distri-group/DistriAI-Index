@@ -56,6 +56,8 @@ var (
 
 	Instruction_RemoveOrder = ag_binary.TypeID([8]byte{118, 116, 244, 40, 144, 211, 242, 51})
 
+	Instruction_AdminRemoveOrder = ag_binary.TypeID([8]byte{120, 68, 51, 2, 103, 164, 213, 81})
+
 	Instruction_CreateAiModel = ag_binary.TypeID([8]byte{210, 121, 102, 94, 247, 85, 173, 215})
 
 	Instruction_RemoveAiModel = ag_binary.TypeID([8]byte{239, 39, 190, 250, 232, 8, 160, 106})
@@ -104,6 +106,8 @@ func InstructionIDToName(id ag_binary.TypeID) string {
 		return "OrderFailed"
 	case Instruction_RemoveOrder:
 		return "RemoveOrder"
+	case Instruction_AdminRemoveOrder:
+		return "AdminRemoveOrder"
 	case Instruction_CreateAiModel:
 		return "CreateAiModel"
 	case Instruction_RemoveAiModel:
@@ -181,6 +185,9 @@ var InstructionImplDef = ag_binary.NewVariantDefinition(
 		},
 		{
 			"remove_order", (*RemoveOrder)(nil),
+		},
+		{
+			"admin_remove_order", (*AdminRemoveOrder)(nil),
 		},
 		{
 			"create_ai_model", (*CreateAiModel)(nil),
