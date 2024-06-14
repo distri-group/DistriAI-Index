@@ -336,7 +336,7 @@ func DatasetSizeTotal(context *gin.Context) {
 
 	var size uint32
 	tx := common.Db.Model(&model.DatasetHeat{}).
-		Select("SUM(size)").
+		Select("IFNULL(SUM(size), 0)").
 		Where("owner = ?", account).
 		Find(&size)
 	if tx.Error != nil {

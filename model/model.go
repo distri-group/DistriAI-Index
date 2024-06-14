@@ -15,6 +15,8 @@ func AutoMigrate(db *gorm.DB) {
 		&AiModel{},
 		&AiModelHeat{},
 		&AiModelLike{},
+		&AiModelDatasetRewardPeriod{},
+		&AiModelDatasetReward{},
 		&Dataset{},
 		&DatasetHeat{},
 		&DatasetLike{},

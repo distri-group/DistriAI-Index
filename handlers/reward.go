@@ -36,7 +36,7 @@ func RewardTotal(context *gin.Context) {
 
 	var response RewardTotalResponse
 	tx := common.Db.Model(&model.RewardMachine{}).
-		Select("SUM(rewards.unit_periodic_reward) AS claimed_periodic_rewards").
+		Select("IFNULL(SUM(rewards.unit_periodic_reward), 0) AS claimed_periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.claimed", true).
@@ -52,7 +52,7 @@ func RewardTotal(context *gin.Context) {
 	}
 
 	tx = common.Db.Model(&model.RewardMachine{}).
-		Select("SUM(rewards.unit_periodic_reward) AS claimable_periodic_rewards").
+		Select("IFNULL(SUM(rewards.unit_periodic_reward), 0) AS claimable_periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.claimed", false).
@@ -143,7 +143,7 @@ func RewardPeriodList(context *gin.Context) {
 
 	var response RewardPeriodListResponse
 	tx := common.Db.Model(&model.RewardMachine{}).
-		Select("reward_machines.period,rewards.start_time,rewards.pool,SUM(rewards.unit_periodic_reward) AS periodic_rewards").
+		Select("reward_machines.period,rewards.start_time,rewards.pool,IFNULL(SUM(rewards.unit_periodic_reward), 0) AS periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
 		Where("reward_machines.owner = ?", account).
 		Where("reward_machines.period < ?", currentPeriod()).
