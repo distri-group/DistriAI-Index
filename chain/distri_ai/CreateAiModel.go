@@ -23,14 +23,16 @@ type CreateAiModel struct {
 	//
 	// [1] = [WRITE, SIGNER] owner
 	//
-	// [2] = [] systemProgram
+	// [2] = [WRITE] statisticsOwner
+	//
+	// [3] = [] systemProgram
 	ag_solanago.AccountMetaSlice `bin:"-"`
 }
 
 // NewCreateAiModelInstructionBuilder creates a new `CreateAiModel` instruction builder.
 func NewCreateAiModelInstructionBuilder() *CreateAiModel {
 	nd := &CreateAiModel{
-		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 3),
+		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 4),
 	}
 	return nd
 }
@@ -93,15 +95,26 @@ func (inst *CreateAiModel) GetOwnerAccount() *ag_solanago.AccountMeta {
 	return inst.AccountMetaSlice.Get(1)
 }
 
+// SetStatisticsOwnerAccount sets the "statisticsOwner" account.
+func (inst *CreateAiModel) SetStatisticsOwnerAccount(statisticsOwner ag_solanago.PublicKey) *CreateAiModel {
+	inst.AccountMetaSlice[2] = ag_solanago.Meta(statisticsOwner).WRITE()
+	return inst
+}
+
+// GetStatisticsOwnerAccount gets the "statisticsOwner" account.
+func (inst *CreateAiModel) GetStatisticsOwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(2)
+}
+
 // SetSystemProgramAccount sets the "systemProgram" account.
 func (inst *CreateAiModel) SetSystemProgramAccount(systemProgram ag_solanago.PublicKey) *CreateAiModel {
-	inst.AccountMetaSlice[2] = ag_solanago.Meta(systemProgram)
+	inst.AccountMetaSlice[3] = ag_solanago.Meta(systemProgram)
 	return inst
 }
 
 // GetSystemProgramAccount gets the "systemProgram" account.
 func (inst *CreateAiModel) GetSystemProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(2)
+	return inst.AccountMetaSlice.Get(3)
 }
 
 func (inst CreateAiModel) Build() *Instruction {
@@ -153,6 +166,9 @@ func (inst *CreateAiModel) Validate() error {
 			return errors.New("accounts.Owner is not set")
 		}
 		if inst.AccountMetaSlice[2] == nil {
+			return errors.New("accounts.StatisticsOwner is not set")
+		}
+		if inst.AccountMetaSlice[3] == nil {
 			return errors.New("accounts.SystemProgram is not set")
 		}
 	}
@@ -178,10 +194,11 @@ func (inst *CreateAiModel) EncodeToTree(parent ag_treeout.Branches) {
 					})
 
 					// Accounts of the instruction:
-					instructionBranch.Child("Accounts[len=3]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
-						accountsBranch.Child(ag_format.Meta("      aiModel", inst.AccountMetaSlice.Get(0)))
-						accountsBranch.Child(ag_format.Meta("        owner", inst.AccountMetaSlice.Get(1)))
-						accountsBranch.Child(ag_format.Meta("systemProgram", inst.AccountMetaSlice.Get(2)))
+					instructionBranch.Child("Accounts[len=4]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
+						accountsBranch.Child(ag_format.Meta("        aiModel", inst.AccountMetaSlice.Get(0)))
+						accountsBranch.Child(ag_format.Meta("          owner", inst.AccountMetaSlice.Get(1)))
+						accountsBranch.Child(ag_format.Meta("statisticsOwner", inst.AccountMetaSlice.Get(2)))
+						accountsBranch.Child(ag_format.Meta("  systemProgram", inst.AccountMetaSlice.Get(3)))
 					})
 				})
 		})
@@ -266,6 +283,7 @@ func NewCreateAiModelInstruction(
 	// Accounts:
 	aiModel ag_solanago.PublicKey,
 	owner ag_solanago.PublicKey,
+	statisticsOwner ag_solanago.PublicKey,
 	systemProgram ag_solanago.PublicKey) *CreateAiModel {
 	return NewCreateAiModelInstructionBuilder().
 		SetName(name).
@@ -276,5 +294,6 @@ func NewCreateAiModelInstruction(
 		SetTags(tags).
 		SetAiModelAccount(aiModel).
 		SetOwnerAccount(owner).
+		SetStatisticsOwnerAccount(statisticsOwner).
 		SetSystemProgramAccount(systemProgram)
 }

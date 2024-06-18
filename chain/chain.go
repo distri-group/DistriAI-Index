@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/common"
 	"distriai-index-solana/utils/logs"
 	"fmt"
@@ -48,11 +49,12 @@ var (
 // initChain initializes the blockchain-related configurations.
 // This function sets the distribution program's public key and creates an RPC client for further blockchain operations.
 func initChain() {
-	 // Converts the chain's program ID from Base58 to PublicKey, ensuring the correct program ID is configured.
+	// Converts the chain's program ID from Base58 to PublicKey, ensuring the correct program ID is configured.
 	distriProgramID = solana.MustPublicKeyFromBase58(common.Conf.Chain.ProgramId)
+	distri_ai.SetProgramID(distriProgramID)
 	// Creates a new RPC client based on the RPC address in the configuration file, for communication with the blockchain.
 	rpcClient = rpc.New(common.Conf.Chain.Rpc)
-    // Calls the initSolana function to perform additional initialization tasks for the Solana chain.
+	// Calls the initSolana function to perform additional initialization tasks for the Solana chain.
 	initSolana()
 }
 
@@ -63,7 +65,7 @@ func Sync() {
 }
 
 func fetchAll() {
-	 // Fetch program accounts data using the default context and confirmed commitment level
+	// Fetch program accounts data using the default context and confirmed commitment level
 	out, err := rpcClient.GetProgramAccountsWithOpts(
 		context.TODO(),
 		distriProgramID,
@@ -76,7 +78,7 @@ func fetchAll() {
 		logs.Error(fmt.Sprintf("GetProgramAccounts error: %s \n", err))
 		return
 	}
-// Call handling functions to process fetched account data for AI models, datasets, machines, orders, rewards, and reward machines
+	// Call handling functions to process fetched account data for AI models, datasets, machines, orders, rewards, and reward machines
 	fetchAllAiModel(out)
 	fetchAllDataset(out)
 	fetchAllMachine(out)
@@ -84,10 +86,11 @@ func fetchAll() {
 	fetchAllReward(out)
 	fetchAllRewardMachine(out)
 }
+
 // HandleEventLogs processes a slice of event logs, identifying specific instructions and data to execute corresponding operations.
 // It iterates through the logs, extracts instruction and data, then performs actions based on the instruction type.
 func HandleEventLogs(eventLogs []string) {
-	spew.Dump(eventLogs)// Debug print of incoming event logs
+	spew.Dump(eventLogs) // Debug print of incoming event logs
 	var instruction, data string
 	for _, l := range eventLogs {
 		// Find first HashrateMarket Instruction in event
@@ -109,15 +112,15 @@ func HandleEventLogs(eventLogs []string) {
 	if instruction == "" || data == "" {
 		return
 	}
-	logs.Info(fmt.Sprintf("[Webhook] Receive instruction: %s \n", instruction))// Log received instruction
+	logs.Info(fmt.Sprintf("[Webhook] Receive instruction: %s \n", instruction)) // Log received instruction
 
 	// Switch statement to handle various instruction cases
 	switch instruction {
-		// Cases handle different types of machine, task, reward, order, AI model, and dataset events
-        // Each case decodes the event data, then performs an action such as adding, removing, updating records, etc.
-        // ...
-        
-        // Default or additional cases would be placed here following the pattern above
+	// Cases handle different types of machine, task, reward, order, AI model, and dataset events
+	// Each case decodes the event data, then performs an action such as adding, removing, updating records, etc.
+	// ...
+
+	// Default or additional cases would be placed here following the pattern above
 	case _AddMachine:
 		var event MachineEvent
 		if decodeDistriEvent(data, &event) != nil {
@@ -201,6 +204,6 @@ func HandleEventLogs(eventLogs []string) {
 		}
 		removeDataset(event.Owner, event.Name)
 	}
-// Log the handled instruction upon completion
+	// Log the handled instruction upon completion
 	logs.Info(fmt.Sprintf("[Webhook] Handle instruction: %s \n", instruction))
 }

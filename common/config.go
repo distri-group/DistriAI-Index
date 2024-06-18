@@ -50,6 +50,7 @@ type Aws struct {
 type Chain struct {
 	Rpc              string
 	ProgramId        string
+	AdminPrivateKey  string
 	FaucetPrivateKey string
 	Dist             string
 	DistDecimals     uint8

@@ -1459,6 +1459,114 @@ func (obj *RewardMachine) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err 
 	return nil
 }
 
+type Statistics struct {
+	Owner                         ag_solanago.PublicKey
+	MachineRewardClaimed          uint64
+	MachineRewardClaimable        uint64
+	AiModelDatasetRewardClaimed   uint64
+	AiModelDatasetRewardClaimable uint64
+	MachineEarning                uint64
+	AiModelDatasetEarning         uint64
+}
+
+var StatisticsDiscriminator = [8]byte{51, 158, 85, 113, 41, 45, 37, 104}
+
+func (obj Statistics) MarshalWithEncoder(encoder *ag_binary.Encoder) (err error) {
+	// Write account discriminator:
+	err = encoder.WriteBytes(StatisticsDiscriminator[:], false)
+	if err != nil {
+		return err
+	}
+	// Serialize `Owner` param:
+	err = encoder.Encode(obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Serialize `MachineRewardClaimed` param:
+	err = encoder.Encode(obj.MachineRewardClaimed)
+	if err != nil {
+		return err
+	}
+	// Serialize `MachineRewardClaimable` param:
+	err = encoder.Encode(obj.MachineRewardClaimable)
+	if err != nil {
+		return err
+	}
+	// Serialize `AiModelDatasetRewardClaimed` param:
+	err = encoder.Encode(obj.AiModelDatasetRewardClaimed)
+	if err != nil {
+		return err
+	}
+	// Serialize `AiModelDatasetRewardClaimable` param:
+	err = encoder.Encode(obj.AiModelDatasetRewardClaimable)
+	if err != nil {
+		return err
+	}
+	// Serialize `MachineEarning` param:
+	err = encoder.Encode(obj.MachineEarning)
+	if err != nil {
+		return err
+	}
+	// Serialize `AiModelDatasetEarning` param:
+	err = encoder.Encode(obj.AiModelDatasetEarning)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *Statistics) UnmarshalWithDecoder(decoder *ag_binary.Decoder) (err error) {
+	// Read and check account discriminator:
+	{
+		discriminator, err := decoder.ReadTypeID()
+		if err != nil {
+			return err
+		}
+		if !discriminator.Equal(StatisticsDiscriminator[:]) {
+			return fmt.Errorf(
+				"wrong discriminator: wanted %s, got %s",
+				"[51 158 85 113 41 45 37 104]",
+				fmt.Sprint(discriminator[:]))
+		}
+	}
+	// Deserialize `Owner`:
+	err = decoder.Decode(&obj.Owner)
+	if err != nil {
+		return err
+	}
+	// Deserialize `MachineRewardClaimed`:
+	err = decoder.Decode(&obj.MachineRewardClaimed)
+	if err != nil {
+		return err
+	}
+	// Deserialize `MachineRewardClaimable`:
+	err = decoder.Decode(&obj.MachineRewardClaimable)
+	if err != nil {
+		return err
+	}
+	// Deserialize `AiModelDatasetRewardClaimed`:
+	err = decoder.Decode(&obj.AiModelDatasetRewardClaimed)
+	if err != nil {
+		return err
+	}
+	// Deserialize `AiModelDatasetRewardClaimable`:
+	err = decoder.Decode(&obj.AiModelDatasetRewardClaimable)
+	if err != nil {
+		return err
+	}
+	// Deserialize `MachineEarning`:
+	err = decoder.Decode(&obj.MachineEarning)
+	if err != nil {
+		return err
+	}
+	// Deserialize `AiModelDatasetEarning`:
+	err = decoder.Decode(&obj.AiModelDatasetEarning)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type Task struct {
 	// Task id
 	Uuid [16]uint8

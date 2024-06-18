@@ -33,22 +33,34 @@ type RefundOrder struct {
 	//
 	// [9] = [WRITE] model5OwnerAta
 	//
-	// [10] = [WRITE] vault
+	// [10] = [WRITE] statisticsSeller
 	//
-	// [11] = [] mint
+	// [11] = [WRITE] statisticsModel1Owner
 	//
-	// [12] = [] tokenProgram
+	// [12] = [WRITE] statisticsModel2Owner
 	//
-	// [13] = [] associatedTokenProgram
+	// [13] = [WRITE] statisticsModel3Owner
 	//
-	// [14] = [] systemProgram
+	// [14] = [WRITE] statisticsModel4Owner
+	//
+	// [15] = [WRITE] statisticsModel5Owner
+	//
+	// [16] = [WRITE] vault
+	//
+	// [17] = [] mint
+	//
+	// [18] = [] tokenProgram
+	//
+	// [19] = [] associatedTokenProgram
+	//
+	// [20] = [] systemProgram
 	ag_solanago.AccountMetaSlice `bin:"-"`
 }
 
 // NewRefundOrderInstructionBuilder creates a new `RefundOrder` instruction builder.
 func NewRefundOrderInstructionBuilder() *RefundOrder {
 	nd := &RefundOrder{
-		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 15),
+		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 21),
 	}
 	return nd
 }
@@ -163,59 +175,125 @@ func (inst *RefundOrder) GetModel5OwnerAtaAccount() *ag_solanago.AccountMeta {
 	return inst.AccountMetaSlice.Get(9)
 }
 
+// SetStatisticsSellerAccount sets the "statisticsSeller" account.
+func (inst *RefundOrder) SetStatisticsSellerAccount(statisticsSeller ag_solanago.PublicKey) *RefundOrder {
+	inst.AccountMetaSlice[10] = ag_solanago.Meta(statisticsSeller).WRITE()
+	return inst
+}
+
+// GetStatisticsSellerAccount gets the "statisticsSeller" account.
+func (inst *RefundOrder) GetStatisticsSellerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(10)
+}
+
+// SetStatisticsModel1OwnerAccount sets the "statisticsModel1Owner" account.
+func (inst *RefundOrder) SetStatisticsModel1OwnerAccount(statisticsModel1Owner ag_solanago.PublicKey) *RefundOrder {
+	inst.AccountMetaSlice[11] = ag_solanago.Meta(statisticsModel1Owner).WRITE()
+	return inst
+}
+
+// GetStatisticsModel1OwnerAccount gets the "statisticsModel1Owner" account.
+func (inst *RefundOrder) GetStatisticsModel1OwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(11)
+}
+
+// SetStatisticsModel2OwnerAccount sets the "statisticsModel2Owner" account.
+func (inst *RefundOrder) SetStatisticsModel2OwnerAccount(statisticsModel2Owner ag_solanago.PublicKey) *RefundOrder {
+	inst.AccountMetaSlice[12] = ag_solanago.Meta(statisticsModel2Owner).WRITE()
+	return inst
+}
+
+// GetStatisticsModel2OwnerAccount gets the "statisticsModel2Owner" account.
+func (inst *RefundOrder) GetStatisticsModel2OwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(12)
+}
+
+// SetStatisticsModel3OwnerAccount sets the "statisticsModel3Owner" account.
+func (inst *RefundOrder) SetStatisticsModel3OwnerAccount(statisticsModel3Owner ag_solanago.PublicKey) *RefundOrder {
+	inst.AccountMetaSlice[13] = ag_solanago.Meta(statisticsModel3Owner).WRITE()
+	return inst
+}
+
+// GetStatisticsModel3OwnerAccount gets the "statisticsModel3Owner" account.
+func (inst *RefundOrder) GetStatisticsModel3OwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(13)
+}
+
+// SetStatisticsModel4OwnerAccount sets the "statisticsModel4Owner" account.
+func (inst *RefundOrder) SetStatisticsModel4OwnerAccount(statisticsModel4Owner ag_solanago.PublicKey) *RefundOrder {
+	inst.AccountMetaSlice[14] = ag_solanago.Meta(statisticsModel4Owner).WRITE()
+	return inst
+}
+
+// GetStatisticsModel4OwnerAccount gets the "statisticsModel4Owner" account.
+func (inst *RefundOrder) GetStatisticsModel4OwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(14)
+}
+
+// SetStatisticsModel5OwnerAccount sets the "statisticsModel5Owner" account.
+func (inst *RefundOrder) SetStatisticsModel5OwnerAccount(statisticsModel5Owner ag_solanago.PublicKey) *RefundOrder {
+	inst.AccountMetaSlice[15] = ag_solanago.Meta(statisticsModel5Owner).WRITE()
+	return inst
+}
+
+// GetStatisticsModel5OwnerAccount gets the "statisticsModel5Owner" account.
+func (inst *RefundOrder) GetStatisticsModel5OwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(15)
+}
+
 // SetVaultAccount sets the "vault" account.
 func (inst *RefundOrder) SetVaultAccount(vault ag_solanago.PublicKey) *RefundOrder {
-	inst.AccountMetaSlice[10] = ag_solanago.Meta(vault).WRITE()
+	inst.AccountMetaSlice[16] = ag_solanago.Meta(vault).WRITE()
 	return inst
 }
 
 // GetVaultAccount gets the "vault" account.
 func (inst *RefundOrder) GetVaultAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(10)
+	return inst.AccountMetaSlice.Get(16)
 }
 
 // SetMintAccount sets the "mint" account.
 func (inst *RefundOrder) SetMintAccount(mint ag_solanago.PublicKey) *RefundOrder {
-	inst.AccountMetaSlice[11] = ag_solanago.Meta(mint)
+	inst.AccountMetaSlice[17] = ag_solanago.Meta(mint)
 	return inst
 }
 
 // GetMintAccount gets the "mint" account.
 func (inst *RefundOrder) GetMintAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(11)
+	return inst.AccountMetaSlice.Get(17)
 }
 
 // SetTokenProgramAccount sets the "tokenProgram" account.
 func (inst *RefundOrder) SetTokenProgramAccount(tokenProgram ag_solanago.PublicKey) *RefundOrder {
-	inst.AccountMetaSlice[12] = ag_solanago.Meta(tokenProgram)
+	inst.AccountMetaSlice[18] = ag_solanago.Meta(tokenProgram)
 	return inst
 }
 
 // GetTokenProgramAccount gets the "tokenProgram" account.
 func (inst *RefundOrder) GetTokenProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(12)
+	return inst.AccountMetaSlice.Get(18)
 }
 
 // SetAssociatedTokenProgramAccount sets the "associatedTokenProgram" account.
 func (inst *RefundOrder) SetAssociatedTokenProgramAccount(associatedTokenProgram ag_solanago.PublicKey) *RefundOrder {
-	inst.AccountMetaSlice[13] = ag_solanago.Meta(associatedTokenProgram)
+	inst.AccountMetaSlice[19] = ag_solanago.Meta(associatedTokenProgram)
 	return inst
 }
 
 // GetAssociatedTokenProgramAccount gets the "associatedTokenProgram" account.
 func (inst *RefundOrder) GetAssociatedTokenProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(13)
+	return inst.AccountMetaSlice.Get(19)
 }
 
 // SetSystemProgramAccount sets the "systemProgram" account.
 func (inst *RefundOrder) SetSystemProgramAccount(systemProgram ag_solanago.PublicKey) *RefundOrder {
-	inst.AccountMetaSlice[14] = ag_solanago.Meta(systemProgram)
+	inst.AccountMetaSlice[20] = ag_solanago.Meta(systemProgram)
 	return inst
 }
 
 // GetSystemProgramAccount gets the "systemProgram" account.
 func (inst *RefundOrder) GetSystemProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(14)
+	return inst.AccountMetaSlice.Get(20)
 }
 
 func (inst RefundOrder) Build() *Instruction {
@@ -269,18 +347,36 @@ func (inst *RefundOrder) Validate() error {
 			return errors.New("accounts.Model5OwnerAta is not set")
 		}
 		if inst.AccountMetaSlice[10] == nil {
-			return errors.New("accounts.Vault is not set")
+			return errors.New("accounts.StatisticsSeller is not set")
 		}
 		if inst.AccountMetaSlice[11] == nil {
-			return errors.New("accounts.Mint is not set")
+			return errors.New("accounts.StatisticsModel1Owner is not set")
 		}
 		if inst.AccountMetaSlice[12] == nil {
-			return errors.New("accounts.TokenProgram is not set")
+			return errors.New("accounts.StatisticsModel2Owner is not set")
 		}
 		if inst.AccountMetaSlice[13] == nil {
-			return errors.New("accounts.AssociatedTokenProgram is not set")
+			return errors.New("accounts.StatisticsModel3Owner is not set")
 		}
 		if inst.AccountMetaSlice[14] == nil {
+			return errors.New("accounts.StatisticsModel4Owner is not set")
+		}
+		if inst.AccountMetaSlice[15] == nil {
+			return errors.New("accounts.StatisticsModel5Owner is not set")
+		}
+		if inst.AccountMetaSlice[16] == nil {
+			return errors.New("accounts.Vault is not set")
+		}
+		if inst.AccountMetaSlice[17] == nil {
+			return errors.New("accounts.Mint is not set")
+		}
+		if inst.AccountMetaSlice[18] == nil {
+			return errors.New("accounts.TokenProgram is not set")
+		}
+		if inst.AccountMetaSlice[19] == nil {
+			return errors.New("accounts.AssociatedTokenProgram is not set")
+		}
+		if inst.AccountMetaSlice[20] == nil {
 			return errors.New("accounts.SystemProgram is not set")
 		}
 	}
@@ -299,7 +395,7 @@ func (inst *RefundOrder) EncodeToTree(parent ag_treeout.Branches) {
 					instructionBranch.Child("Params[len=0]").ParentFunc(func(paramsBranch ag_treeout.Branches) {})
 
 					// Accounts of the instruction:
-					instructionBranch.Child("Accounts[len=15]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
+					instructionBranch.Child("Accounts[len=21]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
 						accountsBranch.Child(ag_format.Meta("               machine", inst.AccountMetaSlice.Get(0)))
 						accountsBranch.Child(ag_format.Meta("                 order", inst.AccountMetaSlice.Get(1)))
 						accountsBranch.Child(ag_format.Meta("                 buyer", inst.AccountMetaSlice.Get(2)))
@@ -310,11 +406,17 @@ func (inst *RefundOrder) EncodeToTree(parent ag_treeout.Branches) {
 						accountsBranch.Child(ag_format.Meta("        model3OwnerAta", inst.AccountMetaSlice.Get(7)))
 						accountsBranch.Child(ag_format.Meta("        model4OwnerAta", inst.AccountMetaSlice.Get(8)))
 						accountsBranch.Child(ag_format.Meta("        model5OwnerAta", inst.AccountMetaSlice.Get(9)))
-						accountsBranch.Child(ag_format.Meta("                 vault", inst.AccountMetaSlice.Get(10)))
-						accountsBranch.Child(ag_format.Meta("                  mint", inst.AccountMetaSlice.Get(11)))
-						accountsBranch.Child(ag_format.Meta("          tokenProgram", inst.AccountMetaSlice.Get(12)))
-						accountsBranch.Child(ag_format.Meta("associatedTokenProgram", inst.AccountMetaSlice.Get(13)))
-						accountsBranch.Child(ag_format.Meta("         systemProgram", inst.AccountMetaSlice.Get(14)))
+						accountsBranch.Child(ag_format.Meta("      statisticsSeller", inst.AccountMetaSlice.Get(10)))
+						accountsBranch.Child(ag_format.Meta(" statisticsModel1Owner", inst.AccountMetaSlice.Get(11)))
+						accountsBranch.Child(ag_format.Meta(" statisticsModel2Owner", inst.AccountMetaSlice.Get(12)))
+						accountsBranch.Child(ag_format.Meta(" statisticsModel3Owner", inst.AccountMetaSlice.Get(13)))
+						accountsBranch.Child(ag_format.Meta(" statisticsModel4Owner", inst.AccountMetaSlice.Get(14)))
+						accountsBranch.Child(ag_format.Meta(" statisticsModel5Owner", inst.AccountMetaSlice.Get(15)))
+						accountsBranch.Child(ag_format.Meta("                 vault", inst.AccountMetaSlice.Get(16)))
+						accountsBranch.Child(ag_format.Meta("                  mint", inst.AccountMetaSlice.Get(17)))
+						accountsBranch.Child(ag_format.Meta("          tokenProgram", inst.AccountMetaSlice.Get(18)))
+						accountsBranch.Child(ag_format.Meta("associatedTokenProgram", inst.AccountMetaSlice.Get(19)))
+						accountsBranch.Child(ag_format.Meta("         systemProgram", inst.AccountMetaSlice.Get(20)))
 					})
 				})
 		})
@@ -340,6 +442,12 @@ func NewRefundOrderInstruction(
 	model3OwnerAta ag_solanago.PublicKey,
 	model4OwnerAta ag_solanago.PublicKey,
 	model5OwnerAta ag_solanago.PublicKey,
+	statisticsSeller ag_solanago.PublicKey,
+	statisticsModel1Owner ag_solanago.PublicKey,
+	statisticsModel2Owner ag_solanago.PublicKey,
+	statisticsModel3Owner ag_solanago.PublicKey,
+	statisticsModel4Owner ag_solanago.PublicKey,
+	statisticsModel5Owner ag_solanago.PublicKey,
 	vault ag_solanago.PublicKey,
 	mint ag_solanago.PublicKey,
 	tokenProgram ag_solanago.PublicKey,
@@ -356,6 +464,12 @@ func NewRefundOrderInstruction(
 		SetModel3OwnerAtaAccount(model3OwnerAta).
 		SetModel4OwnerAtaAccount(model4OwnerAta).
 		SetModel5OwnerAtaAccount(model5OwnerAta).
+		SetStatisticsSellerAccount(statisticsSeller).
+		SetStatisticsModel1OwnerAccount(statisticsModel1Owner).
+		SetStatisticsModel2OwnerAccount(statisticsModel2Owner).
+		SetStatisticsModel3OwnerAccount(statisticsModel3Owner).
+		SetStatisticsModel4OwnerAccount(statisticsModel4Owner).
+		SetStatisticsModel5OwnerAccount(statisticsModel5Owner).
 		SetVaultAccount(vault).
 		SetMintAccount(mint).
 		SetTokenProgramAccount(tokenProgram).

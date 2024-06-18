@@ -23,14 +23,16 @@ type CreateDataset struct {
 	//
 	// [1] = [WRITE, SIGNER] owner
 	//
-	// [2] = [] systemProgram
+	// [2] = [WRITE] statisticsOwner
+	//
+	// [3] = [] systemProgram
 	ag_solanago.AccountMetaSlice `bin:"-"`
 }
 
 // NewCreateDatasetInstructionBuilder creates a new `CreateDataset` instruction builder.
 func NewCreateDatasetInstructionBuilder() *CreateDataset {
 	nd := &CreateDataset{
-		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 3),
+		AccountMetaSlice: make(ag_solanago.AccountMetaSlice, 4),
 	}
 	return nd
 }
@@ -93,15 +95,26 @@ func (inst *CreateDataset) GetOwnerAccount() *ag_solanago.AccountMeta {
 	return inst.AccountMetaSlice.Get(1)
 }
 
+// SetStatisticsOwnerAccount sets the "statisticsOwner" account.
+func (inst *CreateDataset) SetStatisticsOwnerAccount(statisticsOwner ag_solanago.PublicKey) *CreateDataset {
+	inst.AccountMetaSlice[2] = ag_solanago.Meta(statisticsOwner).WRITE()
+	return inst
+}
+
+// GetStatisticsOwnerAccount gets the "statisticsOwner" account.
+func (inst *CreateDataset) GetStatisticsOwnerAccount() *ag_solanago.AccountMeta {
+	return inst.AccountMetaSlice.Get(2)
+}
+
 // SetSystemProgramAccount sets the "systemProgram" account.
 func (inst *CreateDataset) SetSystemProgramAccount(systemProgram ag_solanago.PublicKey) *CreateDataset {
-	inst.AccountMetaSlice[2] = ag_solanago.Meta(systemProgram)
+	inst.AccountMetaSlice[3] = ag_solanago.Meta(systemProgram)
 	return inst
 }
 
 // GetSystemProgramAccount gets the "systemProgram" account.
 func (inst *CreateDataset) GetSystemProgramAccount() *ag_solanago.AccountMeta {
-	return inst.AccountMetaSlice.Get(2)
+	return inst.AccountMetaSlice.Get(3)
 }
 
 func (inst CreateDataset) Build() *Instruction {
@@ -153,6 +166,9 @@ func (inst *CreateDataset) Validate() error {
 			return errors.New("accounts.Owner is not set")
 		}
 		if inst.AccountMetaSlice[2] == nil {
+			return errors.New("accounts.StatisticsOwner is not set")
+		}
+		if inst.AccountMetaSlice[3] == nil {
 			return errors.New("accounts.SystemProgram is not set")
 		}
 	}
@@ -178,10 +194,11 @@ func (inst *CreateDataset) EncodeToTree(parent ag_treeout.Branches) {
 					})
 
 					// Accounts of the instruction:
-					instructionBranch.Child("Accounts[len=3]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
-						accountsBranch.Child(ag_format.Meta("      dataset", inst.AccountMetaSlice.Get(0)))
-						accountsBranch.Child(ag_format.Meta("        owner", inst.AccountMetaSlice.Get(1)))
-						accountsBranch.Child(ag_format.Meta("systemProgram", inst.AccountMetaSlice.Get(2)))
+					instructionBranch.Child("Accounts[len=4]").ParentFunc(func(accountsBranch ag_treeout.Branches) {
+						accountsBranch.Child(ag_format.Meta("        dataset", inst.AccountMetaSlice.Get(0)))
+						accountsBranch.Child(ag_format.Meta("          owner", inst.AccountMetaSlice.Get(1)))
+						accountsBranch.Child(ag_format.Meta("statisticsOwner", inst.AccountMetaSlice.Get(2)))
+						accountsBranch.Child(ag_format.Meta("  systemProgram", inst.AccountMetaSlice.Get(3)))
 					})
 				})
 		})
@@ -266,6 +283,7 @@ func NewCreateDatasetInstruction(
 	// Accounts:
 	dataset ag_solanago.PublicKey,
 	owner ag_solanago.PublicKey,
+	statisticsOwner ag_solanago.PublicKey,
 	systemProgram ag_solanago.PublicKey) *CreateDataset {
 	return NewCreateDatasetInstructionBuilder().
 		SetName(name).
@@ -276,5 +294,6 @@ func NewCreateDatasetInstruction(
 		SetTags(tags).
 		SetDatasetAccount(dataset).
 		SetOwnerAccount(owner).
+		SetStatisticsOwnerAccount(statisticsOwner).
 		SetSystemProgramAccount(systemProgram)
 }

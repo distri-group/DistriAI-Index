@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"distriai-index-solana/chain"
 	"distriai-index-solana/common"
 	"distriai-index-solana/model"
 	"distriai-index-solana/utils/logs"
 	"fmt"
+	"github.com/gagliardetto/solana-go"
 	"github.com/go-co-op/gocron/v2"
 	"time"
 )
@@ -83,9 +85,10 @@ func StartRewardCron() {
 	}
 
 	_, err = scheduler.NewJob(
-		gocron.CronJob("58 23 * * *", false),
+		gocron.CronJob("24 8 * * *", false),
 		gocron.NewTask(func() {
 			createAiModelDatasetRewardPeriod()
+			reportAiModelDatasetReward()
 		}),
 	)
 
@@ -191,5 +194,24 @@ func createAiModelDatasetReward(rewardPeriod model.AiModelDatasetRewardPeriod) {
 			logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
 			return
 		}
+	}
+}
+
+func reportAiModelDatasetReward() {
+	var rewards []model.AiModelDatasetReward
+	tx := common.Db.Model(&model.AiModelDatasetReward{}).Where("tx_hash = ?", "").Find(&rewards)
+	if tx.Error != nil {
+		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
+		return
+	}
+
+	for _, reward := range rewards {
+		owner := solana.MustPublicKeyFromBase58(reward.Owner)
+		txHash, err := chain.ReportAiModelDatasetReward(owner, reward.PeriodicReward)
+		if err != nil {
+			continue
+		}
+		reward.TxHash = txHash
+		tx = common.Db.Save(&reward)
 	}
 }

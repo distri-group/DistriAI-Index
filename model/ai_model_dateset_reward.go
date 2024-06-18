@@ -19,5 +19,5 @@ type AiModelDatasetReward struct {
 	AiModelNum     uint32 `gorm:"not null"`
 	DatasetNum     uint32 `gorm:"not null"`
 	PeriodicReward uint64 `gorm:"not null"`
-	Reported       bool   `gorm:"not null"`
+	TxHash         string `gorm:"size:88;not null"`
 }

@@ -66,6 +66,10 @@ var (
 
 	Instruction_RemoveDataset = ag_binary.TypeID([8]byte{114, 128, 121, 235, 46, 207, 76, 98})
 
+	Instruction_ReportAiModelDatasetReward = ag_binary.TypeID([8]byte{9, 222, 200, 183, 93, 189, 184, 14})
+
+	Instruction_ClaimAiModelDatasetReward = ag_binary.TypeID([8]byte{24, 8, 164, 205, 125, 162, 253, 163})
+
 	Instruction_MigrateMachineNew = ag_binary.TypeID([8]byte{225, 152, 229, 88, 158, 61, 69, 125})
 
 	Instruction_MigrateMachineRename = ag_binary.TypeID([8]byte{188, 135, 117, 64, 94, 119, 3, 147})
@@ -116,6 +120,10 @@ func InstructionIDToName(id ag_binary.TypeID) string {
 		return "CreateDataset"
 	case Instruction_RemoveDataset:
 		return "RemoveDataset"
+	case Instruction_ReportAiModelDatasetReward:
+		return "ReportAiModelDatasetReward"
+	case Instruction_ClaimAiModelDatasetReward:
+		return "ClaimAiModelDatasetReward"
 	case Instruction_MigrateMachineNew:
 		return "MigrateMachineNew"
 	case Instruction_MigrateMachineRename:
@@ -200,6 +208,12 @@ var InstructionImplDef = ag_binary.NewVariantDefinition(
 		},
 		{
 			"remove_dataset", (*RemoveDataset)(nil),
+		},
+		{
+			"report_ai_model_dataset_reward", (*ReportAiModelDatasetReward)(nil),
+		},
+		{
+			"claim_ai_model_dataset_reward", (*ClaimAiModelDatasetReward)(nil),
 		},
 		{
 			"migrate_machine_new", (*MigrateMachineNew)(nil),

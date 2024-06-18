@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"distriai-index-solana/chain/distri_ai"
 	"distriai-index-solana/common"
 	"distriai-index-solana/utils/logs"
 	"errors"
@@ -16,6 +17,8 @@ import (
 )
 
 var (
+	adminPrivateKey  solana.PrivateKey
+	adminPublicKey   solana.PublicKey
 	faucetPrivateKey solana.PrivateKey
 	faucetPublicKey  solana.PublicKey
 	dist             solana.PublicKey
@@ -24,6 +27,8 @@ var (
 )
 
 func initSolana() {
+	adminPrivateKey = solana.MustPrivateKeyFromBase58(common.Conf.Chain.AdminPrivateKey)
+	adminPublicKey = adminPrivateKey.PublicKey()
 	faucetPrivateKey = solana.MustPrivateKeyFromBase58(common.Conf.Chain.FaucetPrivateKey)
 	faucetPublicKey = faucetPrivateKey.PublicKey()
 	dist = solana.MustPublicKeyFromBase58(common.Conf.Chain.Dist)
@@ -111,6 +116,73 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 	}
 
 	logs.Info(fmt.Sprintf("[FaucetDist] Tx confirmed : %v", sig.String()))
+
+	return sig.String(), nil
+}
+
+func ReportAiModelDatasetReward(owner solana.PublicKey, amount uint64) (string, error) {
+	address, _, err := solana.FindProgramAddress(
+		[][]byte{
+			[]byte("statistics"),
+			owner.Bytes(),
+		},
+		distriProgramID,
+	)
+	if err != nil {
+		logs.Error(fmt.Sprintf("FindProgramAddress error: %s \n", err))
+		return "", fmt.Errorf("FindProgramAddress error: %s \n", err)
+	}
+
+	recent, err := rpcClient.GetRecentBlockhash(context.TODO(), rpc.CommitmentFinalized)
+	if err != nil {
+		logs.Error(fmt.Sprintf("Creating transaction error: %s \n", err))
+		return "", fmt.Errorf("error creating transaction: %s \n", err)
+	}
+
+	tx, err := solana.NewTransaction(
+		[]solana.Instruction{
+			distri_ai.NewReportAiModelDatasetRewardInstruction(
+				amount,
+				address,
+				adminPublicKey,
+			).Build(),
+		},
+		recent.Value.Blockhash,
+		solana.TransactionPayer(adminPublicKey),
+	)
+
+	if err != nil {
+		logs.Error(fmt.Sprintf("Creating transaction error: %s \n", err))
+		return "", fmt.Errorf("error creating transaction: %s \n", err)
+	}
+
+	_, err = tx.Sign(
+		func(key solana.PublicKey) *solana.PrivateKey {
+			if adminPublicKey.Equals(key) {
+				return &adminPrivateKey
+			}
+			return nil
+		},
+	)
+	if err != nil {
+		logs.Error(fmt.Sprintf("Signing transaction error: %s \n", err))
+		return "", fmt.Errorf("error signing transaction: %v", err)
+	}
+
+	spew.Dump(tx)
+
+	sig, err := rpcClient.SendTransaction(context.TODO(), tx)
+	if err != nil {
+		spew.Dump(err)
+		logs.Error(fmt.Sprintf("Sending transaction error: %s \n", err))
+		return "", fmt.Errorf("error sending transaction: %v", err)
+	}
+	if _, err := waitForConfirm(sig); err != nil {
+		logs.Error(fmt.Sprintf("Tx waitForConfirm error: %s \n", err))
+		return "", fmt.Errorf("error sending transaction: %v", err)
+	}
+
+	logs.Info(fmt.Sprintf("[ReportAiModelDatasetReward] Tx confirmed : %v", sig.String()))
 
 	return sig.String(), nil
 }
