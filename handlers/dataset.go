@@ -60,6 +60,9 @@ type DatasetDetail struct {
 	Likes     uint32
 	Downloads uint32
 	Clicks    uint32
+	Status    uint8
+	Reason    string
+	Size      uint32
 }
 
 type DatasetListResponse struct {
@@ -76,7 +79,7 @@ func DatasetList(context *gin.Context) {
 
 	var response DatasetListResponse
 	tx := common.Db.Table("datasets").
-		Select("datasets.*, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks, dataset_heats.size").
+		Select("datasets.*, dataset_heats.likes, dataset_heats.downloads, dataset_heats.clicks, dataset_heats.status, dataset_heats.reason, dataset_heats.size").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
@@ -119,7 +122,7 @@ func DatasetLikes(context *gin.Context) {
 
 	var response DatasetListResponse
 	tx := common.Db.Table("datasets").
-		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
+		Select("datasets.*, dataset_heats.likes, dataset_heats.downloads, dataset_heats.clicks, dataset_heats.status, dataset_heats.reason, dataset_heats.size").
 		Joins("INNER JOIN dataset_likes ON datasets.owner = dataset_likes.owner AND datasets.name = dataset_likes.name AND dataset_likes.account = ?", account).
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name")
 
@@ -163,7 +166,7 @@ func DatasetGet(context *gin.Context) {
 
 	var datasetDetail DatasetDetail
 	tx := common.Db.Table("datasets").
-		Select("datasets.owner, datasets.name, datasets.scale, datasets.license, datasets.type1, datasets.type2, datasets.tags, datasets.create_time, datasets.update_time, dataset_heats.downloads, dataset_heats.likes, dataset_heats.clicks").
+		Select("datasets.*, dataset_heats.likes, dataset_heats.downloads, dataset_heats.clicks, dataset_heats.status, dataset_heats.reason, dataset_heats.size").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name").
 		Where("datasets.owner = ? AND datasets.name = ?", req.Owner, req.Name).
 		Take(&datasetDetail)

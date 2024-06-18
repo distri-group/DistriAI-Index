@@ -26,6 +26,8 @@ type ModelDetail struct {
 	Likes     uint32
 	Downloads uint32
 	Clicks    uint32
+	Status    uint8
+	Reason    string
 	Size      uint32
 }
 
@@ -43,7 +45,7 @@ func ModelList(context *gin.Context) {
 
 	var response ModelListResponse
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.*, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks, ai_model_heats.size").
+		Select("ai_models.*, ai_model_heats.likes, ai_model_heats.downloads, ai_model_heats.clicks,  ai_model_heats.status,  ai_model_heats.reason, ai_model_heats.size").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
 	if req.Type1 != 0 && req.Type2 != 0 {
@@ -87,7 +89,7 @@ func ModelLikes(context *gin.Context) {
 
 	var response ModelListResponse
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
+		Select("ai_models.*, ai_model_heats.likes, ai_model_heats.downloads, ai_model_heats.clicks,  ai_model_heats.status,  ai_model_heats.reason, ai_model_heats.size").
 		Joins("INNER JOIN ai_model_likes ON ai_models.owner = ai_model_likes.owner AND ai_models.name = ai_model_likes.name AND ai_model_likes.account = ?", account).
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
@@ -131,7 +133,7 @@ func ModelGet(context *gin.Context) {
 
 	var modelDetail ModelDetail
 	tx := common.Db.Table("ai_models").
-		Select("ai_models.owner, ai_models.name, ai_models.framework, ai_models.license, ai_models.type1, ai_models.type2, ai_models.tags, ai_models.create_time, ai_models.update_time, ai_model_heats.downloads, ai_model_heats.likes, ai_model_heats.clicks").
+		Select("ai_models.*, ai_model_heats.likes, ai_model_heats.downloads, ai_model_heats.clicks,  ai_model_heats.status,  ai_model_heats.reason, ai_model_heats.size").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name").
 		Where("ai_models.owner = ? AND ai_models.name = ?", req.Owner, req.Name).
 		Take(&modelDetail)
