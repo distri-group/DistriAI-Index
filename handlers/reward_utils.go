@@ -85,7 +85,7 @@ func StartRewardCron() {
 	}
 
 	_, err = scheduler.NewJob(
-		gocron.CronJob("24 8 * * *", false),
+		gocron.CronJob("58 23 * * *", false),
 		gocron.NewTask(func() {
 			createAiModelDatasetRewardPeriod()
 			reportAiModelDatasetReward()
@@ -103,7 +103,7 @@ func createAiModelDatasetRewardPeriod() {
 	var aiModelCount int64
 	tx := common.Db.Table("ai_models").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name").
-		Where("ai_model_heats.review = 1").
+		Where("ai_model_heats.status = 2").
 		Count(&aiModelCount)
 	if tx.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
@@ -112,7 +112,7 @@ func createAiModelDatasetRewardPeriod() {
 	var datasetCount int64
 	tx = common.Db.Table("datasets").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name").
-		Where("dataset_heats.review = 1").
+		Where("dataset_heats.status = 2").
 		Count(&datasetCount)
 	if tx.Error != nil {
 		logs.Error(fmt.Sprintf("Database error: %s \n", tx.Error))
@@ -148,7 +148,7 @@ func createAiModelDatasetReward(rewardPeriod model.AiModelDatasetRewardPeriod) {
 	tx := common.Db.Table("ai_models").
 		Select("ai_models.owner AS owner, COUNT(ai_models.owner) AS ai_model_num").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name").
-		Where("ai_model_heats.review = 1").
+		Where("ai_model_heats.status = 2").
 		Group("ai_models.owner").
 		Find(&aiModelRewards)
 	if tx.Error != nil {
@@ -160,7 +160,7 @@ func createAiModelDatasetReward(rewardPeriod model.AiModelDatasetRewardPeriod) {
 	tx = common.Db.Table("datasets").
 		Select("datasets.owner AS owner, COUNT(datasets.owner) AS dataset_num").
 		Joins("LEFT JOIN dataset_heats ON datasets.owner = dataset_heats.owner AND datasets.name = dataset_heats.name").
-		Where("dataset_heats.review = 1").
+		Where("dataset_heats.status = 2").
 		Group("datasets.owner").
 		Find(&datasetRewards)
 	if tx.Error != nil {
@@ -206,6 +206,7 @@ func reportAiModelDatasetReward() {
 	}
 
 	for _, reward := range rewards {
+		time.Sleep(time.Second * 3)
 		owner := solana.MustPublicKeyFromBase58(reward.Owner)
 		txHash, err := chain.ReportAiModelDatasetReward(owner, reward.PeriodicReward)
 		if err != nil {

@@ -50,7 +50,7 @@ func ModelList(context *gin.Context) {
 		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
 	}
 	if "" == req.Owner {
-		tx.Where("ai_model_heats.review = 1")
+		tx.Where("ai_model_heats.status = 2")
 	} else {
 		tx.Where("ai_models.owner = ?", req.Owner)
 	}
@@ -311,9 +311,42 @@ func ModelLikeCount(context *gin.Context) {
 	resp.Success(context, modelHeat.Likes)
 }
 
+type ModelUpdateStatusReq struct {
+	Name   string `binding:"required"`
+	Public bool   `binding:"required"`
+}
+
+func ModelStatusUpdate(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req ModelUpdateStatusReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var aiModelHeat model.AiModelHeat
+	tx := common.Db.Model(&model.AiModelHeat{}).
+		Where("owner = ? AND name = ?", account, req.Name).
+		Take(&aiModelHeat)
+	if tx.Error != nil {
+		resp.Fail(context, "AiModel not found")
+		return
+	}
+	if req.Public {
+		aiModelHeat.Status = 1
+	} else {
+		aiModelHeat.Status = 0
+	}
+	aiModelHeat.Reason = ""
+	if tx := common.Db.Save(aiModelHeat); tx.Error != nil {
+		resp.Fail(context, "Database error")
+	}
+	resp.Success(context, "")
+}
+
 type ModelUpdateSizeReq struct {
 	Name string `binding:"required"`
-	Size uint32
+	Size uint32 `binding:"required"`
 }
 
 func ModelSizeUpdate(context *gin.Context) {

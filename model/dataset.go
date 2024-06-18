@@ -22,7 +22,8 @@ type DatasetHeat struct {
 	Likes     uint   `gorm:"not null"`
 	Downloads uint   `gorm:"not null"`
 	Clicks    uint   `gorm:"not null"`
-	Review    uint8  `gorm:"not null;comment:'0-pending,1-accept,2-reject'"`
+	Status    uint8  `gorm:"not null;comment:'0-private,1-review,2-public'"`
+	Reason    string `gorm:"size:128;not null;comment:'why review fails'"`
 	Size      uint32 `gorm:"not null"`
 }
 

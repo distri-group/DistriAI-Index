@@ -82,7 +82,7 @@ func DatasetList(context *gin.Context) {
 		tx.Where("datasets.type1 = ? AND datasets.type2 = ?", req.Type1, req.Type2)
 	}
 	if "" == req.Owner {
-		tx.Where("dataset_heats.review = 1")
+		tx.Where("dataset_heats.status = 2")
 	} else {
 		tx.Where("datasets.owner = ?", req.Owner)
 	}
@@ -308,9 +308,42 @@ func DatasetLikeCount(context *gin.Context) {
 	resp.Success(context, datasetHeat.Likes)
 }
 
+type DatasetUpdateStatusReq struct {
+	Name   string `binding:"required"`
+	Public bool   `binding:"required"`
+}
+
+func DatasetStatusUpdate(context *gin.Context) {
+	account := getAuthAccount(context)
+	var req DatasetUpdateStatusReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var datasetHeat model.DatasetHeat
+	tx := common.Db.Model(&model.DatasetHeat{}).
+		Where("owner = ? AND name = ?", account, req.Name).
+		Take(&datasetHeat)
+	if tx.Error != nil {
+		resp.Fail(context, "AiModel not found")
+		return
+	}
+	if req.Public {
+		datasetHeat.Status = 1
+	} else {
+		datasetHeat.Status = 0
+	}
+	datasetHeat.Reason = ""
+	if tx := common.Db.Save(datasetHeat); tx.Error != nil {
+		resp.Fail(context, "Database error")
+	}
+	resp.Success(context, "")
+}
+
 type DatasetUpdateSizeReq struct {
 	Name string `binding:"required"`
-	Size uint32
+	Size uint32 `binding:"required"`
 }
 
 func DatasetSizeUpdate(context *gin.Context) {

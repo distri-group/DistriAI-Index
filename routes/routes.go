@@ -58,6 +58,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		modelAuth.POST("/presign", handlers.ModelPresign)
 		modelAuth.POST("/like", handlers.ModelLike)
 		modelAuth.GET("/islike", handlers.ModelIsLike)
+		modelAuth.POST("/status", handlers.ModelStatusUpdate)
 		modelAuth.POST("/size", handlers.ModelSizeUpdate)
 		modelAuth.GET("/size/total", handlers.ModelSizeTotal)
 	}
@@ -74,6 +75,7 @@ func RegisterRoutes(engine *gin.Engine) {
 		datasetAuth.POST("/presign", handlers.DatasetPresign)
 		datasetAuth.POST("/like", handlers.DatasetLike)
 		datasetAuth.GET("/islike", handlers.DatasetIsLike)
+		datasetAuth.POST("/status", handlers.DatasetStatusUpdate)
 		datasetAuth.POST("/size", handlers.DatasetSizeUpdate)
 		datasetAuth.GET("/size/total", handlers.DatasetSizeTotal)
 	}
