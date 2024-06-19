@@ -315,7 +315,7 @@ func ModelLikeCount(context *gin.Context) {
 
 type ModelUpdateStatusReq struct {
 	Name   string `binding:"required"`
-	Public bool   `binding:"required"`
+	Public bool
 }
 
 func ModelStatusUpdate(context *gin.Context) {
@@ -348,7 +348,7 @@ func ModelStatusUpdate(context *gin.Context) {
 
 type ModelUpdateSizeReq struct {
 	Name string `binding:"required"`
-	Size uint32 `binding:"required"`
+	Size uint32
 }
 
 func ModelSizeUpdate(context *gin.Context) {

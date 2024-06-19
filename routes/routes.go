@@ -40,6 +40,13 @@ func RegisterRoutes(engine *gin.Engine) {
 		reward.POST("/period/list", handlers.RewardPeriodList)
 		reward.POST("/machine/list", handlers.RewardMachineList)
 	}
+	modelReward := engine.Group("/model-reward")
+	{
+		modelReward.GET("/pool/total", handlers.AiModelDatasetRewardPoolTotal)
+		modelReward.POST("/period/detail", handlers.AiModelDatasetRewardPeriodDetail)
+		modelReward.POST("/list", handlers.AiModelDatasetRewardList)
+		modelReward.POST("/detail", handlers.AiModelDatasetRewardDetail)
+	}
 	log := engine.Group("/log")
 	{
 		log.POST("/add", handlers.LogAdd)

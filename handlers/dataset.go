@@ -313,7 +313,7 @@ func DatasetLikeCount(context *gin.Context) {
 
 type DatasetUpdateStatusReq struct {
 	Name   string `binding:"required"`
-	Public bool   `binding:"required"`
+	Public bool
 }
 
 func DatasetStatusUpdate(context *gin.Context) {
@@ -346,7 +346,7 @@ func DatasetStatusUpdate(context *gin.Context) {
 
 type DatasetUpdateSizeReq struct {
 	Name string `binding:"required"`
-	Size uint32 `binding:"required"`
+	Size uint32
 }
 
 func DatasetSizeUpdate(context *gin.Context) {
