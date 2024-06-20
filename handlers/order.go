@@ -42,6 +42,8 @@ func OrderMine(context *gin.Context) {
 		tx.Where("buyer = ?", account)
 	} else if req.Direction == "sell" {
 		tx.Where("seller = ?", account)
+	} else if req.Direction == "earn" {
+		tx.Where("seller = ? OR model1_owner = ? OR model2_owner = ? OR model3_owner = ? OR model4_owner = ? OR model5_owner = ?", account, account, account, account, account, account)
 	} else {
 		tx.Where("buyer = ? OR seller = ?", account, account)
 	}

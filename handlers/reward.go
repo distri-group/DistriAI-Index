@@ -11,6 +11,27 @@ import (
 	"time"
 )
 
+type RewardPeriodDetailReq struct {
+	Period uint32
+}
+
+func RewardPeriodDetail(context *gin.Context) {
+	var req RewardPeriodDetailReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		resp.Fail(context, err.Error())
+		return
+	}
+
+	var reward model.Reward
+	tx := common.Db.Model(&model.Reward{}).Where("period = ?", req.Period).Take(&reward)
+	if tx.Error != nil {
+		resp.Fail(context, "Not found")
+		return
+	}
+
+	resp.Success(context, reward)
+}
+
 type RewardTotalReq struct {
 	Period *uint32
 }

@@ -7,6 +7,7 @@ import (
 	"distriai-index-solana/utils/resp"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 func AiModelDatasetRewardPoolTotal(context *gin.Context) {
@@ -33,7 +34,7 @@ func AiModelDatasetRewardPeriodDetail(context *gin.Context) {
 		return
 	}
 
-	var reward model.AiModelDatasetReward
+	var reward model.AiModelDatasetRewardPeriod
 	tx := common.Db.Model(&model.AiModelDatasetRewardPeriod{})
 	if req.Period == nil {
 		tx.Order("period DESC")
@@ -48,21 +49,34 @@ func AiModelDatasetRewardPeriodDetail(context *gin.Context) {
 	resp.Success(context, reward)
 }
 
+type AiModelDatasetRewardListReq struct {
+	Owner  *string
+	Period *uint32
+}
+
 type AiModelDatasetRewardListResponse struct {
 	List []model.AiModelDatasetReward
 	PageResp
 }
 
 func AiModelDatasetRewardList(context *gin.Context) {
-	account, err := getAccount(context)
-	if err != nil {
+	var req AiModelDatasetRewardListReq
+	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
+		resp.Fail(context, err.Error())
 		return
 	}
 
 	var response AiModelDatasetRewardListResponse
-	tx := common.Db.Model(&model.AiModelDatasetReward{}).
-		Where("owner = ?", account).
-		Order("period DESC")
+	tx := common.Db.Model(&model.AiModelDatasetReward{})
+	if req.Owner != nil {
+		tx.Where("owner = ?", req.Owner).
+			Order("period DESC")
+	}
+	if req.Period != nil {
+		tx.Where("period = ?", req.Period).
+			Order("period_reward DESC")
+	}
+
 	tx = tx.Count(&response.Total)
 	if tx.Error != nil {
 		logs.Error(fmt.Sprintf("Database count error: %s \n", tx.Error))
