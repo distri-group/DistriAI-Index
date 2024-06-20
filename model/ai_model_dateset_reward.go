@@ -4,11 +4,11 @@ import "time"
 
 type AiModelDatasetRewardPeriod struct {
 	Id                 uint      `gorm:"primarykey"`
-	Period             uint32    `gorm:"not null;unique"`
+	Period             uint32    `gorm:"not null;unique" json:"Period"`
 	StartTime          time.Time `gorm:"autoCreateTime"`
 	Pool               uint64    `gorm:"not null"`
-	AiModelNum         uint32    `gorm:"not null"`
-	DatasetNum         uint32    `gorm:"not null"`
+	AiModelNum         uint32    `gorm:"not null" json:"AiModelTotalNum"`
+	DatasetNum         uint32    `gorm:"not null" json:"DatasetTotalNum"`
 	UnitPeriodicReward uint64    `gorm:"not null"`
 }
 

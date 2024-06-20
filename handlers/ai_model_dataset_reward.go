@@ -53,9 +53,13 @@ type AiModelDatasetRewardListReq struct {
 	Owner  *string
 	Period *uint32
 }
+type AiModelDatasetRewardItem struct {
+	model.AiModelDatasetReward
+	model.AiModelDatasetRewardPeriod
+}
 
 type AiModelDatasetRewardListResponse struct {
-	List []model.AiModelDatasetReward
+	List []AiModelDatasetRewardItem
 	PageResp
 }
 
@@ -67,14 +71,16 @@ func AiModelDatasetRewardList(context *gin.Context) {
 	}
 
 	var response AiModelDatasetRewardListResponse
-	tx := common.Db.Model(&model.AiModelDatasetReward{})
+	tx := common.Db.Model(&model.AiModelDatasetReward{}).
+		Select("ai_model_dataset_rewards.*, ai_model_dataset_reward_periods.*").
+		Joins("LEFT JOIN ai_model_dataset_reward_periods ON ai_model_dataset_rewards.period = ai_model_dataset_reward_periods.period")
 	if req.Owner != nil {
-		tx.Where("owner = ?", req.Owner).
-			Order("period DESC")
+		tx.Where("ai_model_dataset_rewards.owner = ?", req.Owner).
+			Order("ai_model_dataset_rewards.period DESC")
 	}
 	if req.Period != nil {
-		tx.Where("period = ?", req.Period).
-			Order("period_reward DESC")
+		tx.Where("ai_model_dataset_rewards.period = ?", req.Period).
+			Order("ai_model_dataset_rewards.periodic_reward DESC")
 	}
 
 	tx = tx.Count(&response.Total)
@@ -94,23 +100,22 @@ func AiModelDatasetRewardList(context *gin.Context) {
 }
 
 type AiModelDatasetRewardDetailReq struct {
-	Period uint32 `binding:"required"`
+	Owner  string `binding:"required"`
+	Period uint32
 }
 
 func AiModelDatasetRewardDetail(context *gin.Context) {
-	account, err := getAccount(context)
-	if err != nil {
-		return
-	}
 	var req AiModelDatasetRewardDetailReq
 	if err := context.ShouldBindJSON(&req); err != nil {
 		resp.Fail(context, err.Error())
 		return
 	}
 
-	var reward model.AiModelDatasetReward
+	var reward AiModelDatasetRewardItem
 	tx := common.Db.Model(&model.AiModelDatasetReward{}).
-		Where("period = ? AND owner = ?", req.Period, account).
+		Select("ai_model_dataset_rewards.*, ai_model_dataset_reward_periods.*").
+		Joins("LEFT JOIN ai_model_dataset_reward_periods ON ai_model_dataset_rewards.period = ai_model_dataset_reward_periods.period").
+		Where("ai_model_dataset_rewards.period = ? AND ai_model_dataset_rewards.owner = ?", req.Period, req.Owner).
 		Take(&reward)
 	if tx.Error != nil {
 		resp.Fail(context, "Not found")

@@ -9,8 +9,10 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
+	"golang.org/x/time/rate"
 	"slices"
 	"strings"
+	"time"
 )
 
 const (
@@ -53,7 +55,11 @@ func initChain() {
 	distriProgramID = solana.MustPublicKeyFromBase58(common.Conf.Chain.ProgramId)
 	distri_ai.SetProgramID(distriProgramID)
 	// Creates a new RPC client based on the RPC address in the configuration file, for communication with the blockchain.
-	rpcClient = rpc.New(common.Conf.Chain.Rpc)
+	rpcClient = rpc.NewWithCustomRPCClient(rpc.NewWithLimiter(
+		common.Conf.Chain.Rpc,
+		rate.Every(time.Second),
+		10,
+	))
 	// Calls the initSolana function to perform additional initialization tasks for the Solana chain.
 	initSolana()
 }
