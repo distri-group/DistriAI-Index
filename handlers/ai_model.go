@@ -48,6 +48,7 @@ func ModelList(context *gin.Context) {
 		Select("ai_models.*, ai_model_heats.likes, ai_model_heats.downloads, ai_model_heats.clicks,  ai_model_heats.status,  ai_model_heats.reason, ai_model_heats.size").
 		Joins("LEFT JOIN ai_model_heats ON ai_models.owner = ai_model_heats.owner AND ai_models.name = ai_model_heats.name")
 
+	// Filter based on conditions from the request
 	if req.Type1 != 0 && req.Type2 != 0 {
 		tx.Where("ai_models.type1 = ? AND ai_models.type2 = ?", req.Type1, req.Type2)
 	}
@@ -57,6 +58,7 @@ func ModelList(context *gin.Context) {
 		tx.Where("ai_models.owner = ?", req.Owner)
 	}
 	if "" != req.Name {
+		// Handle special characters in fuzzy search
 		name := strings.ReplaceAll(req.Name, "%", "\\%")
 		tx.Where("ai_models.name LIKE ?", "%"+name+"%")
 	}
@@ -64,13 +66,14 @@ func ModelList(context *gin.Context) {
 		resp.Fail(context, "Database error")
 		return
 	}
-
+	// Order query results based on orderBy field
 	switch req.OrderBy {
 	case "update_time DESC", "downloads DESC", "likes DESC":
 		tx.Order(req.OrderBy)
 	default:
 		tx.Order("`downloads` + `likes` + `clicks` DESC")
 	}
+	// Paginate query and store results in response.List
 	if tx.Scopes(Paginate(context)).Find(&response.List); tx.Error != nil {
 		resp.Fail(context, "Database error")
 		return
@@ -177,8 +180,10 @@ func ModelPresign(context *gin.Context) {
 	var err error
 	switch req.Method {
 	case "PUT":
+		// Generate presigned URL for uploading object with a validity of 3600 seconds (1 hour)
 		presignedPutRequest, err = common.S3Presigner.PutObject("distriai", objectKey, 3600)
 	case "DELETE":
+		// Generate presigned URL for deleting object
 		presignedPutRequest, err = common.S3Presigner.DeleteObject("distriai", objectKey)
 	}
 
