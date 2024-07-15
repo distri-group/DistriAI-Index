@@ -63,6 +63,7 @@ func LogList(context *gin.Context) {
 		resp.Fail(context, "Database error")
 		return
 	}
+	// Continue in the same transaction, order by created time in descending order, apply pagination query, and store the result in response.List
 	dbResult = tx.Order("created_at DESC").Scopes(Paginate(context)).Find(&response.List)
 	if dbResult.Error != nil {
 		logs.Warn(fmt.Sprintf("Database error: %s \n", dbResult.Error))
