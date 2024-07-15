@@ -16,16 +16,23 @@ import (
 // fetch all account data on the Solana blockchain and storage
 func fetchAllAiModel(out rpc.GetProgramAccountsResult) {
 	var aiModels []model.AiModel
+	
+	// Iterate through each keyed account in the 'out' slice
 	for _, keyedAcct := range out {
 		acct := keyedAcct.Account
 		m := new(distri_ai.AiModel)
+		
+		// Attempt to decode the account data into an AiModel object
 		if err := m.UnmarshalWithDecoder(bin.NewBorshDecoder(acct.Data.GetBinary())); err != nil {
 			continue
 		}
+
+		// Build an AiModel database model object
 		machine := buildAiModelModel(m)
 		aiModels = append(aiModels, machine)
 	}
 
+	// If aiModels slice is not empty, attempt to bulk insert into the database
 	if len(aiModels) > 0 {
 		if dbResult := common.Db.Create(&aiModels); dbResult.Error != nil {
 			logs.Error(fmt.Sprintf("Database error: %s \n", dbResult.Error))
