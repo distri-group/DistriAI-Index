@@ -22,6 +22,7 @@ func init() {
 	t := time.Now()
 	formattedTime := t.Format("2006-01-02_15:04:05")
 	logFileName := fmt.Sprintf("./logs/%s.log", formattedTime)
+	// Setting up the lumberjack logger
 	lumberjackLogger := &lumberjack.Logger{
 		Filename:   logFileName,
 		MaxSize:    100,
@@ -29,12 +30,14 @@ func init() {
 		MaxAge:     28,
 	}
 
+	// Creating a Zap core
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
 		zapcore.AddSync(lumberjackLogger),
 		zap.InfoLevel,
 	)
 
+	// Creating a new Zap logger instance
 	Logger = zap.New(core)
 }
 
