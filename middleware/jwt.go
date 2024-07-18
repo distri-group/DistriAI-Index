@@ -53,8 +53,10 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 
 // Jwt Authorization middleware based JWT
 func Jwt() gin.HandlerFunc {
+	// Retrieve the Authorization header from the request
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
+		// Check if Authorization header is missing
 		if authHeader == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"code": 2003,
@@ -64,6 +66,7 @@ func Jwt() gin.HandlerFunc {
 			return
 		}
 
+		// Parse and validate the JWT token from the Authorization header
 		claims, err := ParseToken(authHeader)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
