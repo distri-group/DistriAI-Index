@@ -36,18 +36,22 @@ func initSolana() {
 	distFaucetAmount = common.Conf.Chain.DistFaucetAmount * uint64(math.Pow10(int(distDecimals)))
 }
 
+// FaucetDist facilitates the distribution of a token from a faucet account to a recipient's associated token account on Solana blockchain.
 func FaucetDist(publicKey solana.PublicKey) (string, error) {
+	// Find the associated token address for the faucet account.
 	faucetAta, _, err := solana.FindAssociatedTokenAddress(faucetPublicKey, dist)
 	if err != nil {
 		logs.Error(fmt.Sprintf("error finding associated token address: %s \n", err))
 		return "", fmt.Errorf("error finding associated token address: %s \n", err)
 	}
+	// Find the associated token address for the recipient's public key.
 	receiverAta, _, err := solana.FindAssociatedTokenAddress(publicKey, dist)
 	if err != nil {
 		logs.Error(fmt.Sprintf("error finding associated token address: %s \n", err))
 		return "", fmt.Errorf("error finding associated token address: %s \n", err)
 	}
 
+	// Prepare a list of instructions to be included in the transaction.
 	var instructions []solana.Instruction
 	_, err = rpcClient.GetAccountInfo(context.TODO(), receiverAta)
 	if errors.Is(err, rpc.ErrNotFound) {
@@ -59,7 +63,8 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 			).Build(),
 		)
 	}
-
+	
+	// Add a transfer instruction to transfer tokens from the faucet to the recipient.
 	instructions = append(instructions,
 		token.NewTransferCheckedInstruction(
 			distFaucetAmount,
@@ -72,12 +77,14 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 		).Build(),
 	)
 
+	// Get the recent blockhash for the transaction.
 	recent, err := rpcClient.GetRecentBlockhash(context.TODO(), rpc.CommitmentFinalized)
 	if err != nil {
 		logs.Error(fmt.Sprintf("Creating transaction error: %s \n", err))
 		return "", fmt.Errorf("error creating transaction: %s \n", err)
 	}
 
+	// Create a new transaction using the collected instructions and the recent blockhash.
 	tx, err := solana.NewTransaction(
 		instructions,
 		recent.Value.Blockhash,
@@ -89,6 +96,7 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 		return "", fmt.Errorf("error creating transaction: %s \n", err)
 	}
 
+	// Sign the transaction with the faucet's private key.
 	_, err = tx.Sign(
 		func(key solana.PublicKey) *solana.PrivateKey {
 			if faucetPublicKey.Equals(key) {
@@ -102,8 +110,10 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 		return "", fmt.Errorf("error signing transaction: %v", err)
 	}
 
+	// Display the transaction details using spew (debugging tool).
 	spew.Dump(tx)
 
+	// Send the signed transaction to the Solana blockchain.
 	sig, err := rpcClient.SendTransaction(context.TODO(), tx)
 	if err != nil {
 		spew.Dump(err)
