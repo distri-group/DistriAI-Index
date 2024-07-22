@@ -62,6 +62,8 @@ func startTime(period uint32) time.Time {
 	return time.Unix(genesisTime+periodDuration*int64(period), 0)
 }
 
+// pool calculates the total amount and the AI model dataset portion based on a given period.
+// It returns two values: total and aiModelDataset.
 func pool(period uint32) (total uint64, aiModelDataset uint64) {
 	decayTimes := int(period / decayPeriods)
 	checkpointIndex := decayTimes / 10
@@ -77,6 +79,7 @@ func pool(period uint32) (total uint64, aiModelDataset uint64) {
 	return total, aiModelDataset
 }
 
+// StartRewardCron initializes and starts a cron job scheduler for rewarding AI model dataset contributions.
 func StartRewardCron() {
 	scheduler, err := gocron.NewScheduler(gocron.WithLocation(time.UTC))
 	if err != nil {
