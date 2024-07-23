@@ -17,6 +17,9 @@ type MachineFilterResponse struct {
 	Region   []string
 }
 
+// MachineFilter is a Gin middleware/handler function that filters machines based on certain criteria.
+// Parameters:
+// context - the Gin context object that contains the request details and response writer
 func MachineFilter(context *gin.Context) {
 	var response MachineFilterResponse
 	dbResult := common.Db.Model(&model.Machine{}).Select("gpu").Group("gpu").Find(&response.Gpu)
