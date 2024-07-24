@@ -197,6 +197,9 @@ func ReportAiModelDatasetReward(owner solana.PublicKey, amount uint64) (string, 
 	return sig.String(), nil
 }
 
+// waitForConfirm is a function that waits for a Solana transaction signature to be confirmed.
+// It takes a Solana.Signature as input and returns a boolean indicating if the transaction is confirmed,
+// and an error if one occurred during the process.
 func waitForConfirm(sig solana.Signature) (confirmed bool, err error) {
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
