@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
+// AiModelDatasetRewardPoolTotal is a handler function that calculates the total reward pool for AI model dataset reward periods.
 func AiModelDatasetRewardPoolTotal(context *gin.Context) {
 	var total uint64
 	tx := common.Db.Model(&model.AiModelDatasetRewardPeriod{}).
@@ -27,6 +28,7 @@ type AiModelDatasetRewardPeriodDetailReq struct {
 	Period *uint32
 }
 
+// AiModelDatasetRewardPeriodDetail is a handler function that retrieves details of a specific reward period for AI model datasets.
 func AiModelDatasetRewardPeriodDetail(context *gin.Context) {
 	var req AiModelDatasetRewardPeriodDetailReq
 	if err := context.ShouldBindJSON(&req); err != nil {
