@@ -15,8 +15,11 @@ type RewardPeriodDetailReq struct {
 	Period uint32
 }
 
+// RewardPeriodDetail is a handler function that retrieves details of a specific reward period.
 func RewardPeriodDetail(context *gin.Context) {
 	var req RewardPeriodDetailReq
+	// Attempt to bind the JSON body of the request to the req variable.
+	// If there is an error during binding, respond with a failure message.
 	if err := context.ShouldBindJSON(&req); err != nil {
 		resp.Fail(context, err.Error())
 		return
