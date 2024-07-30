@@ -65,6 +65,8 @@ type AiModelDatasetRewardListResponse struct {
 	PageResp
 }
 
+// AiModelDatasetRewardList handles the request to list rewards for AI model datasets.
+func AiModelDatasetRewardList(context *gin.Context) {
 func AiModelDatasetRewardList(context *gin.Context) {
 	var req AiModelDatasetRewardListReq
 	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
@@ -106,6 +108,7 @@ type AiModelDatasetRewardDetailReq struct {
 	Period uint32
 }
 
+// AiModelDatasetRewardDetail handles the request to get the detail of a specific AI model dataset reward.
 func AiModelDatasetRewardDetail(context *gin.Context) {
 	var req AiModelDatasetRewardDetailReq
 	if err := context.ShouldBindJSON(&req); err != nil {
