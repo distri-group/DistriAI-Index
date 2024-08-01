@@ -109,6 +109,7 @@ type RewardClaimableListResponse struct {
 	PageResp
 }
 
+// RewardClaimableList handles the request to list claimable rewards for an account
 func RewardClaimableList(context *gin.Context) {
 	account, err := getAccount(context)
 	if err != nil {
@@ -122,6 +123,7 @@ func RewardClaimableList(context *gin.Context) {
 	}
 
 	var response RewardClaimableListResponse
+	// Start a new database query using the common.Db model for RewardMachine
 	tx := common.Db.Model(&model.RewardMachine{}).
 		Select("reward_machines.period,reward_machines.machine_id,rewards.unit_periodic_reward AS periodic_rewards").
 		Joins("LEFT JOIN rewards on rewards.period = reward_machines.period").
