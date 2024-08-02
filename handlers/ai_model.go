@@ -36,6 +36,7 @@ type ModelListResponse struct {
 	PageResp
 }
 
+// ModelList handles the request to list models with various filtering and sorting options.
 func ModelList(context *gin.Context) {
 	var req ModelListReq
 	if err := context.ShouldBindBodyWith(&req, binding.JSON); err != nil {
@@ -82,6 +83,7 @@ func ModelList(context *gin.Context) {
 	resp.Success(context, response)
 }
 
+// ModelLikes handles the request to list models that the authenticated account has liked.
 func ModelLikes(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req ModelListReq
