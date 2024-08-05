@@ -11,6 +11,9 @@ type DistriEvent interface {
 	UnmarshalWithDecoder(decoder *bin.Decoder) error
 }
 
+
+// decodeDistriEvent decodes a base64 encoded string into a DistriEvent struct.
+// It takes a base64 encoded string and a pointer to a DistriEvent struct.
 func decodeDistriEvent(data string, event DistriEvent) error {
 	bytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
