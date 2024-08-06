@@ -129,6 +129,7 @@ type ModelGetReq struct {
 	Name  string `binding:"required"`
 }
 
+// ModelGet handles the GET request to retrieve model details.
 func ModelGet(context *gin.Context) {
 	var req ModelGetReq
 	if err := context.ShouldBindUri(&req); err != nil {
