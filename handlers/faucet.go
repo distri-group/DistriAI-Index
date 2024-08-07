@@ -20,6 +20,10 @@ type FaucetResp struct {
 	TxHash string
 }
 
+// Faucet handles the faucet request to distribute tokens to a specified Solana account.
+// It checks the request IP to prevent abuse, validates the Solana account, and
+// performs the transaction to distribute tokens. It also logs the request IP and
+// handles any errors that may occur during the process.
 func Faucet(c *gin.Context) {
 	var req FaucetReq
 	err := c.ShouldBindJSON(&req)
