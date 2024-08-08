@@ -10,6 +10,9 @@ import (
 	"testing"
 )
 
+// TestEncodeDecode_AddMachine tests the encode and decode functions for the AddMachine type.
+// It uses fuzz testing to generate random AddMachine instances and ensures that encoding
+// and then decoding the instance results in the same data.
 func TestEncodeDecode_AddMachine(t *testing.T) {
 	fu := ag_gofuzz.New().NilChance(0)
 	for i := 0; i < 1; i++ {
