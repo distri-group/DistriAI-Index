@@ -41,6 +41,7 @@ func fetchAllAiModel(out rpc.GetProgramAccountsResult) {
 	}
 }
 
+// createAiModelHeats processes a slice of AiModel and creates a new slice of AiModelHeat
 func createAiModelHeats(aiModels []model.AiModel) {
 	var heats []model.AiModelHeat
 	for _, aiModel := range aiModels {
