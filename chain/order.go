@@ -12,6 +12,7 @@ import (
 	"github.com/gagliardetto/solana-go/rpc"
 )
 
+// fetchAllOrder retrieves all orders from the provided rpc result and saves them to the database.
 func fetchAllOrder(out rpc.GetProgramAccountsResult) {
 	var orders []model.Order
 	for _, keyedAcct := range out {
