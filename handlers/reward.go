@@ -46,6 +46,7 @@ type RewardTotalResponse struct {
 	ClaimableTaskRewards     uint64
 }
 
+// RewardTotal calculates the total rewards claimed and claimable for an account.
 func RewardTotal(context *gin.Context) {
 	account, err := getAccount(context)
 	if err != nil {
