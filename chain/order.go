@@ -32,6 +32,8 @@ func fetchAllOrder(out rpc.GetProgramAccountsResult) {
 	}
 }
 
+
+// Adds a new order for a buyer to the system.
 func addOrder(orderId [16]uint8, buyer solana.PublicKey) {
 	address, _, err := solana.FindProgramAddress(
 		[][]byte{
