@@ -164,6 +164,7 @@ type ModelPresignReq struct {
 	Method   string `binding:"required,oneof= PUT DELETE"`
 }
 
+// ModelPresign handles the generation of a presigned URL for S3 operations on AI models.
 func ModelPresign(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req ModelPresignReq
