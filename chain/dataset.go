@@ -34,6 +34,8 @@ func fetchAllDataset(out rpc.GetProgramAccountsResult) {
 	}
 }
 
+// createDatasetHeats creates a slice of DatasetHeat records for each unique Dataset
+// that does not already have a corresponding DatasetHeat record in the database.
 func createDatasetHeats(datasets []model.Dataset) {
 	var heats []model.DatasetHeat
 	for _, dataset := range datasets {
