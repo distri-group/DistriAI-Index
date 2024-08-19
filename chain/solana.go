@@ -130,6 +130,7 @@ func FaucetDist(publicKey solana.PublicKey) (string, error) {
 	return sig.String(), nil
 }
 
+// Function to report AI model dataset reward for a given owner and amount.
 func ReportAiModelDatasetReward(owner solana.PublicKey, amount uint64) (string, error) {
 	address, _, err := solana.FindProgramAddress(
 		[][]byte{
