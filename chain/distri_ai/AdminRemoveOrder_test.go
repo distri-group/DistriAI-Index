@@ -10,6 +10,7 @@ import (
 	"testing"
 )
 
+// TestEncodeDecode_AdminRemoveOrder tests the encode and decode functions for AdminRemoveOrder.
 func TestEncodeDecode_AdminRemoveOrder(t *testing.T) {
 	fu := ag_gofuzz.New().NilChance(0)
 	for i := 0; i < 1; i++ {
