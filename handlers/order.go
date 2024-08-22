@@ -21,6 +21,7 @@ type OrderListResponse struct {
 	PageResp
 }
 
+// OrderMine handles the request to fetch orders related to the logged-in account.
 func OrderMine(context *gin.Context) {
 	account, err := getAccount(context)
 	if err != nil {
