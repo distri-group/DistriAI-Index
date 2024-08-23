@@ -102,6 +102,7 @@ func StartRewardCron() {
 	scheduler.Start()
 }
 
+// createAiModelDatasetRewardPeriod creates a new reward period for AI models and datasets.
 func createAiModelDatasetRewardPeriod() {
 	var aiModelCount int64
 	tx := common.Db.Table("ai_models").
