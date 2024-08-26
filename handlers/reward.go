@@ -210,6 +210,7 @@ type RewardMachineListResponse struct {
 	PageResp
 }
 
+// RewardPeriodList handles the retrieval of a list of reward periods for a specific account.
 func RewardMachineList(context *gin.Context) {
 	account, err := getAccount(context)
 	if err != nil {
