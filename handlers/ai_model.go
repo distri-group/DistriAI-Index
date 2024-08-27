@@ -223,6 +223,7 @@ type ModelLikeReq struct {
 	Like  bool
 }
 
+// ModelLike handles the like and unlike actions for AI models.
 func ModelLike(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req ModelLikeReq
