@@ -199,6 +199,7 @@ func ModelPresign(context *gin.Context) {
 	resp.Success(context, presignedPutRequest.URL)
 }
 
+// ModelDownload handles the download request for a model, incrementing the download count.
 func ModelDownload(context *gin.Context) {
 	var req ModelGetReq
 	if err := context.ShouldBindJSON(&req); err != nil {
