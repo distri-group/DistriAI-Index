@@ -284,6 +284,7 @@ func ModelLike(context *gin.Context) {
 	resp.Success(context, "")
 }
 
+// ModelIsLike checks if the current user likes a specific model.
 func ModelIsLike(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req ModelGetReq
