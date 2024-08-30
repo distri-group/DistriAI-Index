@@ -70,6 +70,7 @@ func addOrder(orderId [16]uint8, buyer solana.PublicKey) {
 	}
 }
 
+// Removes an order from the database based on the provided order ID
 func removeOrder(orderId [16]uint8) {
 	dbResult := common.Db.
 		Where("uuid = ?", fmt.Sprintf("%#x", orderId)).
