@@ -70,6 +70,7 @@ func Sync() {
 	fetchAll()
 }
 
+// fetchAll retrieves all program accounts data and processes them.
 func fetchAll() {
 	// Fetch program accounts data using the default context and confirmed commitment level
 	out, err := rpcClient.GetProgramAccountsWithOpts(
