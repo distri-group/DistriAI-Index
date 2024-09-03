@@ -19,6 +19,7 @@ type DatasetPresignReq struct {
 	Method   string `binding:"required,oneof= PUT DELETE"`
 }
 
+// DatasetPresign handles the request to generate a presigned URL for dataset operations.
 func DatasetPresign(context *gin.Context) {
 	account := getAuthAccount(context)
 	var req DatasetPresignReq
