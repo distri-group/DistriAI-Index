@@ -305,6 +305,7 @@ func ModelIsLike(context *gin.Context) {
 	resp.Success(context, count > 0)
 }
 
+// ModelLikeCount is a handler function to retrieve the like count for a specific AI model.
 func ModelLikeCount(context *gin.Context) {
 	var req ModelGetReq
 	if err := context.ShouldBindJSON(&req); err != nil {
