@@ -34,6 +34,7 @@ type AiModelEvent struct {
 	Name  string
 }
 
+// UnmarshalWithDecoder is a custom unmarshalling method that uses a binary decoder.
 func (obj *AiModelEvent) UnmarshalWithDecoder(decoder *bin.Decoder) (err error) {
 	// Deserialize `Owner`:
 	err = decoder.Decode(&obj.Owner)
