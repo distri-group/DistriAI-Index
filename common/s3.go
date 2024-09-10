@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
+// initS3 initializes the S3 client and presigner with the necessary AWS configuration.
 func initS3() {
 	s3Client := s3.New(s3.Options{
 		Region:      Conf.Aws.Region,
