@@ -14,6 +14,7 @@ type LoginReq struct {
 	Signature string `binding:"required"`
 }
 
+// Login handles the login request by verifying the provided account and signature.
 func Login(context *gin.Context) {
 	var req LoginReq
 	if err := context.ShouldBindJSON(&req); err != nil {
